@@ -24,10 +24,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# Deployment and local setup scripts
-deploy.sh
-setup-valet.sh
-
 # Test files
 test-translations.html
 
