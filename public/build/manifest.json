@@ -1,0 +1,30 @@
+{
+  "_browser-ponyfill-DSBoP9LJ.js": {
+    "file": "assets/browser-ponyfill-DSBoP9LJ.js",
+    "name": "browser-ponyfill",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/main.tsx"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app--Pk_uxmf.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/main.tsx": {
+    "file": "assets/main-DMaGYX1j.js",
+    "name": "main",
+    "src": "resources/js/main.tsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "_browser-ponyfill-DSBoP9LJ.js"
+    ],
+    "css": [
+      "assets/app--Pk_uxmf.css"
+    ]
+  }
+}
