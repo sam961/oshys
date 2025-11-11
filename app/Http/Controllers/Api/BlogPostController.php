@@ -18,12 +18,14 @@ class BlogPostController extends Controller
 
         // Filter by published status
         if ($request->has('published')) {
-            $query->where('is_published', $request->published);
+            $isPublished = filter_var($request->published, FILTER_VALIDATE_BOOLEAN);
+            $query->where('is_published', $isPublished);
         }
 
         // Filter by featured
         if ($request->has('featured')) {
-            $query->where('is_featured', $request->featured);
+            $isFeatured = filter_var($request->featured, FILTER_VALIDATE_BOOLEAN);
+            $query->where('is_featured', $isFeatured);
         }
 
         // Filter by category

@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'ModernCMS') }} - Modern Content Management System</title>
-    <meta name="description" content="Build something amazing with ModernCMS - The modern content management system that empowers teams to create, collaborate, and scale with confidence.">
+    <title>Coral & Shells - Diving Center</title>
+    <meta name="description" content="Coral & Shells Diving Center - Your gateway to underwater adventures. Explore diving courses, exciting trips, and premium equipment in Saudi Arabia.">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

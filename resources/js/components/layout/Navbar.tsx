@@ -52,27 +52,29 @@ export const Navbar: React.FC = () => {
           : 'bg-white/90 backdrop-blur-sm'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <motion.div
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              transition={{ duration: 0.3 }}
-              className="bg-gradient-to-br from-primary-600 to-accent-600 p-2.5 rounded-xl shadow-lg"
-            >
-              <Waves className="w-7 h-7 text-white" />
-            </motion.div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                Coral & Shells
-              </span>
-              <span className="text-xs text-gray-600">Diving Center</span>
-            </div>
-          </Link>
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12">
+        <div className="flex items-center h-20">
+          {/* Logo - Left aligned */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center gap-3 group">
+              <motion.div
+                whileHover={{ scale: 1.05, rotate: 5 }}
+                transition={{ duration: 0.3 }}
+                className="bg-gradient-to-br from-primary-600 to-accent-600 p-2.5 rounded-xl shadow-lg"
+              >
+                <Waves className="w-7 h-7 text-white" />
+              </motion.div>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+                  Coral & Shells
+                </span>
+                <span className="text-xs text-gray-600">Diving Center</span>
+              </div>
+            </Link>
+          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
+          {/* Desktop Navigation - Center */}
+          <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {navigation.map((item) => (
               <div
                 key={item.name}
@@ -124,8 +126,12 @@ export const Navbar: React.FC = () => {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Right Side - Language Switcher and Book Now Button */}
+          <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
             <LanguageSwitcher />
-            <Button size="sm" className="ml-4">Book Now</Button>
+            <Button size="sm">Book Now</Button>
           </div>
 
           {/* Mobile Menu Button */}

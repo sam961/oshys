@@ -32,12 +32,27 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{
+        scale: 1.02,
+        transition: { duration: 0.2, ease: 'easeOut' }
+      }}
+      whileTap={{ scale: 0.95 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        opacity: { duration: 0.3 },
+        y: { duration: 0.3, ease: [0.6, -0.05, 0.01, 0.99] }
+      }}
       className={clsx(baseStyles, variants[variant], sizes[size], className)}
       {...props}
     >
-      {children}
+      <motion.span
+        className="inline-flex items-center gap-2"
+        whileHover={{ x: 2 }}
+        transition={{ duration: 0.2 }}
+      >
+        {children}
+      </motion.span>
     </motion.button>
   );
 };

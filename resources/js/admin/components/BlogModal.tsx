@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateBlogPostMutation, useUpdateBlogPostMutation, useGetCategoriesQuery } from '../../services/api';
 import type { BlogPost } from '../../types';
 import toast from 'react-hot-toast';
+import LanguageTabs from './LanguageTabs';
+import TranslatableInput from './TranslatableInput';
 
 interface BlogModalProps {
   isOpen: boolean;
@@ -17,6 +19,9 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
   const [updateBlogPost, { isLoading: isUpdating }] = useUpdateBlogPostMutation();
   const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'blog' });
 
+  // Add locale state
+  const [currentLocale, setCurrentLocale] = useState<'en' | 'ar'>('en');
+
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
@@ -26,6 +31,10 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
     is_published: false,
     is_featured: false,
     published_at: '',
+    // Add translation fields
+    title_translations: { ar: '' },
+    excerpt_translations: { ar: '' },
+    content_translations: { ar: '' },
   });
 
   useEffect(() => {
@@ -39,6 +48,10 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         is_published: blogPost.is_published,
         is_featured: blogPost.is_featured,
         published_at: blogPost.published_at ? blogPost.published_at.split('T')[0] : '',
+        // Load translations if available
+        title_translations: (blogPost as any).title_translations || { ar: '' },
+        excerpt_translations: (blogPost as any).excerpt_translations || { ar: '' },
+        content_translations: (blogPost as any).content_translations || { ar: '' },
       });
     } else if (mode === 'create') {
       setFormData({
@@ -50,6 +63,9 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         is_published: false,
         is_featured: false,
         published_at: '',
+        title_translations: { ar: '' },
+        excerpt_translations: { ar: '' },
+        content_translations: { ar: '' },
       });
     }
   }, [blogPost, mode]);
@@ -86,6 +102,21 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
       setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // Handle translatable field changes
+  const handleTranslatableChange = (field: string, value: string, locale: 'en' | 'ar') => {
+    if (locale === 'en') {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [`${field}_translations`]: {
+          ...prev[`${field}_translations` as keyof typeof prev] as Record<string, string>,
+          [locale]: value,
+        },
+      }));
     }
   };
 
@@ -128,54 +159,55 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {/* Title */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title *
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                {/* Language Tabs */}
+                {!isViewMode && (
+                  <LanguageTabs
+                    activeLocale={currentLocale}
+                    onLocaleChange={setCurrentLocale}
                   />
-                </div>
+                )}
 
-                {/* Excerpt */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Excerpt *
-                  </label>
-                  <textarea
-                    name="excerpt"
-                    value={formData.excerpt}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    required
-                    rows={2}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                </div>
+                {/* Translatable Fields */}
+                <TranslatableInput
+                  label="Title"
+                  name="title"
+                  value={formData.title}
+                  translations={formData.title_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('title', value, locale)}
+                  required
+                  placeholder="Enter blog post title"
+                />
 
-                {/* Content */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Content *
-                  </label>
-                  <textarea
-                    name="content"
-                    value={formData.content}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    required
-                    rows={8}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                </div>
+                <TranslatableInput
+                  label="Excerpt"
+                  name="excerpt"
+                  value={formData.excerpt}
+                  translations={formData.excerpt_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('excerpt', value, locale)}
+                  type="textarea"
+                  required
+                  rows={2}
+                  placeholder="Enter a brief excerpt"
+                />
 
+                <TranslatableInput
+                  label="Content"
+                  name="content"
+                  value={formData.content}
+                  translations={formData.content_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('content', value, locale)}
+                  type="textarea"
+                  required
+                  rows={8}
+                  placeholder="Enter full blog post content"
+                />
+
+                {/* Non-translatable fields only show when on English tab */}
+                {currentLocale === 'en' && (
+                  <>
                 {/* Category and Published Date */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -250,6 +282,8 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
                     <span className="text-sm text-gray-700">Featured</span>
                   </label>
                 </div>
+                  </>
+                )}
 
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">

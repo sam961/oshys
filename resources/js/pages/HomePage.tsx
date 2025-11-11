@@ -5,7 +5,8 @@ import { Package, Compass, GraduationCap, ArrowRight, Gift, ShoppingBag, Instagr
 import { useTranslation } from 'react-i18next';
 import { HeroSlider } from '../components/features/HeroSlider';
 import { EventsCalendar } from '../components/features/EventsCalendar';
-import { Section, Card, Button } from '../components/ui';
+import { Section, Card, Button, GridSkeleton } from '../components/ui';
+import { ScrollReveal, StaggerContainer, LiquidBackground, WaveBackground } from '../components/animations';
 import { services } from '../data/mockData';
 import { useGetCoursesQuery, useGetTripsQuery, useGetProductsQuery, useGetBlogPostsQuery } from '../services/api';
 import type { Course, Trip, Product, BlogPost } from '../types';
@@ -26,29 +27,9 @@ export const HomePage: React.FC = () => {
 
       {/* Tagline Section */}
       <Section background="gradient" className="text-center relative overflow-hidden">
-        {/* Animated bubbles background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              animate={{
-                y: [0, -30, 0],
-                x: [0, 15, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 5 + i,
-                repeat: Infinity,
-                delay: i * 0.5,
-              }}
-              className="absolute w-20 h-20 rounded-full bg-primary-200/20"
-              style={{
-                left: `${20 + i * 15}%`,
-                top: `${30 + i * 10}%`,
-              }}
-            />
-          ))}
-        </div>
+        {/* Animated liquid background */}
+        <LiquidBackground />
+        <WaveBackground variant="primary" opacity={0.05} />
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -124,7 +105,7 @@ export const HomePage: React.FC = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <StaggerContainer staggerDelay={0.15} className="grid md:grid-cols-3 gap-8">
           {services.map((service, index) => {
             const icons = {
               Package: Package,
@@ -136,12 +117,6 @@ export const HomePage: React.FC = () => {
             return (
               <Link key={service.id} to={service.link}>
                 <Card className="group cursor-pointer h-full">
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
                     <div className="relative overflow-hidden rounded-xl mb-6">
                       <img
                         src={service.image}
@@ -163,12 +138,11 @@ export const HomePage: React.FC = () => {
                       {t('home.learnMore')}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </div>
-                  </motion.div>
                 </Card>
               </Link>
             );
           })}
-        </div>
+        </StaggerContainer>
       </Section>
 
       {/* More About Us Section */}
@@ -241,24 +215,15 @@ export const HomePage: React.FC = () => {
         </motion.div>
 
         {tripsLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
-          </div>
+          <GridSkeleton count={3} />
         ) : tripsError ? (
           <div className="text-center py-12">
             <p className="text-red-600">{t('home.loadingError')}</p>
           </div>
         ) : (
           <>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {trips.slice(0, 3).map((trip, index) => (
-                <motion.div
-                  key={trip.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
                   <Card className="group cursor-pointer overflow-hidden">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
@@ -282,9 +247,8 @@ export const HomePage: React.FC = () => {
                       {t('trips.bookNow')}
                     </Button>
                   </Card>
-                </motion.div>
               ))}
-            </div>
+            </StaggerContainer>
 
             <div className="text-center mt-12">
               <Link to="/shop/trips">
@@ -315,24 +279,15 @@ export const HomePage: React.FC = () => {
         </motion.div>
 
         {coursesLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
-          </div>
+          <GridSkeleton count={3} />
         ) : coursesError ? (
           <div className="text-center py-12">
             <p className="text-red-600">{t('home.loadingError')}</p>
           </div>
         ) : (
           <>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {courses.slice(0, 3).map((course, index) => (
-                <motion.div
-                  key={course.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
                   <Card className="h-full">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
@@ -354,9 +309,8 @@ export const HomePage: React.FC = () => {
                       {t('home.enrollNow')}
                     </Button>
                   </Card>
-                </motion.div>
               ))}
-            </div>
+            </StaggerContainer>
 
             <div className="text-center mt-12">
               <Link to="/shop/courses">
@@ -386,9 +340,7 @@ export const HomePage: React.FC = () => {
         </motion.div>
 
         {productsLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
-          </div>
+          <GridSkeleton count={4} />
         ) : productsError ? (
           <div className="text-center py-12">
             <p className="text-red-600">{t('home.loadingError')}</p>
@@ -553,17 +505,22 @@ export const HomePage: React.FC = () => {
               {t('home.ctaDescription')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="secondary" size="lg" className="bg-white text-primary-600 hover:bg-gray-100">
-                {t('home.bookCourse')}
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white text-white hover:bg-white/10"
-              >
-                {t('nav.contact')}
-              </Button>
+              <Link to="/shop/courses">
+                <Button variant="secondary" size="lg" className="bg-white text-primary-600 hover:bg-gray-100">
+                  {t('home.bookCourse')}
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Link to="/shop/trips">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-white text-white hover:bg-white/10"
+                >
+                  {t('home.exploreTrips')}
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </Card>

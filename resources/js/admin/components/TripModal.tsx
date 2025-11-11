@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateTripMutation, useUpdateTripMutation, useGetCategoriesQuery } from '../../services/api';
 import type { Trip } from '../../types';
 import toast from 'react-hot-toast';
+import LanguageTabs from './LanguageTabs';
+import TranslatableInput from './TranslatableInput';
 
 interface TripModalProps {
   isOpen: boolean;
@@ -16,6 +18,9 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
   const [createTrip, { isLoading: isCreating }] = useCreateTripMutation();
   const [updateTrip, { isLoading: isUpdating }] = useUpdateTripMutation();
   const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'trip' });
+
+  // Add locale state
+  const [currentLocale, setCurrentLocale] = useState<'en' | 'ar'>('en');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -32,6 +37,12 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
     certification_required: false,
     max_participants: null as number | null,
     included_items: [] as string[],
+    // Add translation fields
+    name_translations: { ar: '' },
+    description_translations: { ar: '' },
+    details_translations: { ar: '' },
+    location_translations: { ar: '' },
+    duration_translations: { ar: '' },
   });
 
   useEffect(() => {
@@ -51,6 +62,12 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
         certification_required: trip.certification_required,
         max_participants: trip.max_participants || null,
         included_items: trip.included_items || [],
+        // Load translations if available
+        name_translations: (trip as any).name_translations || { ar: '' },
+        description_translations: (trip as any).description_translations || { ar: '' },
+        details_translations: (trip as any).details_translations || { ar: '' },
+        location_translations: (trip as any).location_translations || { ar: '' },
+        duration_translations: (trip as any).duration_translations || { ar: '' },
       });
     } else if (mode === 'create') {
       setFormData({
@@ -68,6 +85,11 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
         certification_required: false,
         max_participants: null,
         included_items: [],
+        name_translations: { ar: '' },
+        description_translations: { ar: '' },
+        details_translations: { ar: '' },
+        location_translations: { ar: '' },
+        duration_translations: { ar: '' },
       });
     }
   }, [trip, mode]);
@@ -106,6 +128,21 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
       setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // Handle translatable field changes
+  const handleTranslatableChange = (field: string, value: string, locale: 'en' | 'ar') => {
+    if (locale === 'en') {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [`${field}_translations`]: {
+          ...prev[`${field}_translations` as keyof typeof prev] as Record<string, string>,
+          [locale]: value,
+        },
+      }));
     }
   };
 
@@ -148,87 +185,78 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {/* Name */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Trip Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                {/* Language Tabs */}
+                {!isViewMode && (
+                  <LanguageTabs
+                    activeLocale={currentLocale}
+                    onLocaleChange={setCurrentLocale}
                   />
-                </div>
+                )}
 
-                {/* Description */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    required
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                </div>
+                {/* Translatable Fields */}
+                <TranslatableInput
+                  label="Trip Name"
+                  name="name"
+                  value={formData.name}
+                  translations={formData.name_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('name', value, locale)}
+                  required
+                  placeholder="Enter trip name"
+                />
 
-                {/* Details */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Details
-                  </label>
-                  <textarea
-                    name="details"
-                    value={formData.details}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                </div>
+                <TranslatableInput
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  translations={formData.description_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('description', value, locale)}
+                  type="textarea"
+                  required
+                  rows={3}
+                  placeholder="Enter trip description"
+                />
+
+                <TranslatableInput
+                  label="Details"
+                  name="details"
+                  value={formData.details}
+                  translations={formData.details_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('details', value, locale)}
+                  type="textarea"
+                  rows={3}
+                  placeholder="Enter additional details"
+                />
 
                 {/* Location and Duration */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Location *
-                    </label>
-                    <input
-                      type="text"
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      required
-                      placeholder="e.g. Red Sea"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Duration *
-                    </label>
-                    <input
-                      type="text"
-                      name="duration"
-                      value={formData.duration}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      required
-                      placeholder="e.g. 3 days"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                    />
-                  </div>
+                  <TranslatableInput
+                    label="Location"
+                    name="location"
+                    value={formData.location}
+                    translations={formData.location_translations}
+                    currentLocale={currentLocale}
+                    onChange={(value, locale) => handleTranslatableChange('location', value, locale)}
+                    required
+                    placeholder="e.g. Red Sea"
+                  />
+                  <TranslatableInput
+                    label="Duration"
+                    name="duration"
+                    value={formData.duration}
+                    translations={formData.duration_translations}
+                    currentLocale={currentLocale}
+                    onChange={(value, locale) => handleTranslatableChange('duration', value, locale)}
+                    required
+                    placeholder="e.g. 3 days"
+                  />
                 </div>
 
+                {/* Non-translatable fields only show when on English tab */}
+                {currentLocale === 'en' && (
+                  <>
                 {/* Price and Max Participants */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -353,6 +381,8 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                     <span className="text-sm text-gray-700">Cert Required</span>
                   </label>
                 </div>
+                  </>
+                )}
 
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">

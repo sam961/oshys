@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BookOpen, Calendar, User, ArrowRight, Loader2 } from 'lucide-react';
 import { Section, Card, Button } from '../components/ui';
@@ -60,7 +61,8 @@ export const BlogPage: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="group cursor-pointer h-full overflow-hidden hover:shadow-2xl transition-shadow">
+                <Link to={`/blog/${post.id}`}>
+                  <Card className="group cursor-pointer h-full overflow-hidden hover:shadow-2xl transition-shadow">
                   <div className="relative overflow-hidden rounded-xl mb-4">
                     <img
                       src={post.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
@@ -107,6 +109,7 @@ export const BlogPage: React.FC = () => {
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Card>
+                </Link>
               </motion.div>
             ))}
           </div>

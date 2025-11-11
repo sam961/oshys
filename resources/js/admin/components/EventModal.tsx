@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateEventMutation, useUpdateEventMutation } from '../../services/api';
 import type { Event } from '../../types';
 import toast from 'react-hot-toast';
+import LanguageTabs from './LanguageTabs';
+import TranslatableInput from './TranslatableInput';
 
 interface EventModalProps {
   isOpen: boolean;
@@ -16,6 +18,9 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
   const [createEvent, { isLoading: isCreating }] = useCreateEventMutation();
   const [updateEvent, { isLoading: isUpdating }] = useUpdateEventMutation();
 
+  // Add locale state
+  const [currentLocale, setCurrentLocale] = useState<'en' | 'ar'>('en');
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -26,6 +31,10 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
     is_active: true,
     max_participants: null as number | null,
     price: null as number | null,
+    // Add translation fields
+    title_translations: { ar: '' },
+    description_translations: { ar: '' },
+    location_translations: { ar: '' },
   });
 
   useEffect(() => {
@@ -40,6 +49,10 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
         is_active: event.is_active,
         max_participants: event.max_participants || null,
         price: event.price || null,
+        // Load translations if available
+        title_translations: (event as any).title_translations || { ar: '' },
+        description_translations: (event as any).description_translations || { ar: '' },
+        location_translations: (event as any).location_translations || { ar: '' },
       });
     } else if (mode === 'create') {
       setFormData({
@@ -52,6 +65,9 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
         is_active: true,
         max_participants: null,
         price: null,
+        title_translations: { ar: '' },
+        description_translations: { ar: '' },
+        location_translations: { ar: '' },
       });
     }
   }, [event, mode]);
@@ -88,6 +104,21 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
       setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // Handle translatable field changes
+  const handleTranslatableChange = (field: string, value: string, locale: 'en' | 'ar') => {
+    if (locale === 'en') {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [`${field}_translations`]: {
+          ...prev[`${field}_translations` as keyof typeof prev] as Record<string, string>,
+          [locale]: value,
+        },
+      }));
     }
   };
 
@@ -130,71 +161,70 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {/* Title */}
+                {/* Language Tabs */}
+                {!isViewMode && (
+                  <LanguageTabs
+                    activeLocale={currentLocale}
+                    onLocaleChange={setCurrentLocale}
+                  />
+                )}
+
+                {/* Translatable Fields */}
+                <TranslatableInput
+                  label="Event Title"
+                  name="title"
+                  value={formData.title}
+                  translations={formData.title_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('title', value, locale)}
+                  required
+                  placeholder="Enter event title"
+                />
+
+                <TranslatableInput
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  translations={formData.description_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('description', value, locale)}
+                  type="textarea"
+                  required
+                  rows={3}
+                  placeholder="Enter event description"
+                />
+
+                <TranslatableInput
+                  label="Location"
+                  name="location"
+                  value={formData.location}
+                  translations={formData.location_translations}
+                  currentLocale={currentLocale}
+                  onChange={(value, locale) => handleTranslatableChange('location', value, locale)}
+                  placeholder="Enter event location"
+                />
+
+                {/* Non-translatable fields only show when on English tab */}
+                {currentLocale === 'en' && (
+                  <>
+                {/* Event Type */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Event Title *
+                    Event Type *
                   </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
+                  <select
+                    name="type"
+                    value={formData.type}
                     onChange={handleChange}
                     disabled={isViewMode}
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                </div>
-
-                {/* Description */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    required
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                </div>
-
-                {/* Type and Location */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Event Type *
-                    </label>
-                    <select
-                      name="type"
-                      value={formData.type}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                    >
-                      <option value="workshop">Workshop</option>
-                      <option value="course">Course</option>
-                      <option value="trip">Trip</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                    />
-                  </div>
+                  >
+                    <option value="workshop">Workshop</option>
+                    <option value="course">Course</option>
+                    <option value="trip">Trip</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
 
                 {/* Start and End Date */}
@@ -275,6 +305,8 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
                     <span className="text-sm text-gray-700">Active</span>
                   </label>
                 </div>
+                  </>
+                )}
 
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">

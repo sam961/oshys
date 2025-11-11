@@ -1,15 +1,19 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { AnimatePresence } from 'framer-motion';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { WhatsAppButton } from './components/features/WhatsAppButton';
+import { PageTransition, ScrollToTop } from './components/animations';
+import { useSmoothScroll } from './components/animations';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { CoursesPage } from './pages/CoursesPage';
 import { TripsPage } from './pages/TripsPage';
 import { BlogPage } from './pages/BlogPage';
+import { BlogDetailPage } from './pages/BlogDetailPage';
 import { ContactPage } from './pages/ContactPage';
 
 // Admin imports
@@ -24,75 +28,103 @@ import { TeamManagement } from './admin/pages/TeamManagement';
 import { BannerManagement } from './admin/pages/BannerManagement';
 import { Settings } from './admin/pages/Settings';
 
-const App: React.FC = () => {
+const AnimatedRoutes: React.FC = () => {
+  const location = useLocation();
+  useSmoothScroll();
+
   return (
-    <Router>
-      <Toaster position="top-right" />
-      <WhatsAppButton />
-      <Routes>
+    <>
+      <ScrollToTop />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
         {/* Public Routes */}
         <Route path="/" element={
-          <div className="flex flex-col min-h-screen bg-white">
-            <Navbar />
-            <main className="flex-grow">
-              <HomePage />
-            </main>
-            <Footer />
-          </div>
+          <PageTransition>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Navbar />
+              <main className="flex-grow">
+                <HomePage />
+              </main>
+              <Footer />
+            </div>
+          </PageTransition>
         } />
         <Route path="/about" element={
-          <div className="flex flex-col min-h-screen bg-white">
-            <Navbar />
-            <main className="flex-grow">
-              <AboutPage />
-            </main>
-            <Footer />
-          </div>
+          <PageTransition>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Navbar />
+              <main className="flex-grow">
+                <AboutPage />
+              </main>
+              <Footer />
+            </div>
+          </PageTransition>
         } />
         <Route path="/shop/products" element={
-          <div className="flex flex-col min-h-screen bg-white">
-            <Navbar />
-            <main className="flex-grow">
-              <ProductsPage />
-            </main>
-            <Footer />
-          </div>
+          <PageTransition>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Navbar />
+              <main className="flex-grow">
+                <ProductsPage />
+              </main>
+              <Footer />
+            </div>
+          </PageTransition>
         } />
         <Route path="/shop/courses" element={
-          <div className="flex flex-col min-h-screen bg-white">
-            <Navbar />
-            <main className="flex-grow">
-              <CoursesPage />
-            </main>
-            <Footer />
-          </div>
+          <PageTransition>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Navbar />
+              <main className="flex-grow">
+                <CoursesPage />
+              </main>
+              <Footer />
+            </div>
+          </PageTransition>
         } />
         <Route path="/shop/trips" element={
-          <div className="flex flex-col min-h-screen bg-white">
-            <Navbar />
-            <main className="flex-grow">
-              <TripsPage />
-            </main>
-            <Footer />
-          </div>
+          <PageTransition>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Navbar />
+              <main className="flex-grow">
+                <TripsPage />
+              </main>
+              <Footer />
+            </div>
+          </PageTransition>
         } />
         <Route path="/blog" element={
-          <div className="flex flex-col min-h-screen bg-white">
-            <Navbar />
-            <main className="flex-grow">
-              <BlogPage />
-            </main>
-            <Footer />
-          </div>
+          <PageTransition>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Navbar />
+              <main className="flex-grow">
+                <BlogPage />
+              </main>
+              <Footer />
+            </div>
+          </PageTransition>
+        } />
+        <Route path="/blog/:id" element={
+          <PageTransition>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Navbar />
+              <main className="flex-grow">
+                <BlogDetailPage />
+              </main>
+              <Footer />
+            </div>
+          </PageTransition>
         } />
         <Route path="/contact" element={
-          <div className="flex flex-col min-h-screen bg-white">
-            <Navbar />
-            <main className="flex-grow">
-              <ContactPage />
-            </main>
-            <Footer />
-          </div>
+          <PageTransition>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Navbar />
+              <main className="flex-grow">
+                <ContactPage />
+              </main>
+              <Footer />
+            </div>
+          </PageTransition>
         } />
 
         {/* Admin Routes */}
@@ -107,7 +139,18 @@ const App: React.FC = () => {
           <Route path="banners" element={<BannerManagement />} />
           <Route path="settings" element={<Settings />} />
         </Route>
-      </Routes>
+        </Routes>
+      </AnimatePresence>
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Toaster position="top-right" />
+      <WhatsAppButton />
+      <AnimatedRoutes />
     </Router>
   );
 };

@@ -17,7 +17,8 @@ class EventController extends Controller
 
         // Filter by active status
         if ($request->has('active')) {
-            $query->where('is_active', $request->active);
+            $isActive = filter_var($request->active, FILTER_VALIDATE_BOOLEAN);
+            $query->where('is_active', $isActive);
         }
 
         // Filter by type

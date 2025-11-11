@@ -5,9 +5,14 @@ import { Link } from 'react-router-dom';
 import { useGetBannersQuery } from '../../services/api';
 
 export const HeroSlider: React.FC = () => {
-  const { data: banners = [], isLoading } = useGetBannersQuery({ active: true, position: 'hero', current: true });
+  const { data: banners = [], isLoading, refetch } = useGetBannersQuery({ active: true, position: 'hero' });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
+
+  // Force refetch on mount to ensure fresh data
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   // Use banners from API if available, otherwise fallback to default
   const slides = banners.length > 0 ? banners : [
