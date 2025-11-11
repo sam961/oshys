@@ -5,3 +5,4 @@ export { ScrollReveal, StaggerContainer } from './ScrollReveal';
 export { useSmoothScroll } from './SmoothScroll';
 export { ParallaxSection, ParallaxImage } from './ParallaxSection';
 export { ScrollToTop } from './ScrollToTop';
+export { CountUp } from './CountUp';

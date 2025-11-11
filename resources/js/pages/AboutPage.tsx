@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, Users, TrendingUp, MapPin, Shield, Heart, Target, Zap, Loader2 } from 'lucide-react';
 import { Section, Card } from '../components/ui';
+import { CountUp } from '../components/animations';
 import { stats } from '../data/mockData';
 import { useGetTeamMembersQuery } from '../services/api';
 import type { TeamMember } from '../types';
@@ -113,6 +114,21 @@ export const AboutPage: React.FC = () => {
                 };
                 const Icon = icons[stat.icon as keyof typeof icons];
 
+                // Parse the stat value to extract number and prefix/suffix
+                const parseStatValue = (value: string) => {
+                  const match = value.match(/^([+]?)(\d+)([%+]?)$/);
+                  if (match) {
+                    return {
+                      prefix: match[1] || '',
+                      number: parseInt(match[2]),
+                      suffix: match[3] === '+' ? '' : match[3] || '',
+                    };
+                  }
+                  return { prefix: '', number: 0, suffix: '' };
+                };
+
+                const { prefix, number, suffix } = parseStatValue(stat.value);
+
                 return (
                   <motion.div
                     key={stat.label}
@@ -123,7 +139,13 @@ export const AboutPage: React.FC = () => {
                     className="text-center text-white"
                   >
                     <Icon className="w-10 h-10 mx-auto mb-4" />
-                    <div className="text-5xl font-bold mb-2">{stat.value}</div>
+                    <CountUp
+                      end={number}
+                      prefix={prefix}
+                      suffix={suffix}
+                      duration={2.5}
+                      className="text-5xl font-bold mb-2"
+                    />
                     <div className="text-lg opacity-90">{stat.label}</div>
                   </motion.div>
                 );
