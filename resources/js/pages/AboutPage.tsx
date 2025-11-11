@@ -39,7 +39,7 @@ export const AboutPage: React.FC = () => {
   return (
     <div className="pt-20">
       {/* Hero Section */}
-      <Section background="gradient" className="text-center relative overflow-hidden">
+      <Section background="gradient" className="text-center relative overflow-hidden !py-12 sm:!py-16 lg:!py-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -57,7 +57,7 @@ export const AboutPage: React.FC = () => {
       </Section>
 
       {/* Main Content */}
-      <Section background="white">
+      <Section background="white" className="!py-10 sm:!py-12 lg:!py-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -90,7 +90,7 @@ export const AboutPage: React.FC = () => {
       </Section>
 
       {/* Stats Section */}
-      <Section background="gray">
+      <Section background="gray" className="!py-10 sm:!py-12 lg:!py-16">
         <div className="relative">
           {/* Background image with overlay */}
           <div className="absolute inset-0 rounded-3xl overflow-hidden">
@@ -134,7 +134,7 @@ export const AboutPage: React.FC = () => {
       </Section>
 
       {/* Promise Section */}
-      <Section background="white">
+      <Section background="white" className="!py-10 sm:!py-12 lg:!py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -149,7 +149,7 @@ export const AboutPage: React.FC = () => {
       </Section>
 
       {/* Why Choose Us */}
-      <Section background="gradient">
+      <Section background="gradient" className="!py-10 sm:!py-12 lg:!py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -197,7 +197,7 @@ export const AboutPage: React.FC = () => {
       </Section>
 
       {/* Team Section */}
-      <Section background="white">
+      <Section background="white" className="!py-10 sm:!py-12 lg:!py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
