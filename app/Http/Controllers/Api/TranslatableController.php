@@ -63,8 +63,20 @@ trait TranslatableController
         foreach ($model->translatable as $field) {
             $translationKey = $field . '_translations';
 
-            if ($request->has($translationKey) && is_array($request->input($translationKey))) {
-                $translations[$field] = $request->input($translationKey);
+            if ($request->has($translationKey)) {
+                $value = $request->input($translationKey);
+
+                // Handle JSON string (from FormData)
+                if (is_string($value)) {
+                    $decoded = json_decode($value, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        $translations[$field] = $decoded;
+                    }
+                }
+                // Handle array (from regular JSON request)
+                elseif (is_array($value)) {
+                    $translations[$field] = $value;
+                }
             }
         }
 

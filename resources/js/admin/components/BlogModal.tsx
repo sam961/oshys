@@ -37,6 +37,9 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
     content_translations: { ar: '' },
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+
   useEffect(() => {
     if (blogPost && mode !== 'create') {
       setFormData({
@@ -53,6 +56,11 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         excerpt_translations: (blogPost as any).excerpt_translations || { ar: '' },
         content_translations: (blogPost as any).content_translations || { ar: '' },
       });
+      // Set image preview from existing blog post
+      if ((blogPost as any).image_url) {
+        setImagePreview((blogPost as any).image_url);
+      }
+      setImageFile(null);
     } else if (mode === 'create') {
       setFormData({
         title: '',
@@ -67,6 +75,8 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         excerpt_translations: { ar: '' },
         content_translations: { ar: '' },
       });
+      setImageFile(null);
+      setImagePreview('');
     }
   }, [blogPost, mode]);
 
@@ -79,17 +89,56 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
     }
 
     try {
+      // Create FormData for file upload
+      const submitData = new FormData();
+
+      // Add all form fields to FormData
+      submitData.append('title', formData.title);
+      submitData.append('excerpt', formData.excerpt);
+      submitData.append('content', formData.content);
+      submitData.append('is_published', formData.is_published ? '1' : '0');
+      submitData.append('is_featured', formData.is_featured ? '1' : '0');
+      submitData.append('author_id', '1'); // TODO: Get from auth user
+
+      if (formData.category_id) {
+        submitData.append('category_id', formData.category_id.toString());
+      }
+      if (formData.published_at) {
+        submitData.append('published_at', formData.published_at);
+      }
+
+      // Add image file if selected
+      if (imageFile) {
+        submitData.append('image', imageFile);
+      }
+
+      // Add translations
+      submitData.append('title_translations', JSON.stringify(formData.title_translations));
+      submitData.append('excerpt_translations', JSON.stringify(formData.excerpt_translations));
+      submitData.append('content_translations', JSON.stringify(formData.content_translations));
+
       if (mode === 'create') {
-        await createBlogPost(formData).unwrap();
+        await createBlogPost(submitData).unwrap();
         toast.success('Blog post created successfully');
       } else {
-        await updateBlogPost({ id: blogPost!.id, data: formData }).unwrap();
+        // For update with FormData, we need to use POST with _method spoofing
+        submitData.append('_method', 'PUT');
+        await updateBlogPost({ id: blogPost!.id, data: submitData }).unwrap();
         toast.success('Blog post updated successfully');
       }
       onClose();
-    } catch (error) {
-      toast.error(`Failed to ${mode} blog post`);
+    } catch (error: any) {
       console.error(`${mode} error:`, error);
+
+      // Show specific validation errors if available
+      if (error?.data?.errors) {
+        const errors = Object.values(error.data.errors).flat();
+        errors.forEach((err: any) => toast.error(err));
+      } else if (error?.data?.message) {
+        toast.error(error.data.message);
+      } else {
+        toast.error(`Failed to ${mode} blog post`);
+      }
     }
   };
 
@@ -117,6 +166,20 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
           [locale]: value,
         },
       }));
+    }
+  };
+
+  // Handle image file selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -242,19 +305,27 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
                   </div>
                 </div>
 
-                {/* Image URL */}
+                {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Featured Image URL
+                    Featured Image
                   </label>
                   <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                    onChange={handleImageChange}
                     disabled={isViewMode}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
                   />
+                  {imagePreview && (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Checkboxes */}

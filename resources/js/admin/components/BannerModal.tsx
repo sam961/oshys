@@ -29,6 +29,9 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
     end_date: '',
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+
   useEffect(() => {
     if (banner && mode !== 'create') {
       setFormData({
@@ -43,6 +46,11 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
         start_date: banner.start_date ? banner.start_date.split('T')[0] : '',
         end_date: banner.end_date ? banner.end_date.split('T')[0] : '',
       });
+      // Set image preview from existing banner
+      if ((banner as any).image_url) {
+        setImagePreview((banner as any).image_url);
+      }
+      setImageFile(null);
     } else if (mode === 'create') {
       setFormData({
         title: '',
@@ -56,6 +64,8 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
         start_date: '',
         end_date: '',
       });
+      setImageFile(null);
+      setImagePreview('');
     }
   }, [banner, mode]);
 
@@ -68,17 +78,56 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
     }
 
     try {
+      // Create FormData for file upload
+      const submitData = new FormData();
+
+      // Add all form fields to FormData
+      submitData.append('title', formData.title);
+      submitData.append('description', formData.description);
+      submitData.append('position', formData.position);
+      submitData.append('display_order', formData.display_order.toString());
+      submitData.append('is_active', formData.is_active ? '1' : '0');
+
+      if (formData.button_text) {
+        submitData.append('button_text', formData.button_text);
+      }
+      if (formData.button_link) {
+        submitData.append('button_link', formData.button_link);
+      }
+      if (formData.start_date) {
+        submitData.append('start_date', formData.start_date);
+      }
+      if (formData.end_date) {
+        submitData.append('end_date', formData.end_date);
+      }
+
+      // Add image file if selected
+      if (imageFile) {
+        submitData.append('image', imageFile);
+      }
+
       if (mode === 'create') {
-        await createBanner(formData).unwrap();
+        await createBanner(submitData).unwrap();
         toast.success('Banner created successfully');
       } else {
-        await updateBanner({ id: banner!.id, data: formData }).unwrap();
+        // For update with FormData, we need to use POST with _method spoofing
+        submitData.append('_method', 'PUT');
+        await updateBanner({ id: banner!.id, data: submitData }).unwrap();
         toast.success('Banner updated successfully');
       }
       onClose();
-    } catch (error) {
-      toast.error(`Failed to ${mode} banner`);
+    } catch (error: any) {
       console.error(`${mode} error:`, error);
+
+      // Show specific validation errors if available
+      if (error?.data?.errors) {
+        const errors = Object.values(error.data.errors).flat();
+        errors.forEach((err: any) => toast.error(err));
+      } else if (error?.data?.message) {
+        toast.error(error.data.message);
+      } else {
+        toast.error(`Failed to ${mode} banner`);
+      }
     }
   };
 
@@ -91,6 +140,20 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
       setFormData(prev => ({ ...prev, [name]: Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // Handle image file selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -164,21 +227,28 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
                   />
                 </div>
 
-                {/* Image URL */}
+                {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image URL *
+                    Banner Image *
                   </label>
                   <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                    onChange={handleImageChange}
                     disabled={isViewMode}
-                    required
-                    placeholder="https://example.com/banner.jpg"
+                    required={mode === 'create'}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
                   />
+                  {imagePreview && (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Button Text and Link */}

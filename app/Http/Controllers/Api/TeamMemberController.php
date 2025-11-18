@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\TeamMember;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class TeamMemberController extends Controller
 {
@@ -52,15 +54,52 @@ class TeamMemberController extends Controller
             'name' => 'required|string|max:255',
             'role' => 'required|string|max:255',
             'bio' => 'nullable|string',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:255',
             'experience' => 'nullable|string',
-            'certifications' => 'nullable|array',
-            'social_links' => 'nullable|array',
-            'is_active' => 'boolean',
+            'certifications' => 'nullable',
+            'social_links' => 'nullable',
+            'is_active' => 'nullable',
             'display_order' => 'nullable|integer|min:0',
         ]);
+
+        // Convert boolean strings to actual booleans
+        $validated['is_active'] = filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN);
+
+        // Handle certifications (can be JSON string from FormData)
+        if ($request->has('certifications')) {
+            $certifications = $request->input('certifications');
+            if (is_string($certifications)) {
+                $decoded = json_decode($certifications, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $validated['certifications'] = $decoded;
+                }
+            } elseif (is_array($certifications)) {
+                $validated['certifications'] = $certifications;
+            }
+        }
+
+        // Handle social_links (can be JSON string from FormData)
+        if ($request->has('social_links')) {
+            $socialLinks = $request->input('social_links');
+            if (is_string($socialLinks)) {
+                $decoded = json_decode($socialLinks, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $validated['social_links'] = $decoded;
+                }
+            } elseif (is_array($socialLinks)) {
+                $validated['social_links'] = $socialLinks;
+            }
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('team', $filename, 'public');
+            $validated['image'] = $path;
+        }
 
         $teamMember = TeamMember::create($validated);
 
@@ -87,15 +126,59 @@ class TeamMemberController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'role' => 'sometimes|required|string|max:255',
             'bio' => 'nullable|string',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:255',
             'experience' => 'nullable|string',
-            'certifications' => 'nullable|array',
-            'social_links' => 'nullable|array',
-            'is_active' => 'boolean',
+            'certifications' => 'nullable',
+            'social_links' => 'nullable',
+            'is_active' => 'nullable',
             'display_order' => 'nullable|integer|min:0',
         ]);
+
+        // Convert boolean strings to actual booleans if present
+        if ($request->has('is_active')) {
+            $validated['is_active'] = filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Handle certifications (can be JSON string from FormData)
+        if ($request->has('certifications')) {
+            $certifications = $request->input('certifications');
+            if (is_string($certifications)) {
+                $decoded = json_decode($certifications, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $validated['certifications'] = $decoded;
+                }
+            } elseif (is_array($certifications)) {
+                $validated['certifications'] = $certifications;
+            }
+        }
+
+        // Handle social_links (can be JSON string from FormData)
+        if ($request->has('social_links')) {
+            $socialLinks = $request->input('social_links');
+            if (is_string($socialLinks)) {
+                $decoded = json_decode($socialLinks, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $validated['social_links'] = $decoded;
+                }
+            } elseif (is_array($socialLinks)) {
+                $validated['social_links'] = $socialLinks;
+            }
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($teamMember->image && Storage::disk('public')->exists($teamMember->image)) {
+                Storage::disk('public')->delete($teamMember->image);
+            }
+
+            $image = $request->file('image');
+            $filename = time() . '_' . Str::slug($validated['name'] ?? $teamMember->name) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('team', $filename, 'public');
+            $validated['image'] = $path;
+        }
 
         $teamMember->update($validated);
 
@@ -108,6 +191,12 @@ class TeamMemberController extends Controller
     public function destroy($id)
     {
         $teamMember = TeamMember::findOrFail($id);
+
+        // Delete image if exists
+        if ($teamMember->image && Storage::disk('public')->exists($teamMember->image)) {
+            Storage::disk('public')->delete($teamMember->image);
+        }
+
         $teamMember->delete();
 
         return response()->json(['message' => 'Team member deleted successfully']);

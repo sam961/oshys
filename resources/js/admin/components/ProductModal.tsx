@@ -40,6 +40,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
     details_translations: { ar: '' },
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+
   useEffect(() => {
     if (product && mode !== 'create') {
       setFormData({
@@ -59,6 +62,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
         description_translations: (product as any).description_translations || { ar: '' },
         details_translations: (product as any).details_translations || { ar: '' },
       });
+      // Set image preview from existing product
+      if ((product as any).image_url) {
+        setImagePreview((product as any).image_url);
+      }
+      setImageFile(null);
     } else if (mode === 'create') {
       setFormData({
         name: '',
@@ -76,6 +84,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
         description_translations: { ar: '' },
         details_translations: { ar: '' },
       });
+      setImageFile(null);
+      setImagePreview('');
     }
   }, [product, mode]);
 
@@ -88,17 +98,58 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
     }
 
     try {
+      // Create FormData for file upload
+      const submitData = new FormData();
+
+      // Add all form fields to FormData
+      submitData.append('name', formData.name);
+      submitData.append('description', formData.description);
+      submitData.append('details', formData.details);
+      submitData.append('price', formData.price.toString());
+      submitData.append('in_stock', formData.in_stock ? '1' : '0');
+      submitData.append('is_active', formData.is_active ? '1' : '0');
+      submitData.append('is_featured', formData.is_featured ? '1' : '0');
+      submitData.append('stock_quantity', formData.stock_quantity.toString());
+
+      if (formData.category_id) {
+        submitData.append('category_id', formData.category_id.toString());
+      }
+      if (formData.sku) {
+        submitData.append('sku', formData.sku);
+      }
+
+      // Add image file if selected
+      if (imageFile) {
+        submitData.append('image', imageFile);
+      }
+
+      // Add translations
+      submitData.append('name_translations', JSON.stringify(formData.name_translations));
+      submitData.append('description_translations', JSON.stringify(formData.description_translations));
+      submitData.append('details_translations', JSON.stringify(formData.details_translations));
+
       if (mode === 'create') {
-        await createProduct(formData).unwrap();
+        await createProduct(submitData).unwrap();
         toast.success('Product created successfully');
       } else {
-        await updateProduct({ id: product!.id, data: formData }).unwrap();
+        // For update with FormData, we need to use POST with _method spoofing
+        submitData.append('_method', 'PUT');
+        await updateProduct({ id: product!.id, data: submitData }).unwrap();
         toast.success('Product updated successfully');
       }
       onClose();
-    } catch (error) {
-      toast.error(`Failed to ${mode} product`);
+    } catch (error: any) {
       console.error(`${mode} error:`, error);
+
+      // Show specific validation errors if available
+      if (error?.data?.errors) {
+        const errors = Object.values(error.data.errors).flat();
+        errors.forEach((err: any) => toast.error(err));
+      } else if (error?.data?.message) {
+        toast.error(error.data.message);
+      } else {
+        toast.error(`Failed to ${mode} product`);
+      }
     }
   };
 
@@ -128,6 +179,20 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
           [locale]: value,
         },
       }));
+    }
+  };
+
+  // Handle image file selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -287,19 +352,27 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
                   </div>
                 </div>
 
-                {/* Image URL */}
+                {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image URL
+                    Product Image
                   </label>
                   <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                    onChange={handleImageChange}
                     disabled={isViewMode}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
                   />
+                  {imagePreview && (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Checkboxes */}

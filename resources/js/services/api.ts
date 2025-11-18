@@ -44,7 +44,7 @@ export const api = createApi({
       query: (id) => `/courses/${id}`,
       providesTags: ['Course'],
     }),
-    createCourse: builder.mutation<Course, Partial<Course>>({
+    createCourse: builder.mutation<Course, Partial<Course> | FormData>({
       query: (body) => ({
         url: '/courses',
         method: 'POST',
@@ -52,10 +52,10 @@ export const api = createApi({
       }),
       invalidatesTags: ['Course'],
     }),
-    updateCourse: builder.mutation<Course, { id: number; data: Partial<Course> }>({
+    updateCourse: builder.mutation<Course, { id: number; data: Partial<Course> | FormData }>({
       query: ({ id, data }) => ({
         url: `/courses/${id}`,
-        method: 'PUT',
+        method: 'POST', // Use POST for FormData file uploads with _method spoofing
         body: data,
       }),
       invalidatesTags: ['Course'],
@@ -80,7 +80,7 @@ export const api = createApi({
       query: (id) => `/trips/${id}`,
       providesTags: ['Trip'],
     }),
-    createTrip: builder.mutation<Trip, Partial<Trip>>({
+    createTrip: builder.mutation<Trip, Partial<Trip> | FormData>({
       query: (body) => ({
         url: '/trips',
         method: 'POST',
@@ -88,10 +88,10 @@ export const api = createApi({
       }),
       invalidatesTags: ['Trip'],
     }),
-    updateTrip: builder.mutation<Trip, { id: number; data: Partial<Trip> }>({
+    updateTrip: builder.mutation<Trip, { id: number; data: Partial<Trip> | FormData }>({
       query: ({ id, data }) => ({
         url: `/trips/${id}`,
-        method: 'PUT',
+        method: 'POST', // Use POST for FormData file uploads with _method spoofing
         body: data,
       }),
       invalidatesTags: ['Trip'],
@@ -116,7 +116,7 @@ export const api = createApi({
       query: (id) => `/products/${id}`,
       providesTags: ['Product'],
     }),
-    createProduct: builder.mutation<Product, Partial<Product>>({
+    createProduct: builder.mutation<Product, Partial<Product> | FormData>({
       query: (body) => ({
         url: '/products',
         method: 'POST',
@@ -124,10 +124,10 @@ export const api = createApi({
       }),
       invalidatesTags: ['Product'],
     }),
-    updateProduct: builder.mutation<Product, { id: number; data: Partial<Product> }>({
+    updateProduct: builder.mutation<Product, { id: number; data: Partial<Product> | FormData }>({
       query: ({ id, data }) => ({
         url: `/products/${id}`,
-        method: 'PUT',
+        method: 'POST', // Use POST for FormData file uploads with _method spoofing
         body: data,
       }),
       invalidatesTags: ['Product'],
@@ -152,7 +152,7 @@ export const api = createApi({
       query: (id) => `/blog-posts/${id}`,
       providesTags: ['BlogPost'],
     }),
-    createBlogPost: builder.mutation<BlogPost, Partial<BlogPost>>({
+    createBlogPost: builder.mutation<BlogPost, Partial<BlogPost> | FormData>({
       query: (body) => ({
         url: '/blog-posts',
         method: 'POST',
@@ -160,10 +160,10 @@ export const api = createApi({
       }),
       invalidatesTags: ['BlogPost'],
     }),
-    updateBlogPost: builder.mutation<BlogPost, { id: number; data: Partial<BlogPost> }>({
+    updateBlogPost: builder.mutation<BlogPost, { id: number; data: Partial<BlogPost> | FormData }>({
       query: ({ id, data }) => ({
         url: `/blog-posts/${id}`,
-        method: 'PUT',
+        method: 'POST', // Use POST for FormData file uploads with _method spoofing
         body: data,
       }),
       invalidatesTags: ['BlogPost'],
@@ -224,7 +224,7 @@ export const api = createApi({
       query: (id) => `/team-members/${id}`,
       providesTags: ['TeamMember'],
     }),
-    createTeamMember: builder.mutation<TeamMember, Partial<TeamMember>>({
+    createTeamMember: builder.mutation<TeamMember, Partial<TeamMember> | FormData>({
       query: (body) => ({
         url: '/team-members',
         method: 'POST',
@@ -232,10 +232,10 @@ export const api = createApi({
       }),
       invalidatesTags: ['TeamMember'],
     }),
-    updateTeamMember: builder.mutation<TeamMember, { id: number; data: Partial<TeamMember> }>({
+    updateTeamMember: builder.mutation<TeamMember, { id: number; data: Partial<TeamMember> | FormData }>({
       query: ({ id, data }) => ({
         url: `/team-members/${id}`,
-        method: 'PUT',
+        method: 'POST', // Use POST for FormData file uploads with _method spoofing
         body: data,
       }),
       invalidatesTags: ['TeamMember'],
@@ -332,7 +332,7 @@ export const api = createApi({
       query: (id) => `/banners/${id}`,
       providesTags: ['Banner'],
     }),
-    createBanner: builder.mutation<Banner, Partial<Banner>>({
+    createBanner: builder.mutation<Banner, Partial<Banner> | FormData>({
       query: (body) => ({
         url: '/banners',
         method: 'POST',
@@ -340,10 +340,10 @@ export const api = createApi({
       }),
       invalidatesTags: ['Banner'],
     }),
-    updateBanner: builder.mutation<Banner, { id: number; data: Partial<Banner> }>({
+    updateBanner: builder.mutation<Banner, { id: number; data: Partial<Banner> | FormData }>({
       query: ({ id, data }) => ({
         url: `/banners/${id}`,
-        method: 'PUT',
+        method: 'POST', // Use POST for FormData file uploads with _method spoofing
         body: data,
       }),
       invalidatesTags: ['Banner'],

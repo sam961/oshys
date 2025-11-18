@@ -45,6 +45,9 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
     duration_translations: { ar: '' },
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+
   useEffect(() => {
     if (trip && mode !== 'create') {
       setFormData({
@@ -69,6 +72,11 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
         location_translations: (trip as any).location_translations || { ar: '' },
         duration_translations: (trip as any).duration_translations || { ar: '' },
       });
+      // Set image preview from existing trip
+      if ((trip as any).image_url) {
+        setImagePreview((trip as any).image_url);
+      }
+      setImageFile(null);
     } else if (mode === 'create') {
       setFormData({
         name: '',
@@ -91,6 +99,8 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
         location_translations: { ar: '' },
         duration_translations: { ar: '' },
       });
+      setImageFile(null);
+      setImagePreview('');
     }
   }, [trip, mode]);
 
@@ -103,17 +113,65 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
     }
 
     try {
+      // Create FormData for file upload
+      const submitData = new FormData();
+
+      // Add all form fields to FormData
+      submitData.append('name', formData.name);
+      submitData.append('description', formData.description);
+      submitData.append('details', formData.details);
+      submitData.append('price', formData.price.toString());
+      submitData.append('location', formData.location);
+      submitData.append('duration', formData.duration);
+      submitData.append('difficulty', formData.difficulty);
+      submitData.append('is_active', formData.is_active ? '1' : '0');
+      submitData.append('is_featured', formData.is_featured ? '1' : '0');
+      submitData.append('certification_required', formData.certification_required ? '1' : '0');
+
+      if (formData.category_id) {
+        submitData.append('category_id', formData.category_id.toString());
+      }
+      if (formData.max_participants) {
+        submitData.append('max_participants', formData.max_participants.toString());
+      }
+      if (formData.included_items.length > 0) {
+        submitData.append('included_items', JSON.stringify(formData.included_items));
+      }
+
+      // Add image file if selected
+      if (imageFile) {
+        submitData.append('image', imageFile);
+      }
+
+      // Add translations
+      submitData.append('name_translations', JSON.stringify(formData.name_translations));
+      submitData.append('description_translations', JSON.stringify(formData.description_translations));
+      submitData.append('details_translations', JSON.stringify(formData.details_translations));
+      submitData.append('location_translations', JSON.stringify(formData.location_translations));
+      submitData.append('duration_translations', JSON.stringify(formData.duration_translations));
+
       if (mode === 'create') {
-        await createTrip(formData).unwrap();
+        await createTrip(submitData).unwrap();
         toast.success('Trip created successfully');
       } else {
-        await updateTrip({ id: trip!.id, data: formData }).unwrap();
+        // For update with FormData, we need to use POST with _method spoofing
+        submitData.append('_method', 'PUT');
+        await updateTrip({ id: trip!.id, data: submitData }).unwrap();
         toast.success('Trip updated successfully');
       }
       onClose();
-    } catch (error) {
-      toast.error(`Failed to ${mode} trip`);
+    } catch (error: any) {
       console.error(`${mode} error:`, error);
+
+      // Show specific validation errors if available
+      if (error?.data?.errors) {
+        const errors = Object.values(error.data.errors).flat();
+        errors.forEach((err: any) => toast.error(err));
+      } else if (error?.data?.message) {
+        toast.error(error.data.message);
+      } else {
+        toast.error(`Failed to ${mode} trip`);
+      }
     }
   };
 
@@ -143,6 +201,20 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
           [locale]: value,
         },
       }));
+    }
+  };
+
+  // Handle image file selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -330,19 +402,27 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                   </select>
                 </div>
 
-                {/* Image URL */}
+                {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image URL
+                    Trip Image
                   </label>
                   <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                    onChange={handleImageChange}
                     disabled={isViewMode}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
                   />
+                  {imagePreview && (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Checkboxes */}

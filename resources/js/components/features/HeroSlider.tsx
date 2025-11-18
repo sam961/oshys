@@ -50,20 +50,17 @@ export const HeroSlider: React.FC = () => {
   };
 
   const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
+    enter: {
       opacity: 0,
-    }),
+    },
     center: {
       zIndex: 1,
-      x: 0,
       opacity: 1,
     },
-    exit: (direction: number) => ({
+    exit: {
       zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
       opacity: 0,
-    }),
+    },
   };
 
   if (isLoading) {
@@ -80,24 +77,24 @@ export const HeroSlider: React.FC = () => {
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
-      <AnimatePresence initial={false} custom={direction}>
+      <AnimatePresence initial={false} mode="wait">
         <motion.div
           key={currentSlide}
-          custom={direction}
           variants={variants}
           initial="enter"
           animate="center"
           exit="exit"
           transition={{
-            x: { type: 'spring', stiffness: 300, damping: 30 },
-            opacity: { duration: 0.2 },
+            duration: 0.3,
+            ease: 'easeInOut',
           }}
           className="absolute inset-0"
+          style={{ willChange: 'opacity' }}
         >
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
+            style={{ backgroundImage: `url(${(slides[currentSlide] as any).image_url || slides[currentSlide].image})` }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
           </div>
@@ -105,38 +102,24 @@ export const HeroSlider: React.FC = () => {
           {/* Content */}
           <div className="relative h-full flex items-center justify-center text-center px-4">
             <div className="max-w-5xl">
-              <motion.h1
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
+              <h1
                 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-wider"
                 style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
               >
                 {slides[currentSlide].title}
-              </motion.h1>
+              </h1>
               {slides[currentSlide].description && (
-                <motion.p
-                  initial={{ y: 30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4, duration: 0.8 }}
-                  className="text-xl sm:text-2xl text-white/90 mb-8"
-                >
+                <p className="text-xl sm:text-2xl text-white/90 mb-8">
                   {slides[currentSlide].description}
-                </motion.p>
+                </p>
               )}
               {slides[currentSlide].button_text && slides[currentSlide].button_link && (
-                <motion.div
-                  initial={{ y: 30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.6, duration: 0.8 }}
+                <Link
+                  to={slides[currentSlide].button_link || '#'}
+                  className="inline-block px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
                 >
-                  <Link
-                    to={slides[currentSlide].button_link || '#'}
-                    className="inline-block px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105"
-                  >
-                    {slides[currentSlide].button_text}
-                  </Link>
-                </motion.div>
+                  {slides[currentSlide].button_text}
+                </Link>
               )}
             </div>
           </div>
@@ -146,14 +129,14 @@ export const HeroSlider: React.FC = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:scale-110"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors"
         aria-label="Previous slide"
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:scale-110"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors"
         aria-label="Next slide"
       >
         <ChevronRight className="w-6 h-6" />
@@ -176,15 +159,11 @@ export const HeroSlider: React.FC = () => {
       </div>
 
       {/* Scroll Indicator */}
-      <motion.div
-        animate={{ y: [0, 10, 0] }}
-        transition={{ repeat: Infinity, duration: 1.5 }}
-        className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10"
-      >
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10">
         <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-2">
-          <div className="w-1.5 h-3 bg-white/70 rounded-full" />
+          <div className="w-1.5 h-3 bg-white/70 rounded-full animate-bounce" />
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

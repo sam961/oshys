@@ -253,11 +253,17 @@ export const AboutPage: React.FC = () => {
                 <Card className="text-center group hover:shadow-2xl transition-shadow">
                   <div className="relative mb-6">
                     <div className="w-32 h-32 mx-auto rounded-full overflow-hidden ring-4 ring-primary-100 group-hover:ring-primary-300 transition-all">
-                      <img
-                        src={member.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200&h=200&fit=crop'}
-                        alt={member.name}
-                        className="w-full h-full object-cover"
-                      />
+                      {(member as any).image_url ? (
+                        <img
+                          src={(member as any).image_url}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                          <Users className="w-12 h-12 text-gray-300" />
+                        </div>
+                      )}
                     </div>
                     {member.experience && (
                       <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-primary-600 text-white px-4 py-1 rounded-full text-sm font-semibold whitespace-nowrap">

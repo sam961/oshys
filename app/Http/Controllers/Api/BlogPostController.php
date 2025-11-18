@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class BlogPostController extends Controller
 {
@@ -62,13 +63,25 @@ class BlogPostController extends Controller
             'title' => 'required|string|max:255',
             'excerpt' => 'required|string',
             'content' => 'required|string',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'category_id' => 'nullable|exists:categories,id',
             'author_id' => 'required|exists:users,id',
-            'is_published' => 'boolean',
-            'is_featured' => 'boolean',
+            'is_published' => 'nullable',
+            'is_featured' => 'nullable',
             'published_at' => 'nullable|date',
         ]);
+
+        // Convert boolean strings to actual booleans
+        $validated['is_published'] = filter_var($request->input('is_published', false), FILTER_VALIDATE_BOOLEAN);
+        $validated['is_featured'] = filter_var($request->input('is_featured', false), FILTER_VALIDATE_BOOLEAN);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '_' . Str::slug($validated['title']) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('blog', $filename, 'public');
+            $validated['image'] = $path;
+        }
 
         $validated['slug'] = Str::slug($validated['title']);
 
@@ -97,13 +110,34 @@ class BlogPostController extends Controller
             'title' => 'sometimes|required|string|max:255',
             'excerpt' => 'sometimes|required|string',
             'content' => 'sometimes|required|string',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'category_id' => 'nullable|exists:categories,id',
             'author_id' => 'sometimes|required|exists:users,id',
-            'is_published' => 'boolean',
-            'is_featured' => 'boolean',
+            'is_published' => 'nullable',
+            'is_featured' => 'nullable',
             'published_at' => 'nullable|date',
         ]);
+
+        // Convert boolean strings to actual booleans if present
+        if ($request->has('is_published')) {
+            $validated['is_published'] = filter_var($request->input('is_published'), FILTER_VALIDATE_BOOLEAN);
+        }
+        if ($request->has('is_featured')) {
+            $validated['is_featured'] = filter_var($request->input('is_featured'), FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($blogPost->image && Storage::disk('public')->exists($blogPost->image)) {
+                Storage::disk('public')->delete($blogPost->image);
+            }
+
+            $image = $request->file('image');
+            $filename = time() . '_' . Str::slug($validated['title'] ?? $blogPost->title) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('blog', $filename, 'public');
+            $validated['image'] = $path;
+        }
 
         if (isset($validated['title'])) {
             $validated['slug'] = Str::slug($validated['title']);
@@ -120,6 +154,12 @@ class BlogPostController extends Controller
     public function destroy($id)
     {
         $blogPost = BlogPost::findOrFail($id);
+
+        // Delete image if exists
+        if ($blogPost->image && Storage::disk('public')->exists($blogPost->image)) {
+            Storage::disk('public')->delete($blogPost->image);
+        }
+
         $blogPost->delete();
 
         return response()->json(['message' => 'Blog post deleted successfully']);

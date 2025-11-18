@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -64,25 +65,41 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'details' => 'nullable|string',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'required|numeric|min:0',
             'category_id' => 'nullable|exists:categories,id',
-            'in_stock' => 'boolean',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
+            'in_stock' => 'nullable',
+            'is_active' => 'nullable',
+            'is_featured' => 'nullable',
             'stock_quantity' => 'nullable|integer|min:0',
             'sku' => 'nullable|string|max:255|unique:products,sku',
-            // Translation fields
-            'name_translations' => 'nullable|array',
-            'description_translations' => 'nullable|array',
-            'details_translations' => 'nullable|array',
+            // Translation fields can be JSON strings from FormData
+            'name_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'details_translations' => 'nullable',
         ]);
+
+        // Convert boolean strings to actual booleans
+        $validated['in_stock'] = filter_var($request->input('in_stock', true), FILTER_VALIDATE_BOOLEAN);
+        $validated['is_active'] = filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN);
+        $validated['is_featured'] = filter_var($request->input('is_featured', false), FILTER_VALIDATE_BOOLEAN);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('products', $filename, 'public');
+            $validated['image'] = $path;
+        }
 
         $validated['slug'] = Str::slug($validated['name']);
 
+        // Remove translation fields from validated data (they'll be handled separately)
+        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations']);
+
         $product = Product::create($validated);
 
-        // Save translations
+        // Save translations - decode JSON strings if needed
         $this->saveTranslationsFromRequest($product, $request);
 
         return response()->json($product->load('translations'), 201);
@@ -108,27 +125,54 @@ class ProductController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'details' => 'nullable|string',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'sometimes|required|numeric|min:0',
             'category_id' => 'nullable|exists:categories,id',
-            'in_stock' => 'boolean',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
+            'in_stock' => 'nullable',
+            'is_active' => 'nullable',
+            'is_featured' => 'nullable',
             'stock_quantity' => 'nullable|integer|min:0',
             'sku' => 'nullable|string|max:255|unique:products,sku,' . $id,
-            // Translation fields
-            'name_translations' => 'nullable|array',
-            'description_translations' => 'nullable|array',
-            'details_translations' => 'nullable|array',
+            // Translation fields can be JSON strings from FormData
+            'name_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'details_translations' => 'nullable',
         ]);
+
+        // Convert boolean strings to actual booleans if present
+        if ($request->has('in_stock')) {
+            $validated['in_stock'] = filter_var($request->input('in_stock'), FILTER_VALIDATE_BOOLEAN);
+        }
+        if ($request->has('is_active')) {
+            $validated['is_active'] = filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN);
+        }
+        if ($request->has('is_featured')) {
+            $validated['is_featured'] = filter_var($request->input('is_featured'), FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            $image = $request->file('image');
+            $filename = time() . '_' . Str::slug($validated['name'] ?? $product->name) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('products', $filename, 'public');
+            $validated['image'] = $path;
+        }
 
         if (isset($validated['name'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
 
+        // Remove translation fields from validated data (they'll be handled separately)
+        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations']);
+
         $product->update($validated);
 
-        // Save translations
+        // Save translations - decode JSON strings if needed
         $this->saveTranslationsFromRequest($product, $request);
 
         return response()->json($product->load('translations'));
@@ -140,6 +184,12 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
+
+        // Delete image if exists
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
+            Storage::disk('public')->delete($product->image);
+        }
+
         $product->delete();
 
         return response()->json(['message' => 'Product deleted successfully']);

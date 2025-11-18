@@ -35,6 +35,9 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
     display_order: 0,
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+
   useEffect(() => {
     if (teamMember && mode !== 'create') {
       setFormData({
@@ -55,6 +58,11 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
         is_active: teamMember.is_active,
         display_order: teamMember.display_order,
       });
+      // Set image preview from existing team member
+      if ((teamMember as any).image_url) {
+        setImagePreview((teamMember as any).image_url);
+      }
+      setImageFile(null);
     } else if (mode === 'create') {
       setFormData({
         name: '',
@@ -74,6 +82,8 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
         is_active: true,
         display_order: 0,
       });
+      setImageFile(null);
+      setImagePreview('');
     }
   }, [teamMember, mode]);
 
@@ -86,17 +96,61 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
     }
 
     try {
+      // Create FormData for file upload
+      const submitData = new FormData();
+
+      // Add all form fields to FormData
+      submitData.append('name', formData.name);
+      submitData.append('role', formData.role);
+      submitData.append('bio', formData.bio);
+      submitData.append('is_active', formData.is_active ? '1' : '0');
+      submitData.append('display_order', formData.display_order.toString());
+
+      if (formData.email) {
+        submitData.append('email', formData.email);
+      }
+      if (formData.phone) {
+        submitData.append('phone', formData.phone);
+      }
+      if (formData.experience) {
+        submitData.append('experience', formData.experience);
+      }
+
+      // Add certifications as JSON
+      if (formData.certifications.length > 0) {
+        submitData.append('certifications', JSON.stringify(formData.certifications));
+      }
+
+      // Add social links as JSON
+      submitData.append('social_links', JSON.stringify(formData.social_links));
+
+      // Add image file if selected
+      if (imageFile) {
+        submitData.append('image', imageFile);
+      }
+
       if (mode === 'create') {
-        await createTeamMember(formData).unwrap();
+        await createTeamMember(submitData).unwrap();
         toast.success('Team member created successfully');
       } else {
-        await updateTeamMember({ id: teamMember!.id, data: formData }).unwrap();
+        // For update with FormData, we need to use POST with _method spoofing
+        submitData.append('_method', 'PUT');
+        await updateTeamMember({ id: teamMember!.id, data: submitData }).unwrap();
         toast.success('Team member updated successfully');
       }
       onClose();
-    } catch (error) {
-      toast.error(`Failed to ${mode} team member`);
+    } catch (error: any) {
       console.error(`${mode} error:`, error);
+
+      // Show specific validation errors if available
+      if (error?.data?.errors) {
+        const errors = Object.values(error.data.errors).flat();
+        errors.forEach((err: any) => toast.error(err));
+      } else if (error?.data?.message) {
+        toast.error(error.data.message);
+      } else {
+        toast.error(`Failed to ${mode} team member`);
+      }
     }
   };
 
@@ -118,6 +172,20 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // Handle image file selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -270,19 +338,27 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                   </div>
                 </div>
 
-                {/* Image URL */}
+                {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Profile Image URL
+                    Profile Image
                   </label>
                   <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                    onChange={handleImageChange}
                     disabled={isViewMode}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
                   />
+                  {imagePreview && (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Social Links */}

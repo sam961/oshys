@@ -32,115 +32,94 @@ const AnimatedRoutes: React.FC = () => {
   const location = useLocation();
   useSmoothScroll();
 
+  // Check if current route is admin
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
     <>
       <ScrollToTop />
-      <AnimatePresence mode="wait">
+      {isAdminRoute ? (
+        // Admin routes - no transitions
         <Routes location={location} key={location.pathname}>
-        {/* Public Routes */}
-        <Route path="/" element={
-          <PageTransition>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Navbar />
-              <main className="flex-grow">
-                <HomePage />
-              </main>
-              <Footer />
-            </div>
-          </PageTransition>
-        } />
-        <Route path="/about" element={
-          <PageTransition>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Navbar />
-              <main className="flex-grow">
-                <AboutPage />
-              </main>
-              <Footer />
-            </div>
-          </PageTransition>
-        } />
-        <Route path="/shop/products" element={
-          <PageTransition>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Navbar />
-              <main className="flex-grow">
-                <ProductsPage />
-              </main>
-              <Footer />
-            </div>
-          </PageTransition>
-        } />
-        <Route path="/shop/courses" element={
-          <PageTransition>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Navbar />
-              <main className="flex-grow">
-                <CoursesPage />
-              </main>
-              <Footer />
-            </div>
-          </PageTransition>
-        } />
-        <Route path="/shop/trips" element={
-          <PageTransition>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Navbar />
-              <main className="flex-grow">
-                <TripsPage />
-              </main>
-              <Footer />
-            </div>
-          </PageTransition>
-        } />
-        <Route path="/blog" element={
-          <PageTransition>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Navbar />
-              <main className="flex-grow">
-                <BlogPage />
-              </main>
-              <Footer />
-            </div>
-          </PageTransition>
-        } />
-        <Route path="/blog/:id" element={
-          <PageTransition>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Navbar />
-              <main className="flex-grow">
-                <BlogDetailPage />
-              </main>
-              <Footer />
-            </div>
-          </PageTransition>
-        } />
-        <Route path="/contact" element={
-          <PageTransition>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Navbar />
-              <main className="flex-grow">
-                <ContactPage />
-              </main>
-              <Footer />
-            </div>
-          </PageTransition>
-        } />
-
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="products" element={<ProductsManagement />} />
-          <Route path="courses" element={<CoursesManagement />} />
-          <Route path="trips" element={<TripsManagement />} />
-          <Route path="blog" element={<BlogManagement />} />
-          <Route path="events" element={<EventsManagement />} />
-          <Route path="team" element={<TeamManagement />} />
-          <Route path="banners" element={<BannerManagement />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<ProductsManagement />} />
+            <Route path="courses" element={<CoursesManagement />} />
+            <Route path="trips" element={<TripsManagement />} />
+            <Route path="blog" element={<BlogManagement />} />
+            <Route path="events" element={<EventsManagement />} />
+            <Route path="team" element={<TeamManagement />} />
+            <Route path="banners" element={<BannerManagement />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
         </Routes>
-      </AnimatePresence>
+      ) : (
+        // Public routes - with layout and transitions
+        <div className="flex flex-col min-h-screen bg-white">
+          <Navbar />
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={
+                <PageTransition>
+                  <main className="flex-grow">
+                    <HomePage />
+                  </main>
+                </PageTransition>
+              } />
+              <Route path="/about" element={
+                <PageTransition>
+                  <main className="flex-grow">
+                    <AboutPage />
+                  </main>
+                </PageTransition>
+              } />
+              <Route path="/shop/products" element={
+                <PageTransition>
+                  <main className="flex-grow">
+                    <ProductsPage />
+                  </main>
+                </PageTransition>
+              } />
+              <Route path="/shop/courses" element={
+                <PageTransition>
+                  <main className="flex-grow">
+                    <CoursesPage />
+                  </main>
+                </PageTransition>
+              } />
+              <Route path="/shop/trips" element={
+                <PageTransition>
+                  <main className="flex-grow">
+                    <TripsPage />
+                  </main>
+                </PageTransition>
+              } />
+              <Route path="/blog" element={
+                <PageTransition>
+                  <main className="flex-grow">
+                    <BlogPage />
+                  </main>
+                </PageTransition>
+              } />
+              <Route path="/blog/:id" element={
+                <PageTransition>
+                  <main className="flex-grow">
+                    <BlogDetailPage />
+                  </main>
+                </PageTransition>
+              } />
+              <Route path="/contact" element={
+                <PageTransition>
+                  <main className="flex-grow">
+                    <ContactPage />
+                  </main>
+                </PageTransition>
+              } />
+            </Routes>
+          </AnimatePresence>
+          <Footer />
+        </div>
+      )}
     </>
   );
 };

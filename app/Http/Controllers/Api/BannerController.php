@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BannerController extends Controller
 {
@@ -65,15 +67,26 @@ class BannerController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'required|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'button_text' => 'nullable|string|max:255',
             'button_link' => 'nullable|string|max:255',
             'position' => 'required|in:hero,secondary,promo',
             'display_order' => 'nullable|integer|min:0',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
+
+        // Convert boolean strings to actual booleans
+        $validated['is_active'] = filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '_' . Str::slug($validated['title']) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('banners', $filename, 'public');
+            $validated['image'] = $path;
+        }
 
         $banner = Banner::create($validated);
 
@@ -99,15 +112,33 @@ class BannerController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'sometimes|required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'button_text' => 'nullable|string|max:255',
             'button_link' => 'nullable|string|max:255',
             'position' => 'sometimes|required|in:hero,secondary,promo',
             'display_order' => 'nullable|integer|min:0',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
+
+        // Convert boolean strings to actual booleans if present
+        if ($request->has('is_active')) {
+            $validated['is_active'] = filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($banner->image && Storage::disk('public')->exists($banner->image)) {
+                Storage::disk('public')->delete($banner->image);
+            }
+
+            $image = $request->file('image');
+            $filename = time() . '_' . Str::slug($validated['title'] ?? $banner->title) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('banners', $filename, 'public');
+            $validated['image'] = $path;
+        }
 
         $banner->update($validated);
 
@@ -120,6 +151,12 @@ class BannerController extends Controller
     public function destroy($id)
     {
         $banner = Banner::findOrFail($id);
+
+        // Delete image if exists
+        if ($banner->image && Storage::disk('public')->exists($banner->image)) {
+            Storage::disk('public')->delete($banner->image);
+        }
+
         $banner->delete();
 
         return response()->json(['message' => 'Banner deleted successfully']);

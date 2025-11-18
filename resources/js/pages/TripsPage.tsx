@@ -207,12 +207,21 @@ export const TripsPage: React.FC = () => {
                   </motion.div>
 
                   <div className="relative overflow-hidden rounded-xl mb-4">
-                    <img
-                      src={trip.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
-                      alt={trip.name}
-                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    {(trip as any).image_url ? (
+                      <>
+                        <img
+                          src={(trip as any).image_url}
+                          alt={trip.name}
+                          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      </>
+                    ) : (
+                      <div className="w-full h-64 bg-gray-100 flex flex-col items-center justify-center">
+                        <Anchor className="w-16 h-16 text-gray-300 mb-2" />
+                        <p className="text-sm text-gray-400">{t('trips.noImage')}</p>
+                      </div>
+                    )}
 
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
@@ -291,16 +300,25 @@ export const TripsPage: React.FC = () => {
                 <Card key={trip.id} className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
                   <div className="flex gap-6">
                     <div className="relative w-72 h-56 flex-shrink-0 overflow-hidden rounded-xl">
-                      <img
-                        src={trip.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
-                        alt={trip.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                      <div className="absolute bottom-3 left-3 flex items-center gap-2 text-white text-sm">
-                        <MapPin className="w-4 h-4" />
-                        <span className="font-semibold">{trip.location || 'Location TBD'}</span>
-                      </div>
+                      {(trip as any).image_url ? (
+                        <>
+                          <img
+                            src={(trip as any).image_url}
+                            alt={trip.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                          <div className="absolute bottom-3 left-3 flex items-center gap-2 text-white text-sm">
+                            <MapPin className="w-4 h-4" />
+                            <span className="font-semibold">{trip.location || 'Location TBD'}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center">
+                          <Anchor className="w-12 h-12 text-gray-300 mb-2" />
+                          <p className="text-xs text-gray-400">{t('trips.noImage')}</p>
+                        </div>
+                      )}
                       <div className="absolute top-3 left-3">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
                           trip.difficulty === 'Beginner'

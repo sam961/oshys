@@ -21,8 +21,8 @@ export const BannerManagement: React.FC = () => {
       accessor: 'title',
       render: (value: string, row: Banner) => (
         <div className="flex items-center gap-3">
-          {row.image && (
-            <img src={row.image} alt={value} className="w-16 h-10 object-cover rounded-lg" />
+          {(row as any).image_url && (
+            <img src={(row as any).image_url} alt={value} className="w-16 h-10 object-cover rounded-lg" />
           )}
           <div>
             <div className="font-medium">{value}</div>

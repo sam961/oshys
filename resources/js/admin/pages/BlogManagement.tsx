@@ -21,8 +21,8 @@ export const BlogManagement: React.FC = () => {
       accessor: 'title',
       render: (value: string, row: BlogPost) => (
         <div className="flex items-center gap-3">
-          {row.image && (
-            <img src={row.image} alt={value} className="w-12 h-12 object-cover rounded-lg" />
+          {(row as any).image_url && (
+            <img src={(row as any).image_url} alt={value} className="w-12 h-12 object-cover rounded-lg" />
           )}
           <div className="max-w-xs">
             <div className="font-medium truncate">{value}</div>

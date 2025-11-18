@@ -39,4 +39,25 @@ class Banner extends Model
         'description',
         'button_text',
     ];
+
+    /**
+     * Get the image URL accessor
+     */
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        return null;
+    }
+
+    /**
+     * Override toArray to include image_url
+     */
+    public function toArray()
+    {
+        $array = parent::toArray();
+        $array['image_url'] = $this->image_url;
+        return $array;
+    }
 }

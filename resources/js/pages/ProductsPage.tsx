@@ -212,11 +212,20 @@ export const ProductsPage: React.FC = () => {
                   </motion.div>
 
                   <div className="relative overflow-hidden rounded-xl mb-4">
-                    <img
-                      src={product.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
-                      alt={product.name}
-                      className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                    {(product as any).image_url ? (
+                      <img
+                        src={(product as any).image_url}
+                        alt={product.name}
+                        className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-56 bg-gray-100 flex items-center justify-center">
+                        <div className="text-center">
+                          <ShoppingBag className="w-16 h-16 mx-auto text-gray-300 mb-2" />
+                          <p className="text-sm text-gray-400">{t('products.noImage')}</p>
+                        </div>
+                      </div>
+                    )}
                     {!product.in_stock && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                         <span className="bg-white px-4 py-2 rounded-full text-sm font-semibold">
@@ -264,11 +273,19 @@ export const ProductsPage: React.FC = () => {
                 <Card key={product.id} className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
                   <div className="flex gap-6">
                     <div className="relative w-48 h-48 flex-shrink-0 overflow-hidden rounded-xl">
-                      <img
-                        src={product.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
+                      {(product as any).image_url ? (
+                        <img
+                          src={(product as any).image_url}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                          <div className="text-center">
+                            <ShoppingBag className="w-12 h-12 mx-auto text-gray-300" />
+                          </div>
+                        </div>
+                      )}
                       {product.category && (
                         <div className="absolute bottom-3 left-3">
                           <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
