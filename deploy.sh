@@ -99,17 +99,19 @@ execute "composer install --no-dev --optimize-autoloader --no-interaction" || {
     log_warning "Composer install failed, but continuing..."
 }
 
-# NPM install and build
-log "Installing Node dependencies..."
-execute "npm ci --quiet" || {
-    log_warning "NPM install failed, but continuing..."
-}
+# NPM install and build (DISABLED - No Node.js on shared hosting)
+# Frontend assets are built locally and committed to git
+# log "Installing Node dependencies..."
+# execute "npm ci --quiet" || {
+#     log_warning "NPM install failed, but continuing..."
+# }
 
-log "Building frontend assets..."
-execute "npm run build" || {
-    log_error "Frontend build failed"
-    exit 1
-}
+# log "Building frontend assets..."
+# execute "npm run build" || {
+#     log_error "Frontend build failed"
+#     exit 1
+# }
+log "Skipping NPM build (assets built locally and committed)"
 
 # Laravel optimization
 log "Clearing Laravel caches..."

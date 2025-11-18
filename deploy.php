@@ -68,9 +68,10 @@ try {
         // Run database migrations (be careful with this in production!)
         // 'php artisan migrate --force 2>&1',
 
-        // Build frontend assets
-        'npm ci 2>&1',
-        'npm run build 2>&1',
+        // Build frontend assets (DISABLED - No Node.js on shared hosting)
+        // Frontend assets are built locally and committed to git
+        // 'npm ci 2>&1',
+        // 'npm run build 2>&1',
 
         // Set proper permissions
         'chmod -R 755 storage 2>&1',
