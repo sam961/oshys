@@ -12,7 +12,7 @@
 ###############################################################################
 
 # Configuration
-REPO_DIR="/home2/bbgxbgmy/public_html/oshys"  # Change to your actual path
+REPO_DIR="/home2/bbgxbgmy/projects/oshys"  # Change to your actual path
 BRANCH="main"
 LOG_FILE="$REPO_DIR/deployment.log"
 

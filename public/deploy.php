@@ -13,7 +13,7 @@
 
 // Configuration
 define('SECRET_TOKEN', '74df00a7fdfbecc0feb0275acb21d8e45e345fcc565837e285eaf234d86b86f0%'); // Change this to a random string
-define('REPO_DIR', '/home2/bbgxbgmy/public_html/oshys'); // Change to your actual repository path on Bluehost
+define('REPO_DIR', '/home2/bbgxbgmy/projects/oshys'); // Change to your actual repository path on Bluehost
 define('BRANCH', 'main'); // Branch to deploy
 define('LOG_FILE', __DIR__ . '/deployment.log'); // Log file path
 

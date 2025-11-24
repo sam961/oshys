@@ -14,7 +14,7 @@ if (!isset($_GET['key']) || $_GET['key'] !== $password) {
 }
 
 $logFile = __DIR__ . '/deployment.log';
-$repoDir = '/home2/bbgxbgmy/public_html/oshys';
+$repoDir = '/home2/bbgxbgmy/projects/oshys';
 
 ?>
 <!DOCTYPE html>
