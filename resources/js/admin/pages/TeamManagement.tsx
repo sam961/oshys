@@ -21,9 +21,11 @@ export const TeamManagement: React.FC = () => {
       accessor: 'name',
       render: (value: string, row: TeamMember) => (
         <div className="flex items-center gap-3">
-          {(row as any).image_url && (
-            <img src={(row as any).image_url} alt={value} className="w-12 h-12 rounded-full object-cover" />
-          )}
+          <img
+            src={(row as any).image_url || '/placeholder.svg'}
+            alt={value}
+            className="w-12 h-12 rounded-full object-cover"
+          />
           <div>
             <div className="font-medium">{value}</div>
             {row.experience && (

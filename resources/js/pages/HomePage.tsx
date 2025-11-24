@@ -119,7 +119,7 @@ export const HomePage: React.FC = () => {
                 <Card className="group cursor-pointer h-full">
                     <div className="relative overflow-hidden rounded-xl mb-6">
                       <img
-                        src={service.image}
+                        src={service.image || '/placeholder.svg'}
                         alt={service.title}
                         className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -170,11 +170,9 @@ export const HomePage: React.FC = () => {
             viewport={{ once: true }}
             className="relative"
           >
-            <img
-              src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop"
-              alt="Diving"
-              className="rounded-2xl shadow-2xl"
-            />
+            <div className="w-full h-96 bg-gray-200 rounded-2xl shadow-2xl flex items-center justify-center">
+              <p className="text-gray-400 text-lg">About Image Placeholder</p>
+            </div>
             <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-xl shadow-xl">
               <p className="text-4xl font-bold text-primary-600">10+</p>
               <p className="text-gray-600">{t('home.yearsExperience')}</p>
@@ -227,7 +225,7 @@ export const HomePage: React.FC = () => {
                   <Card className="group cursor-pointer overflow-hidden">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
-                        src={trip.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
+                        src={trip.image || '/placeholder.svg'}
                         alt={trip.name}
                         className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -291,7 +289,7 @@ export const HomePage: React.FC = () => {
                   <Card className="h-full">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
-                        src={course.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
+                        src={course.image || '/placeholder.svg'}
                         alt={course.name}
                         className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                       />
@@ -359,7 +357,7 @@ export const HomePage: React.FC = () => {
                   <Card className="group cursor-pointer h-full">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
-                        src={product.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
+                        src={product.image || '/placeholder.svg'}
                         alt={product.name}
                         className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
                       />
@@ -435,7 +433,7 @@ export const HomePage: React.FC = () => {
                     <Card className="group cursor-pointer h-full overflow-hidden">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
-                          src={post.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop'}
+                          src={post.image || '/placeholder.svg'}
                           alt={post.title}
                           className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                         />

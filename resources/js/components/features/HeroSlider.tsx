@@ -14,17 +14,8 @@ export const HeroSlider: React.FC = () => {
     refetch();
   }, [refetch]);
 
-  // Use banners from API if available, otherwise fallback to default
-  const slides = banners.length > 0 ? banners : [
-    {
-      id: 1,
-      title: 'ADVENTURE',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920&h=1080&fit=crop&q=80',
-      description: 'Embark on thrilling underwater expeditions',
-      button_text: null,
-      button_link: null,
-    },
-  ];
+  // Use banners from API
+  const slides = banners;
 
   useEffect(() => {
     const timer = setInterval(() => {

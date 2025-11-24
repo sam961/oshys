@@ -317,15 +317,13 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
                     disabled={isViewMode}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
                   />
-                  {imagePreview && (
-                    <div className="mt-3">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="w-32 h-32 object-cover rounded-lg border border-gray-200"
-                      />
-                    </div>
-                  )}
+                  <div className="mt-3">
+                    <img
+                      src={imagePreview || '/placeholder.svg'}
+                      alt="Preview"
+                      className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                    />
+                  </div>
                 </div>
 
                 {/* Checkboxes */}

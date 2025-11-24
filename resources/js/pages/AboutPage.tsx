@@ -81,11 +81,9 @@ export const AboutPage: React.FC = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <img
-              src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=900&h=700&fit=crop"
-              alt="Diving team"
-              className="rounded-2xl shadow-2xl"
-            />
+            <div className="w-full h-96 bg-gray-200 rounded-2xl shadow-2xl flex items-center justify-center">
+              <p className="text-gray-400 text-lg">Team Image Placeholder</p>
+            </div>
           </motion.div>
         </div>
       </Section>
@@ -93,15 +91,9 @@ export const AboutPage: React.FC = () => {
       {/* Stats Section */}
       <Section background="gray" className="!py-10 sm:!py-12 lg:!py-16">
         <div className="relative">
-          {/* Background image with overlay */}
-          <div className="absolute inset-0 rounded-3xl overflow-hidden">
-            <img
-              src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1400&h=600&fit=crop"
-              alt="Underwater"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-900/95 to-accent-900/95" />
-          </div>
+          {/* Background with overlay */}
+          <div className="absolute inset-0 rounded-3xl overflow-hidden bg-gradient-to-r from-primary-900 to-accent-900" />
+
 
           <div className="relative z-10 py-16 px-8">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">

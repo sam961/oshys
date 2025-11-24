@@ -21,9 +21,11 @@ export const TripsManagement: React.FC = () => {
       accessor: 'name',
       render: (value: string, row: Trip) => (
         <div className="flex items-center gap-3">
-          {(row as any).image_url && (
-            <img src={(row as any).image_url} alt={value} className="w-12 h-12 object-cover rounded-lg" />
-          )}
+          <img
+            src={(row as any).image_url || '/placeholder.svg'}
+            alt={value}
+            className="w-12 h-12 object-cover rounded-lg"
+          />
           <div>
             <div className="font-medium">{value}</div>
             <div className="text-xs text-gray-500">{row.location}</div>
