@@ -22,10 +22,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create admin user
-        $admin = User::factory()->create([
+        // Create admin user (without factory for production compatibility)
+        $admin = User::create([
             'name' => 'Admin User',
             'email' => 'admin@coralsandshells.sa',
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'),
         ]);
 
         // Create Categories
