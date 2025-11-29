@@ -38,6 +38,21 @@ function loadEnv($path) {
     return $env;
 }
 
+// Debug mode - add ?debug=1 to see paths
+if (isset($_GET['debug'])) {
+    header('Content-Type: text/plain');
+    echo "Debug Info:\n";
+    echo "Current dir: " . __DIR__ . "\n";
+    echo "Looking for .env at: " . __DIR__ . '/../.env' . "\n";
+    echo ".env exists: " . (file_exists(__DIR__ . '/../.env') ? 'YES' : 'NO') . "\n";
+    
+    if (file_exists(__DIR__ . '/../.env')) {
+        $envContent = file_get_contents(__DIR__ . '/../.env');
+        echo "\n.env contains DEPLOY_STATUS_PASSWORD: " . (strpos($envContent, 'DEPLOY_STATUS_PASSWORD') !== false ? 'YES' : 'NO') . "\n";
+    }
+    exit;
+}
+
 // Load .env from Laravel root
 $env = loadEnv(__DIR__ . '/../.env');
 
