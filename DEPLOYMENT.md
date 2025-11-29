@@ -156,18 +156,26 @@ Upload the `deploy.php` file from your project to:
 - `/home/username/public_html/deploy.php` (if main domain)
 - OR `/home/username/cms-project/public/deploy.php` (recommended)
 
-### 6.2 Edit Configuration in deploy.php
+### 6.2 Add Deployment Configuration to .env
 
-```php
-define('SECRET_TOKEN', 'generate-a-random-secure-token-here');
-define('REPO_DIR', '/home/username/cms-project');
-define('BRANCH', 'main');
+Add these variables to your `.env` file:
+
+```env
+# Deployment Configuration
+DEPLOY_SECRET=your-github-webhook-secret-here
+DEPLOY_REPO_DIR=/home/username/cms-project
+DEPLOY_BRANCH=main
+DEPLOY_STATUS_PASSWORD=your-status-page-password
 ```
 
-To generate a secure token:
+To generate secure tokens:
 
 ```bash
+# Generate webhook secret
 php -r "echo bin2hex(random_bytes(32));"
+
+# Generate status password
+php -r "echo bin2hex(random_bytes(16));"
 ```
 
 ### 6.3 Set Permissions

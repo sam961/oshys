@@ -7,15 +7,53 @@
  * Setup Instructions:
  * 1. Upload this file to your Bluehost public_html directory (or subdomain directory)
  * 2. Set up GitHub webhook pointing to: https://yourdomain.com/deploy.php
- * 3. Configure the SECRET_TOKEN below (generate a random string)
+ * 3. Add DEPLOY_SECRET, DEPLOY_REPO_DIR, and DEPLOY_BRANCH to your .env file
  * 4. Set up SSH keys on Bluehost for GitHub access
  */
 
-// Configuration
-define('SECRET_TOKEN', '74df00a7fdfbecc0feb0275acb21d8e45e345fcc565837e285eaf234d86b86f0%'); // Change this to a random string
-define('REPO_DIR', '/home2/bbgxbgmy/projects/oshys'); // Change to your actual repository path on Bluehost
-define('BRANCH', 'main'); // Branch to deploy
-define('LOG_FILE', __DIR__ . '/deployment.log'); // Log file path
+/**
+ * Load environment variables from .env file
+ */
+function loadEnv($path) {
+    if (!file_exists($path)) {
+        return [];
+    }
+    
+    $env = [];
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    
+    foreach ($lines as $line) {
+        // Skip comments
+        if (strpos(trim($line), '#') === 0) {
+            continue;
+        }
+        
+        // Parse KEY=value
+        if (strpos($line, '=') !== false) {
+            list($key, $value) = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+            
+            // Remove quotes if present
+            if (preg_match('/^["\'](.*)["\']\s*$/', $value, $matches)) {
+                $value = $matches[1];
+            }
+            
+            $env[$key] = $value;
+        }
+    }
+    
+    return $env;
+}
+
+// Load .env from Laravel root (parent of public directory)
+$env = loadEnv(__DIR__ . '/../.env');
+
+// Configuration - loaded from .env file
+define('SECRET_TOKEN', $env['DEPLOY_SECRET'] ?? '');
+define('REPO_DIR', $env['DEPLOY_REPO_DIR'] ?? '/home2/bbgxbgmy/projects/oshys');
+define('BRANCH', $env['DEPLOY_BRANCH'] ?? 'main');
+define('LOG_FILE', __DIR__ . '/deployment.log');
 
 // Get the webhook payload
 $payload = file_get_contents('php://input');
