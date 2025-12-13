@@ -5,8 +5,8 @@ import { Package, Compass, GraduationCap, ArrowRight, Gift, ShoppingBag, Instagr
 import { useTranslation } from 'react-i18next';
 import { HeroSlider } from '../components/features/HeroSlider';
 import { EventsCalendar } from '../components/features/EventsCalendar';
-import { Section, Card, Button, GridSkeleton } from '../components/ui';
-import { ScrollReveal, StaggerContainer, LiquidBackground, WaveBackground } from '../components/animations';
+import { Section, Card, Button, GridSkeleton, HorizontalScroll } from '../components/ui';
+import { LiquidBackground, WaveBackground } from '../components/animations';
 import { services } from '../data/mockData';
 import { useGetCoursesQuery, useGetTripsQuery, useGetProductsQuery, useGetBlogPostsQuery } from '../services/api';
 import type { Course, Trip, Product, BlogPost } from '../types';
@@ -105,7 +105,7 @@ export const HomePage: React.FC = () => {
           </p>
         </motion.div>
 
-        <StaggerContainer staggerDelay={0.15} className="grid md:grid-cols-3 gap-8">
+        <HorizontalScroll itemCount={services.length} className="md:grid-cols-3">
           {services.map((service, index) => {
             const icons = {
               Package: Package,
@@ -115,7 +115,7 @@ export const HomePage: React.FC = () => {
             const Icon = icons[service.icon as keyof typeof icons];
 
             return (
-              <Link key={service.id} to={service.link}>
+              <Link key={service.id} to={service.link} className="shrink-0 w-[80vw] snap-center sm:w-auto">
                 <Card className="group cursor-pointer h-full">
                     <div className="relative overflow-hidden rounded-xl mb-6">
                       <img
@@ -130,10 +130,10 @@ export const HomePage: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    <h3 className="text-2xl font-bold mb-3 group-hover:text-primary-600 transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-bold mb-3 group-hover:text-primary-600 transition-colors">
                       {service.title}
                     </h3>
-                    <p className="text-gray-600 mb-4">{service.description}</p>
+                    <p className="text-gray-600 mb-4 text-sm sm:text-base">{service.description}</p>
                     <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
                       {t('home.learnMore')}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -142,7 +142,7 @@ export const HomePage: React.FC = () => {
               </Link>
             );
           })}
-        </StaggerContainer>
+        </HorizontalScroll>
       </Section>
 
       {/* More About Us Section */}
@@ -182,7 +182,7 @@ export const HomePage: React.FC = () => {
       </Section>
 
       {/* Calendar Section */}
-      <Section background="white">
+      <Section background="white" id="calendar">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -220,24 +220,24 @@ export const HomePage: React.FC = () => {
           </div>
         ) : (
           <>
-            <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {trips.slice(0, 3).map((trip, index) => (
-                  <Card className="group cursor-pointer overflow-hidden">
+            <HorizontalScroll itemCount={Math.min(trips.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
+              {trips.slice(0, 3).map((trip) => (
+                  <Card key={trip.id} className="group cursor-pointer overflow-hidden shrink-0 w-[80vw] snap-center sm:w-auto">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
                         src={trip.image || '/placeholder.svg'}
                         alt={trip.name}
-                        className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className="absolute top-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg">
-                        <p className="font-bold text-primary-600">SAR {trip.price}</p>
+                      <div className="absolute top-4 right-4 bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg">
+                        <p className="font-bold text-primary-600 text-sm sm:text-base">SAR {trip.price}</p>
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold mb-2">{trip.name}</h3>
-                    <p className="text-gray-600 text-sm mb-4">{trip.description}</p>
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{trip.description}</p>
+                    <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500 mb-4">
                       <span>{trip.duration}</span>
-                      <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full">
+                      <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full">
                         {trip.difficulty}
                       </span>
                     </div>
@@ -246,7 +246,7 @@ export const HomePage: React.FC = () => {
                     </Button>
                   </Card>
               ))}
-            </StaggerContainer>
+            </HorizontalScroll>
 
             <div className="text-center mt-12">
               <Link to="/shop/trips">
@@ -284,31 +284,31 @@ export const HomePage: React.FC = () => {
           </div>
         ) : (
           <>
-            <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {courses.slice(0, 3).map((course, index) => (
-                  <Card className="h-full">
+            <HorizontalScroll itemCount={Math.min(courses.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
+              {courses.slice(0, 3).map((course) => (
+                  <Card key={course.id} className="h-full shrink-0 w-[80vw] snap-center sm:w-auto">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
                         src={course.image || '/placeholder.svg'}
                         alt={course.name}
-                        className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                        className="w-full h-40 sm:h-48 object-cover hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute top-4 right-4 bg-accent-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      <div className="absolute top-4 right-4 bg-accent-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
                         {course.level}
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold mb-2">{course.name}</h3>
-                    <p className="text-gray-600 text-sm mb-4">{course.description}</p>
+                    <h3 className="text-lg sm:text-xl font-bold mb-2">{course.name}</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm text-gray-500">{course.duration}</span>
-                      <span className="text-lg font-bold text-primary-600">SAR {course.price}</span>
+                      <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
+                      <span className="text-base sm:text-lg font-bold text-primary-600">SAR {course.price}</span>
                     </div>
                     <Button variant="primary" className="w-full">
                       {t('home.enrollNow')}
                     </Button>
                   </Card>
               ))}
-            </StaggerContainer>
+            </HorizontalScroll>
 
             <div className="text-center mt-12">
               <Link to="/shop/courses">
@@ -345,42 +345,36 @@ export const HomePage: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.slice(0, 4).map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
-                >
+            <HorizontalScroll itemCount={Math.min(products.length, 4)} className="sm:grid-cols-2 lg:grid-cols-4">
+              {products.slice(0, 4).map((product) => (
+                <div key={product.id} className="shrink-0 w-[65vw] snap-center sm:w-auto">
                   <Card className="group cursor-pointer h-full">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
                         src={product.image || '/placeholder.svg'}
                         alt={product.name}
-                        className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="w-full h-36 sm:h-40 object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                       {!product.in_stock && (
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <span className="bg-white px-4 py-2 rounded-full text-sm font-semibold">
+                          <span className="bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold">
                             {t('home.outOfStock')}
                           </span>
                         </div>
                       )}
                     </div>
-                    <h3 className="text-lg font-bold mb-2 line-clamp-2">{product.name}</h3>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+                    <h3 className="text-base sm:text-lg font-bold mb-2 line-clamp-2">{product.name}</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">{product.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold text-primary-600">SAR {product.price}</span>
+                      <span className="text-lg sm:text-xl font-bold text-primary-600">SAR {product.price}</span>
                       <Button size="sm" variant="ghost">
                         <ShoppingBag className="w-4 h-4" />
                       </Button>
                     </div>
                   </Card>
-                </motion.div>
+                </div>
               ))}
-            </div>
+            </HorizontalScroll>
 
             <div className="text-center mt-12">
               <Link to="/shop/products">
@@ -394,8 +388,8 @@ export const HomePage: React.FC = () => {
         )}
       </Section>
 
-      {/* Blog Posts Section */}
-      <Section background="white">
+      {/* Blog Posts Section - Hidden on mobile */}
+      <Section background="white" className="hidden sm:block">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -420,48 +414,42 @@ export const HomePage: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogPosts.slice(0, 3).map((post, index) => (
-                <motion.div
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
+            <HorizontalScroll itemCount={Math.min(blogPosts.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
+              {blogPosts.slice(0, 3).map((post) => (
+                <div key={post.id} className="shrink-0 w-[80vw] snap-center sm:w-auto">
                   <Link to="/blog">
                     <Card className="group cursor-pointer h-full overflow-hidden">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
                           src={post.image || '/placeholder.svg'}
                           alt={post.title}
-                          className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                         {post.category && (
                           <div className="absolute top-4 left-4">
-                            <span className="bg-white px-3 py-1 rounded-full text-sm font-semibold text-primary-600">
+                            <span className="bg-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold text-primary-600">
                               {post.category.name}
                             </span>
                           </div>
                         )}
                       </div>
-                      <p className="text-sm text-gray-500 mb-2">
+                      <p className="text-xs sm:text-sm text-gray-500 mb-2">
                         {post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}
                         {post.author && ` • ${post.author.name}`}
                       </p>
-                      <h3 className="text-xl font-bold mb-3 group-hover:text-primary-600 transition-colors">
+                      <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
                         {post.title}
                       </h3>
-                      <p className="text-gray-600 text-sm mb-4">{post.excerpt}</p>
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{post.excerpt}</p>
                       <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
                         {t('home.readMore')}
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </Card>
                   </Link>
-                </motion.div>
+                </div>
               ))}
-            </div>
+            </HorizontalScroll>
 
             <div className="text-center mt-12">
               <Link to="/blog">

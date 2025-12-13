@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Instagram, Facebook, MessageCircle, Mail, Phone, MapPin, Waves } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useGetFooterLinksQuery } from '../../services/api';
 
 const socialLinks = [
   { Icon: Instagram, href: '#', label: 'Instagram' },
@@ -12,6 +13,7 @@ const socialLinks = [
 
 export const Footer: React.FC = () => {
   const { t } = useTranslation();
+  const { data: dynamicFooterLinks = [] } = useGetFooterLinksQuery({ active: true });
 
   const footerLinks = {
     company: [
@@ -25,13 +27,39 @@ export const Footer: React.FC = () => {
       { name: t('footer.divingTrips'), href: '/shop/trips' },
       { name: t('footer.equipment'), href: '/shop/products' },
     ],
-    support: [
-      { name: t('footer.faqs'), href: '#' },
-      { name: t('footer.safetyGuidelines'), href: '#' },
-      { name: t('footer.privacyPolicy'), href: '#' },
-      { name: t('footer.termsConditions'), href: '#' },
-    ],
   };
+
+  // Render a link - handles both internal and external URLs
+  const renderLink = (link: { name: string; href: string; openInNewTab?: boolean }, key: string | number) => {
+    const isExternal = link.href.startsWith('http') || link.openInNewTab;
+
+    if (isExternal) {
+      return (
+        <li key={key}>
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-primary-400 transition-colors text-sm inline-block hover:translate-x-1 duration-200"
+          >
+            {link.name}
+          </a>
+        </li>
+      );
+    }
+
+    return (
+      <li key={key}>
+        <Link
+          to={link.href}
+          className="text-gray-400 hover:text-primary-400 transition-colors text-sm inline-block hover:translate-x-1 duration-200"
+        >
+          {link.name}
+        </Link>
+      </li>
+    );
+  };
+
   return (
     <footer className="bg-gradient-to-b from-gray-900 to-black text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -72,26 +100,49 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Links Columns */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="text-white font-bold mb-4 text-lg">
-                {t(`footer.${category}`)}
-              </h3>
-              <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      to={link.href}
-                      className="text-gray-400 hover:text-primary-400 transition-colors text-sm inline-block hover:translate-x-1 duration-200"
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Company Links */}
+          <div>
+            <h3 className="text-white font-bold mb-4 text-lg">
+              {t('footer.company')}
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.company.map((link) => renderLink(link, link.name))}
+            </ul>
+          </div>
+
+          {/* Services Links */}
+          <div>
+            <h3 className="text-white font-bold mb-4 text-lg">
+              {t('footer.services')}
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.services.map((link) => renderLink(link, link.name))}
+            </ul>
+          </div>
+
+          {/* Support Links - Dynamic from CMS */}
+          <div>
+            <h3 className="text-white font-bold mb-4 text-lg">
+              {t('footer.support')}
+            </h3>
+            <ul className="space-y-3">
+              {dynamicFooterLinks.length > 0 ? (
+                dynamicFooterLinks.map((link) =>
+                  renderLink(
+                    { name: link.title, href: link.url, openInNewTab: link.open_in_new_tab },
+                    link.id
+                  )
+                )
+              ) : (
+                // Fallback links if no dynamic links are available
+                <>
+                  {renderLink({ name: t('footer.faqs'), href: '#' }, 'faqs')}
+                  {renderLink({ name: t('footer.privacyPolicy'), href: '#' }, 'privacy')}
+                  {renderLink({ name: t('footer.termsConditions'), href: '#' }, 'terms')}
+                </>
+              )}
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Section */}

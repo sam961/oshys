@@ -1,16 +1,24 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router-dom';
 
 export const ScrollToTop = () => {
   const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+
+  // Enable browser's native scroll restoration for back/forward
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'auto';
+    }
+  }, []);
 
   useEffect(() => {
-    // Scroll to top immediately without smooth behavior
-    window.scrollTo(0, 0);
-    // Also try document.documentElement for better browser support
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, [pathname]);
+    // Only scroll to top on PUSH navigation (clicking links)
+    // Let the browser handle POP (back/forward) naturally
+    if (navigationType === 'PUSH') {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, navigationType]);
 
   return null;
 };

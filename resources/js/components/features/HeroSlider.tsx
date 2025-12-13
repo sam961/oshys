@@ -8,6 +8,7 @@ export const HeroSlider: React.FC = () => {
   const { data: banners = [], isLoading, refetch } = useGetBannersQuery({ active: true, position: 'hero' });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Force refetch on mount to ensure fresh data
   useEffect(() => {
@@ -18,12 +19,14 @@ export const HeroSlider: React.FC = () => {
   const slides = banners;
 
   useEffect(() => {
+    if (isPaused) return;
+
     const timer = setInterval(() => {
       setDirection(1);
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, 8000); // 8 seconds per slide
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [slides.length, isPaused]);
 
   const goToSlide = (index: number) => {
     setDirection(index > currentSlide ? 1 : -1);
@@ -67,7 +70,11 @@ export const HeroSlider: React.FC = () => {
   }
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div
+      className="relative h-screen w-full overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <AnimatePresence initial={false} mode="wait">
         <motion.div
           key={currentSlide}

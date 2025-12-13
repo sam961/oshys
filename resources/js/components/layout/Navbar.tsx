@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown, Waves } from 'lucide-react';
+import { Menu, X, ChevronDown, Waves, CalendarDays } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { LanguageSwitcher } from '../shared/LanguageSwitcher';
@@ -12,6 +12,36 @@ export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleCalendarClick = () => {
+    if (location.pathname === '/') {
+      // Already on home page, just scroll to calendar
+      const element = document.getElementById('calendar');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // Set flag in sessionStorage and navigate to home page
+      sessionStorage.setItem('scrollToCalendar', 'true');
+      navigate('/');
+    }
+  };
+
+  // Handle scroll to calendar after navigation
+  useEffect(() => {
+    if (location.pathname === '/' && sessionStorage.getItem('scrollToCalendar') === 'true') {
+      // Clear the flag first
+      sessionStorage.removeItem('scrollToCalendar');
+      // Wait for page to render and ScrollToTop to finish
+      setTimeout(() => {
+        const element = document.getElementById('calendar');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500);
+    }
+  }, [location.pathname]);
 
   const navigation = [
     { name: t('nav.home'), href: '/' },
@@ -26,6 +56,7 @@ export const Navbar: React.FC = () => {
       ],
     },
     { name: t('nav.blog'), href: '/blog' },
+    { name: 'Initiatives', href: '/initiatives' },
     { name: t('nav.contact'), href: '/contact' },
   ];
 
@@ -53,9 +84,9 @@ export const Navbar: React.FC = () => {
       }`}
     >
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="flex items-center h-20">
+        <div className="flex items-center justify-between h-20">
           {/* Logo - Left aligned */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Link to="/" className="flex items-center gap-3 group">
               <motion.div
                 whileHover={{ scale: 1.05, rotate: 5 }}
@@ -128,19 +159,35 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          {/* Right Side - Language Switcher and Book Now Button */}
+          {/* Right Side - Calendar, Language Switcher and Book Now Button */}
           <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+            <button
+              onClick={handleCalendarClick}
+              className="p-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+              title="View Calendar"
+            >
+              <CalendarDays className="w-5 h-5" />
+            </button>
             <LanguageSwitcher />
             <Button size="sm">Book Now</Button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile - Calendar Icon and Menu Button */}
+          <div className="lg:hidden flex items-center gap-2">
+            <button
+              onClick={handleCalendarClick}
+              className="p-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+              title="View Calendar"
+            >
+              <CalendarDays className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 

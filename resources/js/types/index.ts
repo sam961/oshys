@@ -85,6 +85,7 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   image?: string;
+  image_url?: string;
   category_id?: number;
   category?: Category;
   author_id?: number;
@@ -93,6 +94,25 @@ export interface BlogPost {
     name: string;
     email: string;
   };
+  is_published: boolean;
+  is_featured: boolean;
+  published_at?: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+}
+
+// Social Initiative Types
+export interface SocialInitiative {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  image?: string;
+  image_url?: string;
+  category_id?: number;
+  category?: Category;
   is_published: boolean;
   is_featured: boolean;
   published_at?: string;
@@ -173,6 +193,23 @@ export interface Banner {
 
 export type BannerFormData = Omit<Banner, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
 
+// Footer Link Types
+export interface FooterLink {
+  id: number;
+  title: string;
+  slug: string;
+  url: string;
+  content?: string;
+  display_order: number;
+  is_active: boolean;
+  open_in_new_tab: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+}
+
+export type FooterLinkFormData = Omit<FooterLink, 'id' | 'slug' | 'url' | 'created_at' | 'updated_at' | 'deleted_at'>;
+
 // Image Types
 export interface Image {
   id: number;
@@ -194,6 +231,7 @@ export type CourseFormData = Omit<Course, 'id' | 'slug' | 'created_at' | 'update
 export type TripFormData = Omit<Trip, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category'>;
 export type ProductFormData = Omit<Product, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category'>;
 export type BlogPostFormData = Omit<BlogPost, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category' | 'author'>;
+export type SocialInitiativeFormData = Omit<SocialInitiative, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category'>;
 export type EventFormData = Omit<Event, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
 export type TeamMemberFormData = Omit<TeamMember, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
 export type CategoryFormData = Omit<Category, 'id' | 'slug' | 'created_at' | 'updated_at'>;

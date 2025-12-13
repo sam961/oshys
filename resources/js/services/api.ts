@@ -4,11 +4,13 @@ import type {
   Trip,
   Product,
   BlogPost,
+  SocialInitiative,
   Event,
   TeamMember,
   Category,
   Setting,
   Banner,
+  FooterLink,
 } from '../types';
 
 // Define base query
@@ -30,7 +32,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Course', 'Trip', 'Product', 'BlogPost', 'Event', 'TeamMember', 'Category', 'Setting', 'Banner'],
+  tagTypes: ['Course', 'Trip', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Category', 'Setting', 'Banner', 'FooterLink'],
   endpoints: (builder) => ({
     // Courses
     getCourses: builder.query<Course[], { active?: boolean; featured?: boolean; level?: string; search?: string }>({
@@ -174,6 +176,42 @@ export const api = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['BlogPost'],
+    }),
+
+    // Social Initiatives
+    getSocialInitiatives: builder.query<SocialInitiative[], { published?: boolean; featured?: boolean; search?: string }>({
+      query: (params) => ({
+        url: '/social-initiatives',
+        params,
+      }),
+      providesTags: ['SocialInitiative'],
+    }),
+    getSocialInitiative: builder.query<SocialInitiative, number>({
+      query: (id) => `/social-initiatives/${id}`,
+      providesTags: ['SocialInitiative'],
+    }),
+    createSocialInitiative: builder.mutation<SocialInitiative, Partial<SocialInitiative> | FormData>({
+      query: (body) => ({
+        url: '/social-initiatives',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['SocialInitiative'],
+    }),
+    updateSocialInitiative: builder.mutation<SocialInitiative, { id: number; data: Partial<SocialInitiative> | FormData }>({
+      query: ({ id, data }) => ({
+        url: `/social-initiatives/${id}`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['SocialInitiative'],
+    }),
+    deleteSocialInitiative: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/social-initiatives/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['SocialInitiative'],
     }),
 
     // Events
@@ -355,6 +393,46 @@ export const api = createApi({
       }),
       invalidatesTags: ['Banner'],
     }),
+
+    // Footer Links
+    getFooterLinks: builder.query<FooterLink[], { active?: boolean; search?: string }>({
+      query: (params) => ({
+        url: '/footer-links',
+        params,
+      }),
+      providesTags: ['FooterLink'],
+    }),
+    getFooterLink: builder.query<FooterLink, number>({
+      query: (id) => `/footer-links/${id}`,
+      providesTags: ['FooterLink'],
+    }),
+    getFooterLinkBySlug: builder.query<FooterLink, string>({
+      query: (slug) => `/footer-links/${slug}`,
+      providesTags: ['FooterLink'],
+    }),
+    createFooterLink: builder.mutation<FooterLink, Partial<FooterLink>>({
+      query: (body) => ({
+        url: '/footer-links',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['FooterLink'],
+    }),
+    updateFooterLink: builder.mutation<FooterLink, { id: number; data: Partial<FooterLink> }>({
+      query: ({ id, data }) => ({
+        url: `/footer-links/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['FooterLink'],
+    }),
+    deleteFooterLink: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/footer-links/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['FooterLink'],
+    }),
   }),
 });
 
@@ -383,6 +461,12 @@ export const {
   useCreateBlogPostMutation,
   useUpdateBlogPostMutation,
   useDeleteBlogPostMutation,
+
+  useGetSocialInitiativesQuery,
+  useGetSocialInitiativeQuery,
+  useCreateSocialInitiativeMutation,
+  useUpdateSocialInitiativeMutation,
+  useDeleteSocialInitiativeMutation,
 
   useGetEventsQuery,
   useGetEventQuery,
@@ -413,4 +497,11 @@ export const {
   useCreateBannerMutation,
   useUpdateBannerMutation,
   useDeleteBannerMutation,
+
+  useGetFooterLinksQuery,
+  useGetFooterLinkQuery,
+  useGetFooterLinkBySlugQuery,
+  useCreateFooterLinkMutation,
+  useUpdateFooterLinkMutation,
+  useDeleteFooterLinkMutation,
 } = api;

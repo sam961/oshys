@@ -1,12 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AnimatePresence } from 'framer-motion';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { WhatsAppButton } from './components/features/WhatsAppButton';
-import { PageTransition, ScrollToTop } from './components/animations';
-import { useSmoothScroll } from './components/animations';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ProductsPage } from './pages/ProductsPage';
@@ -15,6 +12,11 @@ import { TripsPage } from './pages/TripsPage';
 import { BlogPage } from './pages/BlogPage';
 import { BlogDetailPage } from './pages/BlogDetailPage';
 import { ContactPage } from './pages/ContactPage';
+import { EventsPage } from './pages/EventsPage';
+import { EventDetailPage } from './pages/EventDetailPage';
+import { InitiativesPage } from './pages/InitiativesPage';
+import { InitiativeDetailPage } from './pages/InitiativeDetailPage';
+import { FooterLinkPage } from './pages/FooterLinkPage';
 
 // Admin imports
 import { AdminLayout } from './admin/layouts/AdminLayout';
@@ -26,21 +28,38 @@ import { BlogManagement } from './admin/pages/BlogManagement';
 import { EventsManagement } from './admin/pages/EventsManagement';
 import { TeamManagement } from './admin/pages/TeamManagement';
 import { BannerManagement } from './admin/pages/BannerManagement';
+import { InitiativesManagement } from './admin/pages/InitiativesManagement';
+import { FooterLinksManagement } from './admin/pages/FooterLinksManagement';
 import { Settings } from './admin/pages/Settings';
 
-const AnimatedRoutes: React.FC = () => {
-  const location = useLocation();
-  useSmoothScroll();
+// Simple scroll to top on navigation (except back/forward)
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
 
-  // Check if current route is admin
+  useEffect(() => {
+    // Enable browser's native scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'auto';
+    }
+  }, []);
+
+  useEffect(() => {
+    // Scroll to top on new page navigation
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
+const AppRoutes: React.FC = () => {
+  const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <>
       <ScrollToTop />
       {isAdminRoute ? (
-        // Admin routes - no transitions
-        <Routes location={location} key={location.pathname}>
+        <Routes>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="products" element={<ProductsManagement />} />
@@ -50,73 +69,31 @@ const AnimatedRoutes: React.FC = () => {
             <Route path="events" element={<EventsManagement />} />
             <Route path="team" element={<TeamManagement />} />
             <Route path="banners" element={<BannerManagement />} />
+            <Route path="initiatives" element={<InitiativesManagement />} />
+            <Route path="footer-links" element={<FooterLinksManagement />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       ) : (
-        // Public routes - with layout and transitions
         <div className="flex flex-col min-h-screen bg-white">
           <Navbar />
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={
-                <PageTransition>
-                  <main className="flex-grow">
-                    <HomePage />
-                  </main>
-                </PageTransition>
-              } />
-              <Route path="/about" element={
-                <PageTransition>
-                  <main className="flex-grow">
-                    <AboutPage />
-                  </main>
-                </PageTransition>
-              } />
-              <Route path="/shop/products" element={
-                <PageTransition>
-                  <main className="flex-grow">
-                    <ProductsPage />
-                  </main>
-                </PageTransition>
-              } />
-              <Route path="/shop/courses" element={
-                <PageTransition>
-                  <main className="flex-grow">
-                    <CoursesPage />
-                  </main>
-                </PageTransition>
-              } />
-              <Route path="/shop/trips" element={
-                <PageTransition>
-                  <main className="flex-grow">
-                    <TripsPage />
-                  </main>
-                </PageTransition>
-              } />
-              <Route path="/blog" element={
-                <PageTransition>
-                  <main className="flex-grow">
-                    <BlogPage />
-                  </main>
-                </PageTransition>
-              } />
-              <Route path="/blog/:id" element={
-                <PageTransition>
-                  <main className="flex-grow">
-                    <BlogDetailPage />
-                  </main>
-                </PageTransition>
-              } />
-              <Route path="/contact" element={
-                <PageTransition>
-                  <main className="flex-grow">
-                    <ContactPage />
-                  </main>
-                </PageTransition>
-              } />
+          <main className="grow">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/shop/products" element={<ProductsPage />} />
+              <Route path="/shop/courses" element={<CoursesPage />} />
+              <Route path="/shop/trips" element={<TripsPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:id" element={<BlogDetailPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/events" element={<EventsPage />} />
+              <Route path="/events/:id" element={<EventDetailPage />} />
+              <Route path="/initiatives" element={<InitiativesPage />} />
+              <Route path="/initiatives/:id" element={<InitiativeDetailPage />} />
+              <Route path="/pages/:slug" element={<FooterLinkPage />} />
             </Routes>
-          </AnimatePresence>
+          </main>
           <Footer />
         </div>
       )}
@@ -129,7 +106,7 @@ const App: React.FC = () => {
     <Router>
       <Toaster position="top-right" />
       <WhatsAppButton />
-      <AnimatedRoutes />
+      <AppRoutes />
     </Router>
   );
 };

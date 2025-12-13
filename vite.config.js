@@ -9,8 +9,11 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/main.tsx'],
             refresh: true,
+            detectTls: 'oshys.test',
         }),
-        react(),
+        react({
+            jsxImportSource: 'react',
+        }),
         tailwindcss(),
     ],
     resolve: {
