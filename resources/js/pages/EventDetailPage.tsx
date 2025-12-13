@@ -1,16 +1,14 @@
 import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Calendar,
   Clock,
   MapPin,
   Users,
-  ArrowLeft,
   Share2,
   Loader2,
   Tag,
-  DollarSign,
   CalendarCheck,
   Info
 } from 'lucide-react';
@@ -21,12 +19,7 @@ import { useTranslation } from 'react-i18next';
 export const EventDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { data: event, isLoading, error } = useGetEventQuery(Number(id));
-
-  const handleGoBack = () => {
-    navigate(-1);
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -77,13 +70,7 @@ export const EventDetailPage: React.FC = () => {
         <div className="text-center">
           <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-          <p className="text-gray-600 mb-6">The event you're looking for doesn't exist or has been removed.</p>
-          <Link to="/events">
-            <Button>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Events
-            </Button>
-          </Link>
+          <p className="text-gray-600">The event you're looking for doesn't exist or has been removed.</p>
         </div>
       </div>
     );
@@ -98,14 +85,6 @@ export const EventDetailPage: React.FC = () => {
           <div className="absolute inset-0" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }} />
-        </div>
-
-        {/* Back Button */}
-        <div className="absolute top-8 left-8 z-10">
-          <Button variant="secondary" className="bg-white/90 hover:bg-white" onClick={handleGoBack}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
         </div>
 
         {/* Hero Content */}
@@ -334,36 +313,6 @@ export const EventDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Footer Navigation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="mt-12 pt-8 border-t border-gray-200 flex items-center justify-between"
-          >
-            <Button variant="outline" onClick={handleGoBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <button
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({
-                    title: event.title,
-                    text: event.description,
-                    url: window.location.href,
-                  });
-                } else {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Link copied to clipboard!');
-                }
-              }}
-              className="flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors font-medium"
-            >
-              <Share2 className="w-5 h-5" />
-              Share this event
-            </button>
-          </motion.div>
         </div>
       </Section>
     </div>

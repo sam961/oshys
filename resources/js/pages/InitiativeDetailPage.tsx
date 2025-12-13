@@ -1,8 +1,8 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, ArrowLeft, Tag, Share2, Loader2, Heart } from 'lucide-react';
-import { Section, Button } from '../components/ui';
+import { Calendar, Tag, Share2, Loader2 } from 'lucide-react';
+import { Section } from '../components/ui';
 import { useGetSocialInitiativeQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
@@ -24,12 +24,7 @@ export const InitiativeDetailPage: React.FC = () => {
       <div className="pt-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Initiative Not Found</h1>
-          <Link to="/initiatives">
-            <Button>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Initiatives
-            </Button>
-          </Link>
+          <p className="text-gray-600">The initiative you're looking for doesn't exist or has been removed.</p>
         </div>
       </div>
     );
@@ -45,16 +40,6 @@ export const InitiativeDetailPage: React.FC = () => {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
-
-        {/* Back Button */}
-        <div className="absolute top-8 left-8">
-          <Link to="/initiatives">
-            <Button variant="secondary" className="bg-white/90 hover:bg-white">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Initiatives
-            </Button>
-          </Link>
-        </div>
       </div>
 
       {/* Article Content */}
@@ -134,24 +119,6 @@ export const InitiativeDetailPage: React.FC = () => {
             dangerouslySetInnerHTML={{ __html: initiative.content }}
           />
 
-          {/* Footer Actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="pt-8 border-t border-gray-200 flex items-center justify-between"
-          >
-            <Link to="/initiatives">
-              <Button variant="outline">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Initiatives
-              </Button>
-            </Link>
-            <button className="flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors font-medium">
-              <Share2 className="w-5 h-5" />
-              Share this initiative
-            </button>
-          </motion.div>
         </div>
       </Section>
     </div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, User, ArrowLeft, Tag, Share2, Loader2 } from 'lucide-react';
-import { Section, Button } from '../components/ui';
+import { Calendar, User, Tag, Share2, Loader2 } from 'lucide-react';
+import { Section } from '../components/ui';
 import { useGetBlogPostQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
@@ -24,12 +24,7 @@ export const BlogDetailPage: React.FC = () => {
       <div className="pt-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Post Not Found</h1>
-          <Link to="/blog">
-            <Button>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Blog
-            </Button>
-          </Link>
+          <p className="text-gray-600">The post you're looking for doesn't exist or has been removed.</p>
         </div>
       </div>
     );
@@ -45,16 +40,6 @@ export const BlogDetailPage: React.FC = () => {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
-
-        {/* Back Button */}
-        <div className="absolute top-8 left-8">
-          <Link to="/blog">
-            <Button variant="secondary" className="bg-white/90 hover:bg-white">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Blog
-            </Button>
-          </Link>
-        </div>
       </div>
 
       {/* Article Content */}
@@ -140,24 +125,6 @@ export const BlogDetailPage: React.FC = () => {
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
-          {/* Footer Actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="pt-8 border-t border-gray-200 flex items-center justify-between"
-          >
-            <Link to="/blog">
-              <Button variant="outline">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Blog
-              </Button>
-            </Link>
-            <button className="flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors font-medium">
-              <Share2 className="w-5 h-5" />
-              Share this article
-            </button>
-          </motion.div>
         </div>
       </Section>
     </div>

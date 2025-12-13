@@ -1,8 +1,8 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2, FileText } from 'lucide-react';
-import { Section, Button } from '../components/ui';
+import { Loader2, FileText } from 'lucide-react';
+import { Section } from '../components/ui';
 import { useGetFooterLinkBySlugQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
@@ -25,15 +25,9 @@ export const FooterLinkPage: React.FC = () => {
         <div className="text-center">
           <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('common.pageNotFound', 'Page Not Found')}</h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600">
             {t('common.pageNotFoundMessage', 'The page you are looking for does not exist or has been removed.')}
           </p>
-          <Link to="/">
-            <Button>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('common.backToHome', 'Back to Home')}
-            </Button>
-          </Link>
         </div>
       </div>
     );
@@ -108,20 +102,6 @@ export const FooterLinkPage: React.FC = () => {
             </motion.div>
           )}
 
-          {/* Back to Home */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="pt-8 border-t border-gray-200"
-          >
-            <Link to="/">
-              <Button variant="outline">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('common.backToHome', 'Back to Home')}
-              </Button>
-            </Link>
-          </motion.div>
         </div>
       </Section>
     </div>
