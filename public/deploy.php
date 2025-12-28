@@ -103,8 +103,8 @@ try {
         'php artisan route:cache 2>&1',
         'php artisan view:cache 2>&1',
 
-        // Run database migrations (be careful with this in production!)
-        // 'php artisan migrate --force 2>&1',
+        // Run database migrations
+        'php artisan migrate --force 2>&1',
 
         // Build frontend assets (DISABLED - No Node.js on shared hosting)
         // Frontend assets are built locally and committed to git
