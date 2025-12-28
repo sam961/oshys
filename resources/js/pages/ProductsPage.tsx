@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Filter, Loader2, Grid3x3, List, Heart, Eye, Star, TrendingUp } from 'lucide-react';
-import { Section, Card, Button, GridSkeleton } from '../components/ui';
+import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, ScrollReveal, WaveBackground } from '../components/animations';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../services/api';
 import type { Product, Category } from '../types';
@@ -249,9 +249,10 @@ export const ProductsPage: React.FC = () => {
                     <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
 
                     <div className="flex items-center justify-between pt-2">
-                      <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                        SAR {product.price}
-                      </span>
+                      <SaudiRiyalPrice
+                        amount={product.price}
+                        className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent"
+                      />
                       <div className="flex items-center gap-1 text-sm text-gray-500">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         <span>4.8</span>
@@ -329,9 +330,10 @@ export const ProductsPage: React.FC = () => {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                          SAR {product.price}
-                        </span>
+                        <SaudiRiyalPrice
+                          amount={product.price}
+                          className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent"
+                        />
                         <Button
                           variant="primary"
                           disabled={!product.in_stock}

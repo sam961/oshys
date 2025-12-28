@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, MapPin, Clock, Award, Loader2, Filter, Grid3x3, List, Heart, Users, Calendar, Anchor, Star, TrendingUp } from 'lucide-react';
-import { Section, Card, Button, GridSkeleton } from '../components/ui';
+import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { BookingModal } from '../components/features/BookingModal';
 import { useGetTripsQuery } from '../services/api';
@@ -294,9 +294,10 @@ export const TripsPage: React.FC = () => {
                       <div className="flex items-center justify-between mb-3">
                         <div>
                           <p className="text-xs text-gray-500">{t('pages.trips.startingFrom')}</p>
-                          <p className="text-2xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent">
-                            {t('pages.trips.currency')} {trip.price}
-                          </p>
+                          <SaudiRiyalPrice
+                            amount={trip.price}
+                            className="text-2xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent"
+                          />
                         </div>
                         <div className="flex items-center gap-1 text-sm">
                           <Calendar className="w-4 h-4 text-secondary-600" />
@@ -397,9 +398,10 @@ export const TripsPage: React.FC = () => {
                       <div className="flex items-center justify-between mt-4">
                         <div>
                           <p className="text-sm text-gray-500">{t('pages.trips.startingFrom')}</p>
-                          <p className="text-3xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent">
-                            {t('pages.trips.currency')} {trip.price}
-                          </p>
+                          <SaudiRiyalPrice
+                            amount={trip.price}
+                            className="text-3xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent"
+                          />
                         </div>
                         <Button variant="primary" size="lg" onClick={(e) => handleBookClick(e, trip)}>
                           {t('pages.trips.bookThisTrip')}

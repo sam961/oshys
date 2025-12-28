@@ -149,7 +149,8 @@
     "subtitle": "Latest news and diving tips",
     "readMore": "Read More",
     "postedOn": "Posted on",
-    "by": "by"
+    "by": "by",
+    "noImage": "No image"
   },
   "contact": {
     "title": "Contact Us",
@@ -241,7 +242,8 @@
     "noImage": "No image",
     "addToWishlist": "Add to Wishlist",
     "quickView": "Quick View",
-    "reviews": "reviews"
+    "reviews": "reviews",
+    "currency": "SAR"
   },
   "pages": {
     "courses": {
@@ -380,10 +382,16 @@
     "heroSubtitle": "Join us for exciting workshops, courses, diving trips, and more. Don't miss out on our upcoming events!",
     "upcoming": "Upcoming",
     "workshops": "Workshops",
+    "trips": "Trips",
     "allEvents": "All Events",
+    "workshop": "Workshop",
+    "course": "Course",
+    "trip": "Trip",
+    "other": "Other",
     "sortSoonestFirst": "Sort: Soonest First",
     "dateEarliest": "Date: Earliest",
     "dateLatest": "Date: Latest",
+    "priceLowToHigh": "Price: Low to High",
     "loadingError": "Failed to load events. Please try again later.",
     "noEvents": "No upcoming events at the moment.",
     "checkBackSoon": "Check back soon for new events!",
@@ -392,7 +400,19 @@
     "startDate": "Start Date",
     "endDate": "End Date",
     "eventPrice": "Event Price",
-    "viewAllEvents": "View All Events"
+    "viewAllEvents": "View All Events",
+    "eventsCount": "{{count}} events",
+    "maxParticipants": "Max {{count}} participants",
+    "max": "Max {{count}}",
+    "price": "Price",
+    "currency": "SAR",
+    "free": "Free",
+    "freeEvent": "Free Event",
+    "viewDetails": "View Details",
+    "dontMissOut": "Don't Miss Out!",
+    "ctaDescription": "Subscribe to our newsletter to stay updated on upcoming events, workshops, and exclusive offers.",
+    "contactUs": "Contact Us",
+    "at": "at"
   },
   "calendar": {
     "hasEvents": "Has Events",

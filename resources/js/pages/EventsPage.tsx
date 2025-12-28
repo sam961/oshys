@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, Users, Filter, Grid3x3, List, ArrowRight } from 'lucide-react';
-import { Section, Card, Button, GridSkeleton } from '../components/ui';
+import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { useGetEventsQuery } from '../services/api';
 import type { Event } from '../types';
 import { useTranslation } from 'react-i18next';
 
 export const EventsPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'default' | 'date-asc' | 'date-desc' | 'price'>('default');
@@ -17,7 +17,19 @@ export const EventsPage: React.FC = () => {
   // Fetch events from API
   const { data: events = [], isLoading, error } = useGetEventsQuery({ active: true });
 
-  const eventTypes = ['workshop', 'course', 'trip', 'other'];
+  const eventTypes = [
+    { key: 'workshop', label: t('events.workshop') },
+    { key: 'course', label: t('events.course') },
+    { key: 'trip', label: t('events.trip') },
+    { key: 'other', label: t('events.other') },
+  ];
+
+  const getTypeLabel = (type: string) => {
+    const typeObj = eventTypes.find(et => et.key === type);
+    return typeObj ? typeObj.label : type.charAt(0).toUpperCase() + type.slice(1);
+  };
+
+  const currentLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
 
   // Filter upcoming events only
   const now = new Date();
@@ -41,7 +53,7 @@ export const EventsPage: React.FC = () => {
   });
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(currentLocale, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -50,10 +62,14 @@ export const EventsPage: React.FC = () => {
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
+    return new Date(dateString).toLocaleTimeString(currentLocale, {
       hour: 'numeric',
       minute: '2-digit',
     });
+  };
+
+  const formatMonth = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString(currentLocale, { month: 'short' });
   };
 
   const getTypeColor = (type: string) => {
@@ -67,10 +83,6 @@ export const EventsPage: React.FC = () => {
       default:
         return 'bg-gray-100 text-gray-700';
     }
-  };
-
-  const getTypeLabel = (type: string) => {
-    return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
   return (
@@ -89,12 +101,12 @@ export const EventsPage: React.FC = () => {
                 <Calendar className="w-8 h-8 text-primary-600" />
                 <h1 className="text-4xl lg:text-5xl font-bold">
                   <span className="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                    Upcoming Events
+                    {t('events.heroTitle')}
                   </span>
                 </h1>
               </div>
               <p className="text-gray-600 max-w-2xl">
-                Join us for exciting workshops, courses, diving trips, and more. Don't miss out on our upcoming events!
+                {t('events.heroSubtitle')}
               </p>
             </div>
 
@@ -102,19 +114,19 @@ export const EventsPage: React.FC = () => {
             <div className="hidden lg:flex items-center gap-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary-600">{upcomingEvents.length}</div>
-                <div className="text-sm text-gray-600">Upcoming</div>
+                <div className="text-sm text-gray-600">{t('events.upcoming')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-accent-600">
                   {upcomingEvents.filter(e => e.type === 'workshop').length}
                 </div>
-                <div className="text-sm text-gray-600">Workshops</div>
+                <div className="text-sm text-gray-600">{t('events.workshops')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-secondary-600">
                   {upcomingEvents.filter(e => e.type === 'trip').length}
                 </div>
-                <div className="text-sm text-gray-600">Trips</div>
+                <div className="text-sm text-gray-600">{t('events.trips')}</div>
               </div>
             </div>
           </motion.div>
@@ -138,21 +150,21 @@ export const EventsPage: React.FC = () => {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                All Events
+                {t('events.allEvents')}
               </motion.button>
               {eventTypes.map((type) => (
                 <motion.button
-                  key={type}
+                  key={type.key}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedType(type)}
-                  className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium capitalize ${
-                    selectedType === type
+                  onClick={() => setSelectedType(type.key)}
+                  className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
+                    selectedType === type.key
                       ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {type}
+                  {type.label}
                 </motion.button>
               ))}
             </div>
@@ -165,10 +177,10 @@ export const EventsPage: React.FC = () => {
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
-                <option value="default">Sort: Soonest First</option>
-                <option value="date-asc">Date: Earliest</option>
-                <option value="date-desc">Date: Latest</option>
-                <option value="price">Price: Low to High</option>
+                <option value="default">{t('events.sortSoonestFirst')}</option>
+                <option value="date-asc">{t('events.dateEarliest')}</option>
+                <option value="date-desc">{t('events.dateLatest')}</option>
+                <option value="price">{t('events.priceLowToHigh')}</option>
               </select>
 
               {/* View Toggle */}
@@ -201,7 +213,7 @@ export const EventsPage: React.FC = () => {
 
               {/* Results Count */}
               <div className="hidden md:block text-sm text-gray-600">
-                {sortedEvents.length} events
+                {t('events.eventsCount', { count: sortedEvents.length })}
               </div>
             </div>
           </div>
@@ -215,13 +227,13 @@ export const EventsPage: React.FC = () => {
             <GridSkeleton count={6} />
           ) : error ? (
             <div className="text-center py-12">
-              <p className="text-red-600">Failed to load events. Please try again later.</p>
+              <p className="text-red-600">{t('events.loadingError')}</p>
             </div>
           ) : sortedEvents.length === 0 ? (
             <div className="text-center py-20">
               <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-              <p className="text-xl text-gray-600">No upcoming events at the moment.</p>
-              <p className="text-gray-500 mt-2">Check back soon for new events!</p>
+              <p className="text-xl text-gray-600">{t('events.noEvents')}</p>
+              <p className="text-gray-500 mt-2">{t('events.checkBackSoon')}</p>
             </div>
           ) : (
             <AnimatePresence mode="wait">
@@ -240,7 +252,7 @@ export const EventsPage: React.FC = () => {
                             {new Date(event.start_date).getDate()}
                           </div>
                           <div className="text-xs text-gray-600 uppercase">
-                            {new Date(event.start_date).toLocaleDateString('en-US', { month: 'short' })}
+                            {formatMonth(event.start_date)}
                           </div>
                         </div>
 
@@ -282,7 +294,7 @@ export const EventsPage: React.FC = () => {
                             {event.max_participants && (
                               <div className="flex items-center gap-2">
                                 <Users className="w-4 h-4 text-primary-600" />
-                                <span>Max {event.max_participants} participants</span>
+                                <span>{t('events.maxParticipants', { count: event.max_participants })}</span>
                               </div>
                             )}
                           </div>
@@ -290,16 +302,19 @@ export const EventsPage: React.FC = () => {
                           <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
                             {event.price ? (
                               <div>
-                                <p className="text-xs text-gray-500">Price</p>
-                                <p className="text-xl font-bold text-primary-600">SAR {event.price}</p>
+                                <p className="text-xs text-gray-500">{t('events.price')}</p>
+                                <SaudiRiyalPrice
+                                  amount={event.price}
+                                  className="text-xl font-bold text-primary-600"
+                                />
                               </div>
                             ) : (
                               <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                                Free
+                                {t('events.free')}
                               </span>
                             )}
                             <span className="flex items-center gap-1 text-primary-600 font-medium group-hover:gap-2 transition-all">
-                              View Details
+                              {t('events.viewDetails')}
                               <ArrowRight className="w-4 h-4" />
                             </span>
                           </div>
@@ -316,7 +331,7 @@ export const EventsPage: React.FC = () => {
                               {new Date(event.start_date).getDate()}
                             </div>
                             <div className="text-sm uppercase">
-                              {new Date(event.start_date).toLocaleDateString('en-US', { month: 'short' })}
+                              {formatMonth(event.start_date)}
                             </div>
                           </div>
 
@@ -335,7 +350,7 @@ export const EventsPage: React.FC = () => {
                               <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">
                                   <Clock className="w-4 h-4 text-primary-600" />
-                                  <span>{formatDate(event.start_date)} at {formatTime(event.start_date)}</span>
+                                  <span>{formatDate(event.start_date)} {t('events.at')} {formatTime(event.start_date)}</span>
                                 </div>
                                 {event.location && (
                                   <div className="flex items-center gap-2">
@@ -346,7 +361,7 @@ export const EventsPage: React.FC = () => {
                                 {event.max_participants && (
                                   <div className="flex items-center gap-2">
                                     <Users className="w-4 h-4 text-primary-600" />
-                                    <span>Max {event.max_participants}</span>
+                                    <span>{t('events.max', { count: event.max_participants })}</span>
                                   </div>
                                 )}
                               </div>
@@ -354,16 +369,17 @@ export const EventsPage: React.FC = () => {
 
                             <div className="flex items-center justify-between mt-4">
                               {event.price ? (
-                                <div className="text-2xl font-bold text-primary-600">
-                                  SAR {event.price}
-                                </div>
+                                <SaudiRiyalPrice
+                                  amount={event.price}
+                                  className="text-2xl font-bold text-primary-600"
+                                />
                               ) : (
                                 <span className="px-4 py-1 bg-green-100 text-green-700 rounded-full font-semibold">
-                                  Free Event
+                                  {t('events.freeEvent')}
                                 </span>
                               )}
                               <Button variant="primary" size="sm">
-                                View Details
+                                {t('events.viewDetails')}
                                 <ArrowRight className="w-4 h-4 ml-2" />
                               </Button>
                             </div>
@@ -387,13 +403,13 @@ export const EventsPage: React.FC = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-4">Don't Miss Out!</h2>
+            <h2 className="text-4xl font-bold mb-4">{t('events.dontMissOut')}</h2>
             <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
-              Subscribe to our newsletter to stay updated on upcoming events, workshops, and exclusive offers.
+              {t('events.ctaDescription')}
             </p>
             <Link to="/contact">
               <Button variant="secondary" size="lg" className="bg-white text-primary-600">
-                Contact Us
+                {t('events.contactUs')}
               </Button>
             </Link>
           </motion.div>

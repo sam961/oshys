@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, Clock, BarChart3, Loader2, Filter, Grid3x3, List, Heart, BookOpen, Users, Award, Star, CheckCircle2 } from 'lucide-react';
-import { Section, Card, Button, GridSkeleton } from '../components/ui';
+import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { BookingModal } from '../components/features/BookingModal';
 import { useGetCoursesQuery } from '../services/api';
@@ -275,9 +275,10 @@ export const CoursesPage: React.FC = () => {
                       <div className="flex items-center justify-between mb-3">
                         <div>
                           <p className="text-xs text-gray-500">{t('pages.courses.startingFrom')}</p>
-                          <p className="text-2xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent">
-                            {t('pages.courses.currency')} {course.price}
-                          </p>
+                          <SaudiRiyalPrice
+                            amount={course.price}
+                            className="text-2xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent"
+                          />
                         </div>
                         <div className="flex items-center gap-1 text-sm">
                           <Award className="w-4 h-4 text-accent-600" />
@@ -365,9 +366,10 @@ export const CoursesPage: React.FC = () => {
                       <div className="flex items-center justify-between mt-4">
                         <div>
                           <p className="text-sm text-gray-500">{t('pages.courses.startingFrom')}</p>
-                          <p className="text-3xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent">
-                            {t('pages.courses.currency')} {course.price}
-                          </p>
+                          <SaudiRiyalPrice
+                            amount={course.price}
+                            className="text-3xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent"
+                          />
                         </div>
                         <Button variant="primary" size="lg" onClick={(e) => handleEnrollClick(e, course)}>
                           {t('pages.courses.enrollNow')}
