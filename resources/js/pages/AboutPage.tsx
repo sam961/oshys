@@ -46,8 +46,9 @@ export const AboutPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl mx-auto relative z-10"
         >
-          <h1 className="text-5xl lg:text-7xl font-bold mb-6">
-            {t('about.heroTitle')} <span className="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 leading-tight">
+            <span className="block">{t('about.heroTitle')}</span>
+            <span className="block bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
               {t('about.heroName')}
             </span>
           </h1>
