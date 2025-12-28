@@ -18,9 +18,19 @@ export const SaudiRiyalPrice: React.FC<SaudiRiyalPriceProps> = ({
   className = '',
   showSymbol = true
 }) => {
-  const formattedAmount = typeof amount === 'number'
-    ? amount.toLocaleString()
-    : amount;
+  const formatPrice = (value: number | string): string => {
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(num)) return String(value);
+
+    // Remove trailing zeros (e.g., 45.00 -> 45, 45.50 -> 45.5)
+    const formatted = num % 1 === 0
+      ? num.toLocaleString('en-US', { maximumFractionDigits: 0 })
+      : num.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 }).replace(/\.?0+$/, '');
+
+    return formatted;
+  };
+
+  const formattedAmount = formatPrice(amount);
 
   return (
     <span className={className}>
