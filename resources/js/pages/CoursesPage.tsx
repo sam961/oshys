@@ -25,7 +25,12 @@ export const CoursesPage: React.FC = () => {
   // Fetch courses from API
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useGetCoursesQuery({ active: true });
 
-  const levels = ['Beginner', 'Intermediate', 'Advanced', 'Professional'];
+  const levels = [
+    { key: 'Beginner', label: t('pages.courses.beginner') },
+    { key: 'Intermediate', label: t('pages.courses.intermediate') },
+    { key: 'Advanced', label: t('pages.courses.advanced') },
+    { key: 'Professional', label: t('pages.courses.professional') },
+  ];
 
   const filteredCourses = selectedLevel
     ? courses.filter((c) => c.level === selectedLevel)
@@ -105,21 +110,21 @@ export const CoursesPage: React.FC = () => {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                All Levels
+                {t('pages.courses.allLevels')}
               </motion.button>
               {levels.map((level) => (
                 <motion.button
-                  key={level}
+                  key={level.key}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedLevel(level)}
+                  onClick={() => setSelectedLevel(level.key)}
                   className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
-                    selectedLevel === level
+                    selectedLevel === level.key
                       ? 'bg-gradient-to-r from-accent-600 to-accent-500 text-white shadow-lg shadow-accent-500/30'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {level}
+                  {level.label}
                 </motion.button>
               ))}
             </div>
@@ -132,10 +137,10 @@ export const CoursesPage: React.FC = () => {
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
-                <option value="default">Sort: Default</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="duration">Duration</option>
+                <option value="default">{t('pages.courses.sortDefault')}</option>
+                <option value="price-low">{t('pages.courses.priceLowToHigh')}</option>
+                <option value="price-high">{t('pages.courses.priceHighToLow')}</option>
+                <option value="duration">{t('pages.courses.duration')}</option>
               </select>
 
               {/* View Toggle */}
@@ -168,7 +173,7 @@ export const CoursesPage: React.FC = () => {
 
               {/* Results Count */}
               <div className="hidden md:block text-sm text-gray-600">
-                {sortedCourses.length} courses
+                {t('pages.courses.coursesCount', { count: sortedCourses.length })}
               </div>
             </div>
           </div>
@@ -209,7 +214,7 @@ export const CoursesPage: React.FC = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="p-2 bg-white rounded-full shadow-lg hover:bg-accent-50 transition-colors"
-                      title="Add to Favorites"
+                      title={t('pages.courses.addToFavorites')}
                     >
                       <Heart className="w-4 h-4 text-gray-700" />
                     </motion.button>
@@ -226,7 +231,7 @@ export const CoursesPage: React.FC = () => {
                       <div className="w-full h-56 bg-gray-100 flex items-center justify-center">
                         <div className="text-center">
                           <BookOpen className="w-16 h-16 mx-auto text-gray-300 mb-2" />
-                          <p className="text-sm text-gray-400">{t('courses.noImage')}</p>
+                          <p className="text-sm text-gray-400">{t('pages.courses.noImage')}</p>
                         </div>
                       </div>
                     )}
@@ -258,25 +263,25 @@ export const CoursesPage: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <BookOpen className="w-4 h-4 text-accent-600" />
-                        <span>12 Modules</span>
+                        <span>{t('pages.courses.modules', { count: 12 })}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Users className="w-4 h-4 text-accent-600" />
-                        <span>50+ Students</span>
+                        <span>{t('pages.courses.studentsEnrolled', { count: 50 })}</span>
                       </div>
                     </div>
 
                     <div className="pt-3 border-t border-gray-100">
                       <div className="flex items-center justify-between mb-3">
                         <div>
-                          <p className="text-xs text-gray-500">Starting from</p>
+                          <p className="text-xs text-gray-500">{t('pages.courses.startingFrom')}</p>
                           <p className="text-2xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent">
-                            SAR {course.price}
+                            {t('pages.courses.currency')} {course.price}
                           </p>
                         </div>
                         <div className="flex items-center gap-1 text-sm">
                           <Award className="w-4 h-4 text-accent-600" />
-                          <span className="text-gray-600">Certificate</span>
+                          <span className="text-gray-600">{t('pages.courses.certificate')}</span>
                         </div>
                       </div>
                       <Button variant="primary" className="w-full" size="sm" onClick={(e) => handleEnrollClick(e, course)}>
@@ -333,35 +338,35 @@ export const CoursesPage: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <BookOpen className="w-5 h-5 text-accent-600" />
-                            <span>12 Modules</span>
+                            <span>{t('pages.courses.modules', { count: 12 })}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Users className="w-5 h-5 text-accent-600" />
-                            <span>50+ Enrolled</span>
+                            <span>{t('pages.courses.studentsEnrolled', { count: 50 })}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span>4.9 (120 reviews)</span>
+                            <span>{t('pages.courses.rating', { rating: '4.9' })} {t('pages.courses.reviews', { count: 120 })}</span>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-3">
                           <span className="px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-xs font-semibold flex items-center gap-1">
                             <Award className="w-3 h-3" />
-                            Certificate Included
+                            {t('pages.courses.certificateIncluded')}
                           </span>
                           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" />
-                            Lifetime Access
+                            {t('pages.courses.lifetimeAccess')}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between mt-4">
                         <div>
-                          <p className="text-sm text-gray-500">Starting from</p>
+                          <p className="text-sm text-gray-500">{t('pages.courses.startingFrom')}</p>
                           <p className="text-3xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent">
-                            SAR {course.price}
+                            {t('pages.courses.currency')} {course.price}
                           </p>
                         </div>
                         <Button variant="primary" size="lg" onClick={(e) => handleEnrollClick(e, course)}>

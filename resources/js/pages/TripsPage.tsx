@@ -25,7 +25,11 @@ export const TripsPage: React.FC = () => {
   // Fetch trips from API
   const { data: trips = [], isLoading: tripsLoading, error: tripsError } = useGetTripsQuery({ active: true });
 
-  const difficulties = ['Beginner', 'Intermediate', 'Advanced'];
+  const difficulties = [
+    { key: 'Beginner', label: t('pages.trips.beginner') },
+    { key: 'Intermediate', label: t('pages.trips.intermediate') },
+    { key: 'Advanced', label: t('pages.trips.advanced') },
+  ];
 
   const filteredTrips = selectedDifficulty
     ? trips.filter((t) => t.difficulty === selectedDifficulty)
@@ -73,15 +77,15 @@ export const TripsPage: React.FC = () => {
             <div className="hidden lg:flex gap-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-secondary-600">{trips.length}+</div>
-                <div className="text-sm text-gray-600">Dive Trips</div>
+                <div className="text-sm text-gray-600">{t('pages.trips.diveTrips')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary-600">15</div>
-                <div className="text-sm text-gray-600">Destinations</div>
+                <div className="text-sm text-gray-600">{t('pages.trips.destinations')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-accent-600">1000+</div>
-                <div className="text-sm text-gray-600">Happy Divers</div>
+                <div className="text-sm text-gray-600">{t('pages.trips.happyDivers')}</div>
               </div>
             </div>
           </motion.div>
@@ -105,21 +109,21 @@ export const TripsPage: React.FC = () => {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                All Levels
+                {t('pages.trips.allLevels')}
               </motion.button>
               {difficulties.map((level) => (
                 <motion.button
-                  key={level}
+                  key={level.key}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedDifficulty(level)}
+                  onClick={() => setSelectedDifficulty(level.key)}
                   className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
-                    selectedDifficulty === level
+                    selectedDifficulty === level.key
                       ? 'bg-gradient-to-r from-secondary-600 to-secondary-500 text-white shadow-lg shadow-secondary-500/30'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {level}
+                  {level.label}
                 </motion.button>
               ))}
             </div>
@@ -132,10 +136,10 @@ export const TripsPage: React.FC = () => {
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:border-transparent"
               >
-                <option value="default">Sort: Default</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="duration">Duration</option>
+                <option value="default">{t('pages.trips.sortDefault')}</option>
+                <option value="price-low">{t('pages.trips.priceLowToHigh')}</option>
+                <option value="price-high">{t('pages.trips.priceHighToLow')}</option>
+                <option value="duration">{t('pages.trips.duration')}</option>
               </select>
 
               {/* View Toggle */}
@@ -168,7 +172,7 @@ export const TripsPage: React.FC = () => {
 
               {/* Results Count */}
               <div className="hidden md:block text-sm text-gray-600">
-                {sortedTrips.length} trips
+                {t('pages.trips.tripsCount', { count: sortedTrips.length })}
               </div>
             </div>
           </div>
@@ -209,7 +213,7 @@ export const TripsPage: React.FC = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="p-2 bg-white rounded-full shadow-lg hover:bg-secondary-50 transition-colors"
-                      title="Add to Favorites"
+                      title={t('pages.trips.addToFavorites')}
                     >
                       <Heart className="w-4 h-4 text-gray-700" />
                     </motion.button>
@@ -228,7 +232,7 @@ export const TripsPage: React.FC = () => {
                     ) : (
                       <div className="w-full h-64 bg-gray-100 flex flex-col items-center justify-center">
                         <Anchor className="w-16 h-16 text-gray-300 mb-2" />
-                        <p className="text-sm text-gray-400">{t('trips.noImage')}</p>
+                        <p className="text-sm text-gray-400">{t('pages.trips.noImage')}</p>
                       </div>
                     )}
 
@@ -245,7 +249,7 @@ export const TripsPage: React.FC = () => {
                       {trip.certification_required && (
                         <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                           <Award className="w-3 h-3" />
-                          Cert Required
+                          {t('pages.trips.certRequired')}
                         </span>
                       )}
                     </div>
@@ -253,7 +257,7 @@ export const TripsPage: React.FC = () => {
                     <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
                       <div className="flex items-center gap-2 text-white text-sm">
                         <MapPin className="w-4 h-4" />
-                        <span className="font-semibold">{trip.location || 'Location TBD'}</span>
+                        <span className="font-semibold">{trip.location || t('pages.trips.locationTBD')}</span>
                       </div>
                       <div className="flex items-center gap-1 text-white text-sm">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -278,25 +282,25 @@ export const TripsPage: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Users className="w-4 h-4 text-secondary-600" />
-                        <span>Max 12</span>
+                        <span>{t('pages.trips.maxParticipants', { count: 12 })}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Anchor className="w-4 h-4 text-secondary-600" />
-                        <span>4 Dives</span>
+                        <span>{t('pages.trips.dives', { count: 4 })}</span>
                       </div>
                     </div>
 
                     <div className="pt-3 border-t border-gray-100">
                       <div className="flex items-center justify-between mb-3">
                         <div>
-                          <p className="text-xs text-gray-500">Starting from</p>
+                          <p className="text-xs text-gray-500">{t('pages.trips.startingFrom')}</p>
                           <p className="text-2xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent">
-                            SAR {trip.price}
+                            {t('pages.trips.currency')} {trip.price}
                           </p>
                         </div>
                         <div className="flex items-center gap-1 text-sm">
                           <Calendar className="w-4 h-4 text-secondary-600" />
-                          <span className="text-gray-600">Book Now</span>
+                          <span className="text-gray-600">{t('pages.trips.bookNow')}</span>
                         </div>
                       </div>
                       <Button variant="primary" className="w-full" size="sm" onClick={(e) => handleBookClick(e, trip)}>
@@ -319,13 +323,13 @@ export const TripsPage: React.FC = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                           <div className="absolute bottom-3 left-3 flex items-center gap-2 text-white text-sm">
                             <MapPin className="w-4 h-4" />
-                            <span className="font-semibold">{trip.location || 'Location TBD'}</span>
+                            <span className="font-semibold">{trip.location || t('pages.trips.locationTBD')}</span>
                           </div>
                         </>
                       ) : (
                         <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center">
                           <Anchor className="w-12 h-12 text-gray-300 mb-2" />
-                          <p className="text-xs text-gray-400">{t('trips.noImage')}</p>
+                          <p className="text-xs text-gray-400">{t('pages.trips.noImage')}</p>
                         </div>
                       )}
                       <div className="absolute top-3 left-3">
@@ -364,15 +368,15 @@ export const TripsPage: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Users className="w-5 h-5 text-secondary-600" />
-                            <span>Small Groups (Max 12)</span>
+                            <span>{t('pages.trips.smallGroups', { count: 12 })}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Anchor className="w-5 h-5 text-secondary-600" />
-                            <span>4 Dive Sites</span>
+                            <span>{t('pages.trips.diveSites', { count: 4 })}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span>4.8 (95 reviews)</span>
+                            <span>{t('pages.trips.rating', { rating: '4.8' })} {t('pages.trips.reviews', { count: 95 })}</span>
                           </div>
                         </div>
 
@@ -380,21 +384,21 @@ export const TripsPage: React.FC = () => {
                           {trip.certification_required && (
                             <span className="px-3 py-1 bg-secondary-100 text-secondary-700 rounded-full text-xs font-semibold flex items-center gap-1">
                               <Award className="w-3 h-3" />
-                              Certification Required
+                              {t('pages.trips.certificationRequired')}
                             </span>
                           )}
                           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
                             <TrendingUp className="w-3 h-3" />
-                            Spots Available
+                            {t('pages.trips.spotsAvailable')}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between mt-4">
                         <div>
-                          <p className="text-sm text-gray-500">Starting from</p>
+                          <p className="text-sm text-gray-500">{t('pages.trips.startingFrom')}</p>
                           <p className="text-3xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent">
-                            SAR {trip.price}
+                            {t('pages.trips.currency')} {trip.price}
                           </p>
                         </div>
                         <Button variant="primary" size="lg" onClick={(e) => handleBookClick(e, trip)}>
