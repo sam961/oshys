@@ -46,9 +46,20 @@ export const AboutPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl mx-auto relative z-10"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-            <span className="block">{t('about.heroTitle')}</span>
-            <span className="block bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6">
+            <span className="block mb-2 sm:mb-4">{t('about.heroTitle')}</span>
+            <span
+              className="block text-primary-600"
+              style={{
+                background: 'linear-gradient(to right, var(--color-primary-600), var(--color-accent-600))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                paddingTop: '0.3em',
+                paddingBottom: '0.1em',
+                lineHeight: '1.3',
+              }}
+            >
               {t('about.heroName')}
             </span>
           </h1>
