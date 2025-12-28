@@ -10,12 +10,14 @@ use Illuminate\Support\Str;
 
 class BannerController extends Controller
 {
+    use TranslatableController;
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = Banner::query();
+        $query = Banner::with('translations');
 
         // Filter by active status
         if ($request->has('active')) {
@@ -56,6 +58,9 @@ class BannerController extends Controller
                          ->orderBy('created_at', 'desc')
                          ->get();
 
+        // Add translations to response
+        $banners = $this->transformWithTranslations($banners);
+
         return response()->json($banners);
     }
 
@@ -75,6 +80,10 @@ class BannerController extends Controller
             'is_active' => 'nullable',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'button_text_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans
@@ -88,9 +97,15 @@ class BannerController extends Controller
             $validated['image'] = $path;
         }
 
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['description_translations'], $validated['button_text_translations']);
+
         $banner = Banner::create($validated);
 
-        return response()->json($banner, 201);
+        // Save translations
+        $this->saveTranslationsFromRequest($banner, $request);
+
+        return response()->json($banner->load('translations'), 201);
     }
 
     /**
@@ -98,8 +113,8 @@ class BannerController extends Controller
      */
     public function show($id)
     {
-        $banner = Banner::findOrFail($id);
-        return response()->json($banner);
+        $banner = Banner::with('translations')->findOrFail($id);
+        return response()->json($banner->toArrayWithTranslations());
     }
 
     /**
@@ -120,6 +135,10 @@ class BannerController extends Controller
             'is_active' => 'nullable',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'button_text_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans if present
@@ -140,9 +159,15 @@ class BannerController extends Controller
             $validated['image'] = $path;
         }
 
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['description_translations'], $validated['button_text_translations']);
+
         $banner->update($validated);
 
-        return response()->json($banner);
+        // Save translations
+        $this->saveTranslationsFromRequest($banner, $request);
+
+        return response()->json($banner->load('translations'));
     }
 
     /**

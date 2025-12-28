@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\SocialInitiativeController;
 use App\Http\Controllers\Api\FooterLinkController;
+use App\Http\Controllers\Api\BookingController;
 
 // API Routes
 Route::apiResource('courses', CourseController::class);
@@ -20,8 +21,10 @@ Route::apiResource('products', ProductController::class);
 Route::apiResource('blog-posts', BlogPostController::class);
 Route::apiResource('events', EventController::class);
 Route::apiResource('team-members', TeamMemberController::class);
+Route::get('team-members-featured', [TeamMemberController::class, 'featured']);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('settings', SettingController::class);
 Route::apiResource('banners', BannerController::class);
 Route::apiResource('social-initiatives', SocialInitiativeController::class);
 Route::apiResource('footer-links', FooterLinkController::class);
+Route::apiResource('bookings', BookingController::class);

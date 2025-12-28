@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateSocialInitiativeMutation, useUpdateSocialInitiativeMutation, useGetCategoriesQuery } from '../../services/api';
 import type { SocialInitiative } from '../../types';
 import toast from 'react-hot-toast';
-import LanguageTabs from './LanguageTabs';
-import TranslatableInput from './TranslatableInput';
+import TranslatableField from './TranslatableField';
+import { ImageUploadWithCrop, IMAGE_GUIDELINES } from './ImageUploadWithCrop';
 
 interface InitiativeModalProps {
   isOpen: boolean;
@@ -18,8 +18,6 @@ export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClos
   const [createInitiative, { isLoading: isCreating }] = useCreateSocialInitiativeMutation();
   const [updateInitiative, { isLoading: isUpdating }] = useUpdateSocialInitiativeMutation();
   const { data: categories = [] } = useGetCategoriesQuery({ active: true });
-
-  const [currentLocale, setCurrentLocale] = useState<'en' | 'ar'>('en');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -143,30 +141,9 @@ export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClos
     }
   };
 
-  const handleTranslatableChange = (field: string, value: string, locale: 'en' | 'ar') => {
-    if (locale === 'en') {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [`${field}_translations`]: {
-          ...prev[`${field}_translations` as keyof typeof prev] as Record<string, string>,
-          [locale]: value,
-        },
-      }));
-    }
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageCropped = (file: File, previewUrl: string) => {
+    setImageFile(file);
+    setImagePreview(previewUrl);
   };
 
   const isViewMode = mode === 'view';
@@ -203,132 +180,131 @@ export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClos
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {!isViewMode && (
-                  <LanguageTabs
-                    activeLocale={currentLocale}
-                    onLocaleChange={setCurrentLocale}
-                  />
-                )}
-
-                <TranslatableInput
+              <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                {/* Translatable Fields with per-field language toggle */}
+                <TranslatableField
                   label="Title"
                   name="title"
                   value={formData.title}
-                  translations={formData.title_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('title', value, locale)}
+                  translationValue={formData.title_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, title: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, title_translations: { ...prev.title_translations, ar: value } }))}
                   required
                   placeholder="Enter initiative title"
+                  placeholderAr="أدخل عنوان المبادرة"
+                  disabled={isViewMode}
                 />
 
-                <TranslatableInput
+                <TranslatableField
                   label="Excerpt"
                   name="excerpt"
                   value={formData.excerpt}
-                  translations={formData.excerpt_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('excerpt', value, locale)}
+                  translationValue={formData.excerpt_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, excerpt: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, excerpt_translations: { ...prev.excerpt_translations, ar: value } }))}
                   type="textarea"
                   required
                   rows={2}
                   placeholder="Enter a brief excerpt"
+                  placeholderAr="أدخل مقتطف قصير"
+                  disabled={isViewMode}
                 />
 
-                <TranslatableInput
+                <TranslatableField
                   label="Content"
                   name="content"
                   value={formData.content}
-                  translations={formData.content_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('content', value, locale)}
+                  translationValue={formData.content_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, content_translations: { ...prev.content_translations, ar: value } }))}
                   type="textarea"
                   required
                   rows={8}
                   placeholder="Enter full initiative content"
+                  placeholderAr="أدخل محتوى المبادرة الكامل"
+                  disabled={isViewMode}
                 />
 
-                {currentLocale === 'en' && (
-                  <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Category
-                        </label>
-                        <select
-                          name="category_id"
-                          value={formData.category_id || ''}
-                          onChange={handleChange}
-                          disabled={isViewMode}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                        >
-                          <option value="">No Category</option>
-                          {categories.map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Published Date
-                        </label>
-                        <input
-                          type="date"
-                          name="published_at"
-                          value={formData.published_at}
-                          onChange={handleChange}
-                          disabled={isViewMode}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                        />
-                      </div>
-                    </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category
+                    </label>
+                    <select
+                      name="category_id"
+                      value={formData.category_id || ''}
+                      onChange={handleChange}
+                      disabled={isViewMode}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
+                    >
+                      <option value="">No Category</option>
+                      {categories.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Published Date
+                    </label>
+                    <input
+                      type="date"
+                      name="published_at"
+                      value={formData.published_at}
+                      onChange={handleChange}
+                      disabled={isViewMode}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
+                    />
+                  </div>
+                </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Featured Image
-                      </label>
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                        onChange={handleImageChange}
-                        disabled={isViewMode}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                {/* Image Upload with Crop */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Featured Image
+                  </label>
+                  {isViewMode ? (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview || '/placeholder.svg'}
+                        alt="Preview"
+                        className="w-full h-48 object-cover rounded-lg border border-gray-200"
                       />
-                      <div className="mt-3">
-                        <img
-                          src={imagePreview || '/placeholder.svg'}
-                          alt="Preview"
-                          className="w-32 h-32 object-cover rounded-lg border border-gray-200"
-                        />
-                      </div>
                     </div>
+                  ) : (
+                    <ImageUploadWithCrop
+                      onImageCropped={handleImageCropped}
+                      currentPreview={imagePreview}
+                      guideline={IMAGE_GUIDELINES.initiative}
+                      disabled={isViewMode}
+                    />
+                  )}
+                </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          name="is_published"
-                          checked={formData.is_published}
-                          onChange={handleChange}
-                          disabled={isViewMode}
-                          className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                        />
-                        <span className="text-sm text-gray-700">Published</span>
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          name="is_featured"
-                          checked={formData.is_featured}
-                          onChange={handleChange}
-                          disabled={isViewMode}
-                          className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                        />
-                        <span className="text-sm text-gray-700">Featured</span>
-                      </label>
-                    </div>
-                  </>
-                )}
+                <div className="grid grid-cols-2 gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="is_published"
+                      checked={formData.is_published}
+                      onChange={handleChange}
+                      disabled={isViewMode}
+                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Published</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="is_featured"
+                      checked={formData.is_featured}
+                      onChange={handleChange}
+                      disabled={isViewMode}
+                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Featured</span>
+                  </label>
+                </div>
 
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                   <button

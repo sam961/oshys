@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class SocialInitiativeController extends Controller
 {
+    use TranslatableController;
+
     public function index(Request $request)
     {
-        $query = SocialInitiative::with(['category']);
+        $query = SocialInitiative::with(['category', 'translations']);
 
         if ($request->has('published')) {
             $isPublished = filter_var($request->published, FILTER_VALIDATE_BOOLEAN);
@@ -39,6 +41,9 @@ class SocialInitiativeController extends Controller
 
         $initiatives = $query->orderBy('created_at', 'desc')->get();
 
+        // Add translations to response
+        $initiatives = $this->transformWithTranslations($initiatives);
+
         return response()->json($initiatives);
     }
 
@@ -53,6 +58,10 @@ class SocialInitiativeController extends Controller
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
             'published_at' => 'nullable|date',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'excerpt_translations' => 'nullable',
+            'content_translations' => 'nullable',
         ]);
 
         $validated['is_published'] = filter_var($request->input('is_published', false), FILTER_VALIDATE_BOOLEAN);
@@ -67,15 +76,21 @@ class SocialInitiativeController extends Controller
 
         $validated['slug'] = Str::slug($validated['title']);
 
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['excerpt_translations'], $validated['content_translations']);
+
         $initiative = SocialInitiative::create($validated);
 
-        return response()->json($initiative, 201);
+        // Save translations
+        $this->saveTranslationsFromRequest($initiative, $request);
+
+        return response()->json($initiative->load('translations'), 201);
     }
 
     public function show($id)
     {
-        $initiative = SocialInitiative::with(['category'])->findOrFail($id);
-        return response()->json($initiative);
+        $initiative = SocialInitiative::with(['category', 'translations'])->findOrFail($id);
+        return response()->json($initiative->toArrayWithTranslations());
     }
 
     public function update(Request $request, $id)
@@ -91,6 +106,10 @@ class SocialInitiativeController extends Controller
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
             'published_at' => 'nullable|date',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'excerpt_translations' => 'nullable',
+            'content_translations' => 'nullable',
         ]);
 
         if ($request->has('is_published')) {
@@ -115,9 +134,15 @@ class SocialInitiativeController extends Controller
             $validated['slug'] = Str::slug($validated['title']);
         }
 
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['excerpt_translations'], $validated['content_translations']);
+
         $initiative->update($validated);
 
-        return response()->json($initiative);
+        // Save translations
+        $this->saveTranslationsFromRequest($initiative, $request);
+
+        return response()->json($initiative->load('translations'));
     }
 
     public function destroy($id)

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 
 class TripController extends Controller
 {
+    use TranslatableController;
+
     /**
      * Display a listing of the resource.
      */
@@ -49,6 +51,9 @@ class TripController extends Controller
 
         $trips = $query->orderBy('created_at', 'desc')->get();
 
+        // Add translations to response
+        $trips = $this->transformWithTranslations($trips);
+
         return response()->json($trips);
     }
 
@@ -72,6 +77,12 @@ class TripController extends Controller
             'certification_required' => 'nullable',
             'max_participants' => 'nullable|integer|min:1',
             'included_items' => 'nullable',
+            // Translation fields
+            'name_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'details_translations' => 'nullable',
+            'location_translations' => 'nullable',
+            'duration_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans
@@ -102,9 +113,15 @@ class TripController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
 
+        // Remove translation fields from validated data
+        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations'], $validated['location_translations'], $validated['duration_translations']);
+
         $trip = Trip::create($validated);
 
-        return response()->json($trip, 201);
+        // Save translations
+        $this->saveTranslationsFromRequest($trip, $request);
+
+        return response()->json($trip->load('translations'), 201);
     }
 
     /**
@@ -112,8 +129,8 @@ class TripController extends Controller
      */
     public function show($id)
     {
-        $trip = Trip::with(['category', 'images'])->findOrFail($id);
-        return response()->json($trip);
+        $trip = Trip::with(['category', 'images', 'translations'])->findOrFail($id);
+        return response()->json($trip->toArrayWithTranslations());
     }
 
     /**
@@ -138,6 +155,12 @@ class TripController extends Controller
             'certification_required' => 'nullable',
             'max_participants' => 'nullable|integer|min:1',
             'included_items' => 'nullable',
+            // Translation fields
+            'name_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'details_translations' => 'nullable',
+            'location_translations' => 'nullable',
+            'duration_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans if present
@@ -181,9 +204,15 @@ class TripController extends Controller
             $validated['slug'] = Str::slug($validated['name']);
         }
 
+        // Remove translation fields from validated data
+        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations'], $validated['location_translations'], $validated['duration_translations']);
+
         $trip->update($validated);
 
-        return response()->json($trip);
+        // Save translations
+        $this->saveTranslationsFromRequest($trip, $request);
+
+        return response()->json($trip->load('translations'));
     }
 
     /**

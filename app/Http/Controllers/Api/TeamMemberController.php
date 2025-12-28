@@ -4,12 +4,40 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\TeamMember;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class TeamMemberController extends Controller
 {
+    /**
+     * Get the featured instructor based on CMS settings.
+     */
+    public function featured()
+    {
+        $featuredId = Setting::get('featured_instructor_id');
+
+        if (!$featuredId) {
+            // Fallback to first active team member if no featured instructor is set
+            $teamMember = TeamMember::with('images')
+                ->where('is_active', true)
+                ->orderBy('display_order', 'asc')
+                ->first();
+        } else {
+            $teamMember = TeamMember::with('images')
+                ->where('id', $featuredId)
+                ->where('is_active', true)
+                ->first();
+        }
+
+        if (!$teamMember) {
+            return response()->json(null);
+        }
+
+        return response()->json($teamMember);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -19,7 +47,7 @@ class TeamMemberController extends Controller
 
         // Filter by active status
         if ($request->has('active')) {
-            $query->where('is_active', $request->active);
+            $query->where('is_active', filter_var($request->active, FILTER_VALIDATE_BOOLEAN));
         }
 
         // Filter by role

@@ -191,7 +191,10 @@
     "viewAllPosts": "View All Posts",
     "outOfStock": "Out of Stock",
     "loadingError": "Failed to load. Please try again later.",
-    "readMore": "Read More"
+    "readMore": "Read More",
+    "meetInstructor": "Meet Our Instructor",
+    "viewTeam": "View Our Team",
+    "contactUs": "Contact Us"
   },
   "about": {
     "heroTitle": "Welcome to",
@@ -358,5 +361,30 @@
     "name": "Coral & Shells",
     "subtitle": "Diving Center",
     "viewCalendar": "View Calendar"
+  },
+  "booking": {
+    "duration": "Duration",
+    "level": "Level",
+    "location": "Location",
+    "maxStudents": "Max Students",
+    "maxParticipants": "Max Participants",
+    "price": "Price",
+    "fillDetails": "Fill in your details to register",
+    "name": "Full Name",
+    "namePlaceholder": "Enter your full name",
+    "email": "Email Address",
+    "emailPlaceholder": "Enter your email address",
+    "phone": "Phone Number",
+    "phonePlaceholder": "+966 50 123 4567",
+    "submit": "Submit Registration",
+    "submitting": "Submitting...",
+    "successTitle": "Registration Submitted!",
+    "successMessage": "Thank you for your registration. Our team will review your request and contact you shortly to confirm your booking.",
+    "errors": {
+      "nameRequired": "Please enter your full name",
+      "emailRequired": "Please enter your email address",
+      "emailInvalid": "Please enter a valid email address",
+      "phoneRequired": "Please enter your phone number"
+    }
   }
 }

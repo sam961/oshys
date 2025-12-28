@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { InitiativeModal } from '../components/InitiativeModal';
 import { useGetSocialInitiativesQuery, useDeleteSocialInitiativeMutation } from '../../services/api';
 import type { SocialInitiative } from '../../types';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 
 export const InitiativesManagement: React.FC = () => {
-  const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: initiatives = [], isLoading, error } = useGetSocialInitiativesQuery({});
   const [deleteInitiative] = useDeleteSocialInitiativeMutation();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedInitiative, setSelectedInitiative] = useState<SocialInitiative | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   const columns = [
     {
@@ -54,9 +54,7 @@ export const InitiativesManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: SocialInitiative) => {
-    setSelectedInitiative(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/initiatives/${item.id}/edit`);
   };
 
   const handleDelete = async (item: SocialInitiative) => {
@@ -73,14 +71,11 @@ export const InitiativesManagement: React.FC = () => {
 
   const handleView = (item: SocialInitiative) => {
     setSelectedInitiative(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddInitiative = () => {
-    setSelectedInitiative(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/initiatives/new');
   };
 
   const handleCloseModal = () => {
@@ -106,7 +101,6 @@ export const InitiativesManagement: React.FC = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Social Initiatives</h1>
@@ -121,7 +115,6 @@ export const InitiativesManagement: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="text-sm text-gray-600 mb-1">Total Initiatives</div>
@@ -141,7 +134,6 @@ export const InitiativesManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={initiatives}
@@ -154,7 +146,7 @@ export const InitiativesManagement: React.FC = () => {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         initiative={selectedInitiative}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

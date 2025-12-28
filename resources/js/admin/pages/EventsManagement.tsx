@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { EventModal } from '../components/EventModal';
@@ -9,11 +10,12 @@ import { useTranslation } from 'react-i18next';
 
 export const EventsManagement: React.FC = () => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: events = [], isLoading, error } = useGetEventsQuery({});
   const [deleteEvent] = useDeleteEventMutation();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   const columns = [
     {
@@ -48,9 +50,7 @@ export const EventsManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: Event) => {
-    setSelectedEvent(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/events/${item.id}/edit`);
   };
 
   const handleDelete = async (item: Event) => {
@@ -67,14 +67,11 @@ export const EventsManagement: React.FC = () => {
 
   const handleView = (item: Event) => {
     setSelectedEvent(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddEvent = () => {
-    setSelectedEvent(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/events/new');
   };
 
   const handleCloseModal = () => {
@@ -100,7 +97,6 @@ export const EventsManagement: React.FC = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('events.title')}</h1>
@@ -115,7 +111,6 @@ export const EventsManagement: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="text-sm text-gray-600 mb-1">Total Events</div>
@@ -135,7 +130,6 @@ export const EventsManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={events}
@@ -148,7 +142,7 @@ export const EventsManagement: React.FC = () => {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         event={selectedEvent}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

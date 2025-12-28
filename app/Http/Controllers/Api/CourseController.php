@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
+    use TranslatableController;
+
     /**
      * Display a listing of the resource.
      */
@@ -43,6 +45,9 @@ class CourseController extends Controller
 
         $courses = $query->orderBy('created_at', 'desc')->get();
 
+        // Add translations to response
+        $courses = $this->transformWithTranslations($courses);
+
         return response()->json($courses);
     }
 
@@ -64,6 +69,10 @@ class CourseController extends Controller
             'is_featured' => 'nullable',
             'max_students' => 'nullable|integer|min:1',
             'requirements' => 'nullable',
+            // Translation fields
+            'name_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'details_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans
@@ -93,9 +102,15 @@ class CourseController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
 
+        // Remove translation fields from validated data
+        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations']);
+
         $course = Course::create($validated);
 
-        return response()->json($course, 201);
+        // Save translations
+        $this->saveTranslationsFromRequest($course, $request);
+
+        return response()->json($course->load('translations'), 201);
     }
 
     /**
@@ -103,8 +118,8 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::with('category')->findOrFail($id);
-        return response()->json($course);
+        $course = Course::with(['category', 'translations'])->findOrFail($id);
+        return response()->json($course->toArrayWithTranslations());
     }
 
     /**
@@ -127,6 +142,10 @@ class CourseController extends Controller
             'is_featured' => 'nullable',
             'max_students' => 'nullable|integer|min:1',
             'requirements' => 'nullable',
+            // Translation fields
+            'name_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'details_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans if present
@@ -167,9 +186,15 @@ class CourseController extends Controller
             $validated['slug'] = Str::slug($validated['name']);
         }
 
+        // Remove translation fields from validated data
+        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations']);
+
         $course->update($validated);
 
-        return response()->json($course);
+        // Save translations
+        $this->saveTranslationsFromRequest($course, $request);
+
+        return response()->json($course->load('translations'));
     }
 
     /**

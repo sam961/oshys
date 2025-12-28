@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateBannerMutation, useUpdateBannerMutation } from '../../services/api';
 import type { Banner } from '../../types';
 import toast from 'react-hot-toast';
+import TranslatableField from './TranslatableField';
+import { ImageUploadWithCrop, IMAGE_GUIDELINES } from './ImageUploadWithCrop';
 
 interface BannerModalProps {
   isOpen: boolean;
@@ -25,8 +27,10 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
     position: 'hero' as 'hero' | 'secondary' | 'promo',
     display_order: 0,
     is_active: true,
-    start_date: '',
-    end_date: '',
+    // Translation fields
+    title_translations: { ar: '' },
+    description_translations: { ar: '' },
+    button_text_translations: { ar: '' },
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -43,8 +47,9 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
         position: banner.position,
         display_order: banner.display_order,
         is_active: banner.is_active,
-        start_date: banner.start_date ? banner.start_date.split('T')[0] : '',
-        end_date: banner.end_date ? banner.end_date.split('T')[0] : '',
+        title_translations: (banner as any).title_translations || { ar: '' },
+        description_translations: (banner as any).description_translations || { ar: '' },
+        button_text_translations: (banner as any).button_text_translations || { ar: '' },
       });
       // Set image preview from existing banner
       if ((banner as any).image_url) {
@@ -61,8 +66,9 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
         position: 'hero',
         display_order: 0,
         is_active: true,
-        start_date: '',
-        end_date: '',
+        title_translations: { ar: '' },
+        description_translations: { ar: '' },
+        button_text_translations: { ar: '' },
       });
       setImageFile(null);
       setImagePreview('');
@@ -94,17 +100,16 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
       if (formData.button_link) {
         submitData.append('button_link', formData.button_link);
       }
-      if (formData.start_date) {
-        submitData.append('start_date', formData.start_date);
-      }
-      if (formData.end_date) {
-        submitData.append('end_date', formData.end_date);
-      }
 
       // Add image file if selected
       if (imageFile) {
         submitData.append('image', imageFile);
       }
+
+      // Add translations
+      submitData.append('title_translations', JSON.stringify(formData.title_translations));
+      submitData.append('description_translations', JSON.stringify(formData.description_translations));
+      submitData.append('button_text_translations', JSON.stringify(formData.button_text_translations));
 
       if (mode === 'create') {
         await createBanner(submitData).unwrap();
@@ -143,18 +148,9 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
     }
   };
 
-  // Handle image file selection
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageCropped = (file: File, previewUrl: string) => {
+    setImageFile(file);
+    setImagePreview(previewUrl);
   };
 
   const isViewMode = mode === 'view';
@@ -195,76 +191,72 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {/* Title */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Banner Title *
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                {/* Translatable Fields with per-field language toggle */}
+                <TranslatableField
+                  label="Banner Title"
+                  name="title"
+                  value={formData.title}
+                  translationValue={formData.title_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, title: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, title_translations: { ...prev.title_translations, ar: value } }))}
+                  required
+                  placeholder="Enter banner title"
+                  placeholderAr="أدخل عنوان البانر"
+                  disabled={isViewMode}
+                />
 
-                {/* Description */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                </div>
+                <TranslatableField
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  translationValue={formData.description_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, description: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, description_translations: { ...prev.description_translations, ar: value } }))}
+                  type="textarea"
+                  rows={3}
+                  placeholder="Enter banner description"
+                  placeholderAr="أدخل وصف البانر"
+                  disabled={isViewMode}
+                />
 
-                {/* Image Upload */}
+                {/* Image Upload with Crop */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Banner Image *
+                    Banner Image {mode === 'create' && '*'}
                   </label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                    onChange={handleImageChange}
-                    disabled={isViewMode}
-                    required={mode === 'create'}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                  <div className="mt-3">
-                    <img
-                      src={imagePreview || '/placeholder.svg'}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                  {isViewMode ? (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview || '/placeholder.svg'}
+                        alt="Preview"
+                        className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  ) : (
+                    <ImageUploadWithCrop
+                      onImageCropped={handleImageCropped}
+                      currentPreview={imagePreview}
+                      guideline={IMAGE_GUIDELINES.banner}
+                      disabled={isViewMode}
+                      required={mode === 'create'}
                     />
-                  </div>
+                  )}
                 </div>
 
                 {/* Button Text and Link */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Button Text
-                    </label>
-                    <input
-                      type="text"
-                      name="button_text"
-                      value={formData.button_text}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      placeholder="e.g. Learn More"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                    />
-                  </div>
+                  <TranslatableField
+                    label="Button Text"
+                    name="button_text"
+                    value={formData.button_text}
+                    translationValue={formData.button_text_translations.ar}
+                    onChangeEnglish={(value) => setFormData(prev => ({ ...prev, button_text: value }))}
+                    onChangeArabic={(value) => setFormData(prev => ({ ...prev, button_text_translations: { ...prev.button_text_translations, ar: value } }))}
+                    placeholder="e.g. Learn More"
+                    placeholderAr="مثال: اعرف المزيد"
+                    disabled={isViewMode}
+                  />
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Button Link
@@ -276,7 +268,7 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
                       onChange={handleChange}
                       disabled={isViewMode}
                       placeholder="/courses"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>
@@ -293,7 +285,7 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
                       onChange={handleChange}
                       disabled={isViewMode}
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     >
                       <option value="hero">Hero Banner (Main)</option>
                       <option value="secondary">Secondary Banner</option>
@@ -311,37 +303,7 @@ export const BannerModal: React.FC<BannerModalProps> = ({ isOpen, onClose, banne
                       onChange={handleChange}
                       disabled={isViewMode}
                       min="0"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                    />
-                  </div>
-                </div>
-
-                {/* Start and End Date */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      name="start_date"
-                      value={formData.start_date}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      name="end_date"
-                      value={formData.end_date}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>

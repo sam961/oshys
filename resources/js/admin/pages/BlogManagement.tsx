@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { BlogModal } from '../components/BlogModal';
@@ -9,11 +10,12 @@ import { useTranslation } from 'react-i18next';
 
 export const BlogManagement: React.FC = () => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: blogPosts = [], isLoading, error } = useGetBlogPostsQuery({});
   const [deleteBlogPost] = useDeleteBlogPostMutation();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   const columns = [
     {
@@ -59,9 +61,7 @@ export const BlogManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: BlogPost) => {
-    setSelectedPost(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/blog/${item.id}/edit`);
   };
 
   const handleDelete = async (item: BlogPost) => {
@@ -78,14 +78,11 @@ export const BlogManagement: React.FC = () => {
 
   const handleView = (item: BlogPost) => {
     setSelectedPost(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddPost = () => {
-    setSelectedPost(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/blog/new');
   };
 
   const handleCloseModal = () => {
@@ -111,7 +108,6 @@ export const BlogManagement: React.FC = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('blog.title')}</h1>
@@ -126,7 +122,6 @@ export const BlogManagement: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="text-sm text-gray-600 mb-1">Total Posts</div>
@@ -146,7 +141,6 @@ export const BlogManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={blogPosts}
@@ -159,7 +153,7 @@ export const BlogManagement: React.FC = () => {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         blogPost={selectedPost}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

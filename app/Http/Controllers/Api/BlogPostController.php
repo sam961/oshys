@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Storage;
 
 class BlogPostController extends Controller
 {
+    use TranslatableController;
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = BlogPost::with(['category', 'author', 'images']);
+        $query = BlogPost::with(['category', 'author', 'images', 'translations']);
 
         // Filter by published status
         if ($request->has('published')) {
@@ -51,6 +53,9 @@ class BlogPostController extends Controller
 
         $blogPosts = $query->orderBy('created_at', 'desc')->get();
 
+        // Add translations to response
+        $blogPosts = $this->transformWithTranslations($blogPosts);
+
         return response()->json($blogPosts);
     }
 
@@ -69,6 +74,10 @@ class BlogPostController extends Controller
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
             'published_at' => 'nullable|date',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'excerpt_translations' => 'nullable',
+            'content_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans
@@ -85,9 +94,15 @@ class BlogPostController extends Controller
 
         $validated['slug'] = Str::slug($validated['title']);
 
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['excerpt_translations'], $validated['content_translations']);
+
         $blogPost = BlogPost::create($validated);
 
-        return response()->json($blogPost, 201);
+        // Save translations
+        $this->saveTranslationsFromRequest($blogPost, $request);
+
+        return response()->json($blogPost->load('translations'), 201);
     }
 
     /**
@@ -95,8 +110,8 @@ class BlogPostController extends Controller
      */
     public function show($id)
     {
-        $blogPost = BlogPost::with(['category', 'author', 'images'])->findOrFail($id);
-        return response()->json($blogPost);
+        $blogPost = BlogPost::with(['category', 'author', 'images', 'translations'])->findOrFail($id);
+        return response()->json($blogPost->toArrayWithTranslations());
     }
 
     /**
@@ -116,6 +131,10 @@ class BlogPostController extends Controller
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
             'published_at' => 'nullable|date',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'excerpt_translations' => 'nullable',
+            'content_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans if present
@@ -143,9 +162,15 @@ class BlogPostController extends Controller
             $validated['slug'] = Str::slug($validated['title']);
         }
 
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['excerpt_translations'], $validated['content_translations']);
+
         $blogPost->update($validated);
 
-        return response()->json($blogPost);
+        // Save translations
+        $this->saveTranslationsFromRequest($blogPost, $request);
+
+        return response()->json($blogPost->load('translations'));
     }
 
     /**

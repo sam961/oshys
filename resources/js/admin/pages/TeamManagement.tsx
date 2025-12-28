@@ -1,19 +1,58 @@
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Star } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { TeamMemberModal } from '../components/TeamMemberModal';
-import { useGetTeamMembersQuery, useDeleteTeamMemberMutation } from '../../services/api';
+import { useGetTeamMembersQuery, useDeleteTeamMemberMutation, useGetSettingsQuery, useCreateSettingMutation, useUpdateSettingMutation } from '../../services/api';
 import type { TeamMember } from '../../types';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 export const TeamManagement: React.FC = () => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: teamMembers = [], isLoading, error } = useGetTeamMembersQuery({});
+  const { data: settings = [] } = useGetSettingsQuery({});
   const [deleteTeamMember] = useDeleteTeamMemberMutation();
+  const [createSetting] = useCreateSettingMutation();
+  const [updateSetting] = useUpdateSettingMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
+  const [featuredInstructorId, setFeaturedInstructorId] = useState<number | null>(null);
+  const [featuredSettingId, setFeaturedSettingId] = useState<number | null>(null);
+
+  // Load featured instructor setting
+  useEffect(() => {
+    const featuredSetting = settings.find(s => s.key === 'featured_instructor_id');
+    if (featuredSetting) {
+      setFeaturedInstructorId(featuredSetting.value ? parseInt(featuredSetting.value) : null);
+      setFeaturedSettingId(featuredSetting.id);
+    }
+  }, [settings]);
+
+  const handleSetFeatured = async (member: TeamMember) => {
+    try {
+      if (featuredSettingId) {
+        await updateSetting({
+          id: featuredSettingId,
+          data: { value: String(member.id) },
+        }).unwrap();
+      } else {
+        const result = await createSetting({
+          key: 'featured_instructor_id',
+          value: String(member.id),
+          type: 'number',
+          group: 'homepage',
+        }).unwrap();
+        setFeaturedSettingId(result.id);
+      }
+      setFeaturedInstructorId(member.id);
+      toast.success(`${member.name} is now the featured instructor`);
+    } catch (error) {
+      toast.error('Failed to set featured instructor');
+      console.error('Update error:', error);
+    }
+  };
 
   const columns = [
     {
@@ -21,13 +60,23 @@ export const TeamManagement: React.FC = () => {
       accessor: 'name',
       render: (value: string, row: TeamMember) => (
         <div className="flex items-center gap-3">
+          {featuredInstructorId === row.id && (
+            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 shrink-0" />
+          )}
           <img
             src={(row as any).image_url || '/placeholder.svg'}
             alt={value}
             className="w-12 h-12 rounded-full object-cover"
           />
           <div>
-            <div className="font-medium">{value}</div>
+            <div className="font-medium flex items-center gap-2">
+              {value}
+              {featuredInstructorId === row.id && (
+                <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
+                  Featured
+                </span>
+              )}
+            </div>
             {row.experience && (
               <div className="text-xs text-gray-500">{row.experience}</div>
             )}
@@ -44,7 +93,7 @@ export const TeamManagement: React.FC = () => {
       accessor: 'certifications',
       render: (value: string[]) => (
         <div className="flex flex-wrap gap-1">
-          {value.map((cert, index) => (
+          {value?.map((cert, index) => (
             <span key={index} className="px-2 py-1 bg-accent-100 text-accent-700 rounded text-xs">
               {cert}
             </span>
@@ -55,9 +104,7 @@ export const TeamManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: TeamMember) => {
-    setSelectedMember(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/team/${item.id}/edit`);
   };
 
   const handleDelete = async (item: TeamMember) => {
@@ -74,14 +121,11 @@ export const TeamManagement: React.FC = () => {
 
   const handleView = (item: TeamMember) => {
     setSelectedMember(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddMember = () => {
-    setSelectedMember(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/team/new');
   };
 
   const handleCloseModal = () => {
@@ -149,13 +193,26 @@ export const TeamManagement: React.FC = () => {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onView={handleView}
+        customActions={(item: TeamMember) => (
+          <button
+            onClick={() => handleSetFeatured(item)}
+            className={`p-2 rounded-lg transition-colors ${
+              featuredInstructorId === item.id
+                ? 'bg-yellow-100 text-yellow-600'
+                : 'hover:bg-gray-100 text-gray-400 hover:text-yellow-600'
+            }`}
+            title={featuredInstructorId === item.id ? 'Currently Featured' : 'Set as Featured'}
+          >
+            <Star className={`w-5 h-5 ${featuredInstructorId === item.id ? 'fill-yellow-500' : ''}`} />
+          </button>
+        )}
       />
 
       <TeamMemberModal
         isOpen={modalOpen}
         onClose={handleCloseModal}
         teamMember={selectedMember}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

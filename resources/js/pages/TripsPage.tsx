@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, MapPin, Clock, Award, Loader2, Filter, Grid3x3, List, Heart, Users, Calendar, Anchor, Star, TrendingUp } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
+import { BookingModal } from '../components/features/BookingModal';
 import { useGetTripsQuery } from '../services/api';
 import type { Trip } from '../types';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,14 @@ export const TripsPage: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high' | 'duration'>('default');
+  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  const handleBookClick = (e: React.MouseEvent, trip: Trip) => {
+    e.stopPropagation();
+    setSelectedTrip(trip);
+    setIsBookingOpen(true);
+  };
 
   // Fetch trips from API
   const { data: trips = [], isLoading: tripsLoading, error: tripsError } = useGetTripsQuery({ active: true });
@@ -290,7 +299,7 @@ export const TripsPage: React.FC = () => {
                           <span className="text-gray-600">Book Now</span>
                         </div>
                       </div>
-                      <Button variant="primary" className="w-full" size="sm">
+                      <Button variant="primary" className="w-full" size="sm" onClick={(e) => handleBookClick(e, trip)}>
                         {t('pages.trips.bookThisTrip')}
                       </Button>
                     </div>
@@ -388,7 +397,7 @@ export const TripsPage: React.FC = () => {
                             SAR {trip.price}
                           </p>
                         </div>
-                        <Button variant="primary" size="lg">
+                        <Button variant="primary" size="lg" onClick={(e) => handleBookClick(e, trip)}>
                           {t('pages.trips.bookThisTrip')}
                         </Button>
                       </div>
@@ -437,6 +446,16 @@ export const TripsPage: React.FC = () => {
           </Card>
         </StaggerContainer>
       </Section>
+
+      {/* Booking Modal */}
+      {selectedTrip && (
+        <BookingModal
+          isOpen={isBookingOpen}
+          onClose={() => setIsBookingOpen(false)}
+          item={selectedTrip}
+          type="trip"
+        />
+      )}
     </div>
   );
 };

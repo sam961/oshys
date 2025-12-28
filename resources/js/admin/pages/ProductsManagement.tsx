@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { ProductModal } from '../components/ProductModal';
@@ -9,11 +10,13 @@ import { useTranslation } from 'react-i18next';
 
 export const ProductsManagement: React.FC = () => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: products = [], isLoading, error } = useGetProductsQuery({});
   const [deleteProduct] = useDeleteProductMutation();
+
+  // Keep modal state only for view mode
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   const columns = [
     {
@@ -66,9 +69,7 @@ export const ProductsManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: Product) => {
-    setSelectedProduct(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/products/${item.id}/edit`);
   };
 
   const handleDelete = async (item: Product) => {
@@ -85,14 +86,11 @@ export const ProductsManagement: React.FC = () => {
 
   const handleView = (item: Product) => {
     setSelectedProduct(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddProduct = () => {
-    setSelectedProduct(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/products/new');
   };
 
   const handleCloseModal = () => {
@@ -162,11 +160,12 @@ export const ProductsManagement: React.FC = () => {
         onView={handleView}
       />
 
+      {/* Keep modal only for view mode */}
       <ProductModal
         isOpen={modalOpen}
         onClose={handleCloseModal}
         product={selectedProduct}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

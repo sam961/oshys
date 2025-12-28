@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateTeamMemberMutation, useUpdateTeamMemberMutation } from '../../services/api';
 import type { TeamMember } from '../../types';
 import toast from 'react-hot-toast';
+import { ImageUploadWithCrop, IMAGE_GUIDELINES } from './ImageUploadWithCrop';
 
 interface TeamMemberModalProps {
   isOpen: boolean;
@@ -175,18 +176,9 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
     }
   };
 
-  // Handle image file selection
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageCropped = (file: File, previewUrl: string) => {
+    setImageFile(file);
+    setImagePreview(previewUrl);
   };
 
   const isViewMode = mode === 'view';
@@ -241,7 +233,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       onChange={handleChange}
                       disabled={isViewMode}
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                   <div>
@@ -256,7 +248,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       disabled={isViewMode}
                       required
                       placeholder="e.g. Lead Instructor"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>
@@ -272,7 +264,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                     onChange={handleChange}
                     disabled={isViewMode}
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                   />
                 </div>
 
@@ -288,7 +280,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       value={formData.email}
                       onChange={handleChange}
                       disabled={isViewMode}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                   <div>
@@ -301,7 +293,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       value={formData.phone}
                       onChange={handleChange}
                       disabled={isViewMode}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>
@@ -319,7 +311,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       onChange={handleChange}
                       disabled={isViewMode}
                       placeholder="e.g. 10+ years"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                   <div>
@@ -333,30 +325,33 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       onChange={handleChange}
                       disabled={isViewMode}
                       min="0"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>
 
-                {/* Image Upload */}
+                {/* Image Upload with Crop */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Profile Image
                   </label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                    onChange={handleImageChange}
-                    disabled={isViewMode}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                  <div className="mt-3">
-                    <img
-                      src={imagePreview || '/placeholder.svg'}
-                      alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                  {isViewMode ? (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview || '/placeholder.svg'}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  ) : (
+                    <ImageUploadWithCrop
+                      onImageCropped={handleImageCropped}
+                      currentPreview={imagePreview}
+                      guideline={IMAGE_GUIDELINES.teamMember}
+                      disabled={isViewMode}
+                      aspectRatio={1}
                     />
-                  </div>
+                  )}
                 </div>
 
                 {/* Social Links */}
@@ -372,7 +367,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       onChange={handleChange}
                       disabled={isViewMode}
                       placeholder="Facebook URL"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                     <input
                       type="url"
@@ -381,7 +376,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       onChange={handleChange}
                       disabled={isViewMode}
                       placeholder="Instagram URL"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                     <input
                       type="url"
@@ -390,7 +385,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       onChange={handleChange}
                       disabled={isViewMode}
                       placeholder="Twitter URL"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                     <input
                       type="url"
@@ -399,7 +394,7 @@ export const TeamMemberModal: React.FC<TeamMemberModalProps> = ({ isOpen, onClos
                       onChange={handleChange}
                       disabled={isViewMode}
                       placeholder="LinkedIn URL"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>

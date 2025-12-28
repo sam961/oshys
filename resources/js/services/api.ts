@@ -11,6 +11,7 @@ import type {
   Setting,
   Banner,
   FooterLink,
+  Booking,
 } from '../types';
 
 // Define base query
@@ -32,7 +33,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Course', 'Trip', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Category', 'Setting', 'Banner', 'FooterLink'],
+  tagTypes: ['Course', 'Trip', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Category', 'Setting', 'Banner', 'FooterLink', 'Booking'],
   endpoints: (builder) => ({
     // Courses
     getCourses: builder.query<Course[], { active?: boolean; featured?: boolean; level?: string; search?: string }>({
@@ -262,6 +263,10 @@ export const api = createApi({
       query: (id) => `/team-members/${id}`,
       providesTags: ['TeamMember'],
     }),
+    getFeaturedInstructor: builder.query<TeamMember | null, void>({
+      query: () => '/team-members-featured',
+      providesTags: ['TeamMember', 'Setting'],
+    }),
     createTeamMember: builder.mutation<TeamMember, Partial<TeamMember> | FormData>({
       query: (body) => ({
         url: '/team-members',
@@ -433,6 +438,49 @@ export const api = createApi({
       }),
       invalidatesTags: ['FooterLink'],
     }),
+
+    // Bookings
+    getBookings: builder.query<Booking[], { status?: string; type?: string }>({
+      query: (params) => ({
+        url: '/bookings',
+        params,
+      }),
+      providesTags: ['Booking'],
+    }),
+    getBooking: builder.query<Booking, number>({
+      query: (id) => `/bookings/${id}`,
+      providesTags: ['Booking'],
+    }),
+    createBooking: builder.mutation<{ message: string; booking: Booking }, {
+      name: string;
+      email: string;
+      phone: string;
+      bookable_type: 'course' | 'trip';
+      bookable_id: number;
+      notes?: string;
+    }>({
+      query: (body) => ({
+        url: '/bookings',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+    updateBooking: builder.mutation<{ message: string; booking: Booking }, { id: number; data: Partial<Booking> }>({
+      query: ({ id, data }) => ({
+        url: `/bookings/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Booking'],
+    }),
+    deleteBooking: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/bookings/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Booking'],
+    }),
   }),
 });
 
@@ -476,6 +524,7 @@ export const {
 
   useGetTeamMembersQuery,
   useGetTeamMemberQuery,
+  useGetFeaturedInstructorQuery,
   useCreateTeamMemberMutation,
   useUpdateTeamMemberMutation,
   useDeleteTeamMemberMutation,
@@ -504,4 +553,10 @@ export const {
   useCreateFooterLinkMutation,
   useUpdateFooterLinkMutation,
   useDeleteFooterLinkMutation,
+
+  useGetBookingsQuery,
+  useGetBookingQuery,
+  useCreateBookingMutation,
+  useUpdateBookingMutation,
+  useDeleteBookingMutation,
 } = api;

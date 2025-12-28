@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateTripMutation, useUpdateTripMutation, useGetCategoriesQuery } from '../../services/api';
 import type { Trip } from '../../types';
 import toast from 'react-hot-toast';
-import LanguageTabs from './LanguageTabs';
-import TranslatableInput from './TranslatableInput';
+import TranslatableField from './TranslatableField';
+import { ImageUploadWithCrop, IMAGE_GUIDELINES } from './ImageUploadWithCrop';
 
 interface TripModalProps {
   isOpen: boolean;
@@ -18,9 +18,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
   const [createTrip, { isLoading: isCreating }] = useCreateTripMutation();
   const [updateTrip, { isLoading: isUpdating }] = useUpdateTripMutation();
   const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'trip' });
-
-  // Add locale state
-  const [currentLocale, setCurrentLocale] = useState<'en' | 'ar'>('en');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -189,33 +186,9 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
     }
   };
 
-  // Handle translatable field changes
-  const handleTranslatableChange = (field: string, value: string, locale: 'en' | 'ar') => {
-    if (locale === 'en') {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [`${field}_translations`]: {
-          ...prev[`${field}_translations` as keyof typeof prev] as Record<string, string>,
-          [locale]: value,
-        },
-      }));
-    }
-  };
-
-  // Handle image file selection
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageCropped = (file: File, previewUrl: string) => {
+    setImageFile(file);
+    setImagePreview(previewUrl);
   };
 
   const isViewMode = mode === 'view';
@@ -256,79 +229,78 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {/* Language Tabs */}
-                {!isViewMode && (
-                  <LanguageTabs
-                    activeLocale={currentLocale}
-                    onLocaleChange={setCurrentLocale}
-                  />
-                )}
-
-                {/* Translatable Fields */}
-                <TranslatableInput
+              <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                {/* Translatable Fields with per-field language toggle */}
+                <TranslatableField
                   label="Trip Name"
                   name="name"
                   value={formData.name}
-                  translations={formData.name_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('name', value, locale)}
+                  translationValue={formData.name_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, name: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, name_translations: { ...prev.name_translations, ar: value } }))}
                   required
                   placeholder="Enter trip name"
+                  placeholderAr="أدخل اسم الرحلة"
+                  disabled={isViewMode}
                 />
 
-                <TranslatableInput
+                <TranslatableField
                   label="Description"
                   name="description"
                   value={formData.description}
-                  translations={formData.description_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('description', value, locale)}
+                  translationValue={formData.description_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, description: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, description_translations: { ...prev.description_translations, ar: value } }))}
                   type="textarea"
                   required
                   rows={3}
                   placeholder="Enter trip description"
+                  placeholderAr="أدخل وصف الرحلة"
+                  disabled={isViewMode}
                 />
 
-                <TranslatableInput
+                <TranslatableField
                   label="Details"
                   name="details"
                   value={formData.details}
-                  translations={formData.details_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('details', value, locale)}
+                  translationValue={formData.details_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, details: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, details_translations: { ...prev.details_translations, ar: value } }))}
                   type="textarea"
                   rows={3}
                   placeholder="Enter additional details"
+                  placeholderAr="أدخل تفاصيل إضافية"
+                  disabled={isViewMode}
                 />
 
                 {/* Location and Duration */}
                 <div className="grid grid-cols-2 gap-4">
-                  <TranslatableInput
+                  <TranslatableField
                     label="Location"
                     name="location"
                     value={formData.location}
-                    translations={formData.location_translations}
-                    currentLocale={currentLocale}
-                    onChange={(value, locale) => handleTranslatableChange('location', value, locale)}
+                    translationValue={formData.location_translations.ar}
+                    onChangeEnglish={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                    onChangeArabic={(value) => setFormData(prev => ({ ...prev, location_translations: { ...prev.location_translations, ar: value } }))}
                     required
                     placeholder="e.g. Red Sea"
+                    placeholderAr="مثال: البحر الأحمر"
+                    disabled={isViewMode}
                   />
-                  <TranslatableInput
+                  <TranslatableField
                     label="Duration"
                     name="duration"
                     value={formData.duration}
-                    translations={formData.duration_translations}
-                    currentLocale={currentLocale}
-                    onChange={(value, locale) => handleTranslatableChange('duration', value, locale)}
+                    translationValue={formData.duration_translations.ar}
+                    onChangeEnglish={(value) => setFormData(prev => ({ ...prev, duration: value }))}
+                    onChangeArabic={(value) => setFormData(prev => ({ ...prev, duration_translations: { ...prev.duration_translations, ar: value } }))}
                     required
                     placeholder="e.g. 3 days"
+                    placeholderAr="مثال: ٣ أيام"
+                    disabled={isViewMode}
                   />
                 </div>
 
-                {/* Non-translatable fields only show when on English tab */}
-                {currentLocale === 'en' && (
-                  <>
                 {/* Price and Max Participants */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -344,7 +316,7 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                       required
                       step="0.01"
                       min="0"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                   <div>
@@ -358,7 +330,7 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                       onChange={handleChange}
                       disabled={isViewMode}
                       min="1"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>
@@ -374,7 +346,7 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                     onChange={handleChange}
                     disabled={isViewMode}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                   >
                     <option value="Beginner">Beginner</option>
                     <option value="Intermediate">Intermediate</option>
@@ -393,7 +365,7 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                     value={formData.category_id || ''}
                     onChange={handleChange}
                     disabled={isViewMode}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                   >
                     <option value="">No Category</option>
                     {categories.map(cat => (
@@ -402,25 +374,27 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                   </select>
                 </div>
 
-                {/* Image Upload */}
+                {/* Image Upload with Crop */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Trip Image
                   </label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                    onChange={handleImageChange}
-                    disabled={isViewMode}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
-                  />
-                  <div className="mt-3">
-                    <img
-                      src={imagePreview || '/placeholder.svg'}
-                      alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                  {isViewMode ? (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview || '/placeholder.svg'}
+                        alt="Preview"
+                        className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  ) : (
+                    <ImageUploadWithCrop
+                      onImageCropped={handleImageCropped}
+                      currentPreview={imagePreview}
+                      guideline={IMAGE_GUIDELINES.trip}
+                      disabled={isViewMode}
                     />
-                  </div>
+                  )}
                 </div>
 
                 {/* Checkboxes */}
@@ -459,8 +433,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                     <span className="text-sm text-gray-700">Cert Required</span>
                   </label>
                 </div>
-                  </>
-                )}
 
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">

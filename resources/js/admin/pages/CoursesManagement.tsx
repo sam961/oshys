@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { CourseModal } from '../components/CourseModal';
@@ -9,11 +10,12 @@ import { useTranslation } from 'react-i18next';
 
 export const CoursesManagement: React.FC = () => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: courses = [], isLoading, error } = useGetCoursesQuery({});
   const [deleteCourse] = useDeleteCourseMutation();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   const columns = [
     {
@@ -55,9 +57,7 @@ export const CoursesManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: Course) => {
-    setSelectedCourse(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/courses/${item.id}/edit`);
   };
 
   const handleDelete = async (item: Course) => {
@@ -74,14 +74,11 @@ export const CoursesManagement: React.FC = () => {
 
   const handleView = (item: Course) => {
     setSelectedCourse(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddCourse = () => {
-    setSelectedCourse(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/courses/new');
   };
 
   const handleCloseModal = () => {
@@ -107,7 +104,6 @@ export const CoursesManagement: React.FC = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('courses.title')}</h1>
@@ -122,7 +118,6 @@ export const CoursesManagement: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="text-sm text-gray-600 mb-1">Total Courses</div>
@@ -142,7 +137,6 @@ export const CoursesManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={courses}
@@ -155,7 +149,7 @@ export const CoursesManagement: React.FC = () => {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         course={selectedCourse}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

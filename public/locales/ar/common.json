@@ -191,7 +191,10 @@
     "viewAllPosts": "عرض جميع المقالات",
     "outOfStock": "غير متوفر",
     "loadingError": "فشل التحميل. يرجى المحاولة مرة أخرى لاحقاً.",
-    "readMore": "اقرأ المزيد"
+    "readMore": "اقرأ المزيد",
+    "meetInstructor": "تعرف على مدربنا",
+    "viewTeam": "تعرف على فريقنا",
+    "contactUs": "تواصل معنا"
   },
   "about": {
     "heroTitle": "مرحباً بكم في",
@@ -358,5 +361,30 @@
     "name": "كورال آند شيلز",
     "subtitle": "مركز الغوص",
     "viewCalendar": "عرض التقويم"
+  },
+  "booking": {
+    "duration": "المدة",
+    "level": "المستوى",
+    "location": "الموقع",
+    "maxStudents": "الحد الأقصى للطلاب",
+    "maxParticipants": "الحد الأقصى للمشاركين",
+    "price": "السعر",
+    "fillDetails": "أدخل بياناتك للتسجيل",
+    "name": "الاسم الكامل",
+    "namePlaceholder": "أدخل اسمك الكامل",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "phone": "رقم الهاتف",
+    "phonePlaceholder": "+966 50 123 4567",
+    "submit": "إرسال التسجيل",
+    "submitting": "جاري الإرسال...",
+    "successTitle": "تم إرسال التسجيل!",
+    "successMessage": "شكراً لتسجيلك. سيقوم فريقنا بمراجعة طلبك والتواصل معك قريباً لتأكيد الحجز.",
+    "errors": {
+      "nameRequired": "يرجى إدخال اسمك الكامل",
+      "emailRequired": "يرجى إدخال بريدك الإلكتروني",
+      "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح",
+      "phoneRequired": "يرجى إدخال رقم هاتفك"
+    }
   }
 }

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, Clock, BarChart3, Loader2, Filter, Grid3x3, List, Heart, BookOpen, Users, Award, Star, CheckCircle2 } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
+import { BookingModal } from '../components/features/BookingModal';
 import { useGetCoursesQuery } from '../services/api';
 import type { Course } from '../types';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,14 @@ export const CoursesPage: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high' | 'duration'>('default');
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  const handleEnrollClick = (e: React.MouseEvent, course: Course) => {
+    e.stopPropagation();
+    setSelectedCourse(course);
+    setIsBookingOpen(true);
+  };
 
   // Fetch courses from API
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useGetCoursesQuery({ active: true });
@@ -270,7 +279,7 @@ export const CoursesPage: React.FC = () => {
                           <span className="text-gray-600">Certificate</span>
                         </div>
                       </div>
-                      <Button variant="primary" className="w-full" size="sm">
+                      <Button variant="primary" className="w-full" size="sm" onClick={(e) => handleEnrollClick(e, course)}>
                         {t('pages.courses.enrollNow')}
                       </Button>
                     </div>
@@ -355,7 +364,7 @@ export const CoursesPage: React.FC = () => {
                             SAR {course.price}
                           </p>
                         </div>
-                        <Button variant="primary" size="lg">
+                        <Button variant="primary" size="lg" onClick={(e) => handleEnrollClick(e, course)}>
                           {t('pages.courses.enrollNow')}
                         </Button>
                       </div>
@@ -388,6 +397,16 @@ export const CoursesPage: React.FC = () => {
           </motion.div>
         </Card>
       </Section>
+
+      {/* Booking Modal */}
+      {selectedCourse && (
+        <BookingModal
+          isOpen={isBookingOpen}
+          onClose={() => setIsBookingOpen(false)}
+          item={selectedCourse}
+          type="course"
+        />
+      )}
     </div>
   );
 };

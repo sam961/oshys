@@ -9,12 +9,14 @@ use Illuminate\Support\Str;
 
 class FooterLinkController extends Controller
 {
+    use TranslatableController;
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = FooterLink::query();
+        $query = FooterLink::with('translations');
 
         // Filter by active status
         if ($request->has('active')) {
@@ -35,6 +37,9 @@ class FooterLinkController extends Controller
                              ->orderBy('created_at', 'desc')
                              ->get();
 
+        // Add translations to response
+        $footerLinks = $this->transformWithTranslations($footerLinks);
+
         return response()->json($footerLinks);
     }
 
@@ -50,6 +55,9 @@ class FooterLinkController extends Controller
             'display_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable',
             'open_in_new_tab' => 'nullable',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'content_translations' => 'nullable',
         ]);
 
         // Generate slug from title if not provided
@@ -64,9 +72,15 @@ class FooterLinkController extends Controller
         $validated['is_active'] = filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN);
         $validated['open_in_new_tab'] = filter_var($request->input('open_in_new_tab', false), FILTER_VALIDATE_BOOLEAN);
 
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['content_translations']);
+
         $footerLink = FooterLink::create($validated);
 
-        return response()->json($footerLink, 201);
+        // Save translations
+        $this->saveTranslationsFromRequest($footerLink, $request);
+
+        return response()->json($footerLink->load('translations'), 201);
     }
 
     /**
@@ -76,10 +90,10 @@ class FooterLinkController extends Controller
     {
         // Try to find by ID first, then by slug
         $footerLink = is_numeric($id)
-            ? FooterLink::findOrFail($id)
-            : FooterLink::where('slug', $id)->where('is_active', true)->firstOrFail();
+            ? FooterLink::with('translations')->findOrFail($id)
+            : FooterLink::with('translations')->where('slug', $id)->where('is_active', true)->firstOrFail();
 
-        return response()->json($footerLink);
+        return response()->json($footerLink->toArrayWithTranslations());
     }
 
     /**
@@ -96,6 +110,9 @@ class FooterLinkController extends Controller
             'display_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable',
             'open_in_new_tab' => 'nullable',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'content_translations' => 'nullable',
         ]);
 
         // Generate slug from title if title changed
@@ -116,9 +133,15 @@ class FooterLinkController extends Controller
             $validated['open_in_new_tab'] = filter_var($request->input('open_in_new_tab'), FILTER_VALIDATE_BOOLEAN);
         }
 
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['content_translations']);
+
         $footerLink->update($validated);
 
-        return response()->json($footerLink);
+        // Save translations
+        $this->saveTranslationsFromRequest($footerLink, $request);
+
+        return response()->json($footerLink->load('translations'));
     }
 
     /**

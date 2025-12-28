@@ -236,3 +236,19 @@ export type EventFormData = Omit<Event, 'id' | 'created_at' | 'updated_at' | 'de
 export type TeamMemberFormData = Omit<TeamMember, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
 export type CategoryFormData = Omit<Category, 'id' | 'slug' | 'created_at' | 'updated_at'>;
 export type SettingFormData = Omit<Setting, 'id' | 'created_at' | 'updated_at'>;
+
+// Booking Types
+export interface Booking {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  bookable_type: 'course' | 'trip';
+  bookable_id: number;
+  bookable_name: string;
+  price: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}

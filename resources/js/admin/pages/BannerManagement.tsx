@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { BannerModal } from '../components/BannerModal';
@@ -9,11 +10,11 @@ import { useTranslation } from 'react-i18next';
 
 export const BannerManagement: React.FC = () => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: banners = [], isLoading, error } = useGetBannersQuery({});
   const [deleteBanner] = useDeleteBannerMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState<Banner | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   const columns = [
     {
@@ -79,9 +80,7 @@ export const BannerManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: Banner) => {
-    setSelectedBanner(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/banners/${item.id}/edit`);
   };
 
   const handleDelete = async (item: Banner) => {
@@ -98,14 +97,11 @@ export const BannerManagement: React.FC = () => {
 
   const handleView = (item: Banner) => {
     setSelectedBanner(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddBanner = () => {
-    setSelectedBanner(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/banners/new');
   };
 
   const handleCloseModal = () => {
@@ -185,7 +181,7 @@ export const BannerManagement: React.FC = () => {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         banner={selectedBanner}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

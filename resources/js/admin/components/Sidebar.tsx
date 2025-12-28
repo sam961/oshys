@@ -22,6 +22,7 @@ import {
   Cog,
   Home,
   Link as LinkIcon,
+  ClipboardList,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -66,6 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       title: 'shop',
       icon: ShoppingBag,
       items: [
+        { icon: ClipboardList, label: 'Bookings', path: '/admin/bookings' },
         { icon: Package, label: t('sidebar.products'), path: '/admin/products' },
         { icon: GraduationCap, label: t('sidebar.courses'), path: '/admin/courses' },
         { icon: Compass, label: t('sidebar.trips'), path: '/admin/trips' },
@@ -79,13 +81,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
         { icon: Calendar, label: t('sidebar.events'), path: '/admin/events' },
         { icon: Heart, label: 'Initiatives', path: '/admin/initiatives' },
         { icon: Image, label: t('sidebar.banners'), path: '/admin/banners' },
+        { icon: Users, label: t('sidebar.team'), path: '/admin/team' },
       ],
     },
     {
       title: 'settings',
       icon: Cog,
       items: [
-        { icon: Users, label: t('sidebar.team'), path: '/admin/team' },
         { icon: LinkIcon, label: 'Footer Links', path: '/admin/footer-links' },
         { icon: Settings, label: t('sidebar.settings'), path: '/admin/settings' },
       ],

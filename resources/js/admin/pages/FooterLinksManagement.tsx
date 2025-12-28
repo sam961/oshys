@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { FooterLinkModal } from '../components/FooterLinkModal';
 import { useGetFooterLinksQuery, useDeleteFooterLinkMutation } from '../../services/api';
 import type { FooterLink } from '../../types';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 
 export const FooterLinksManagement: React.FC = () => {
-  const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: footerLinks = [], isLoading, error } = useGetFooterLinksQuery({});
   const [deleteFooterLink] = useDeleteFooterLinkMutation();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedLink, setSelectedLink] = useState<FooterLink | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   const columns = [
     {
@@ -66,9 +66,7 @@ export const FooterLinksManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: FooterLink) => {
-    setSelectedLink(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/footer-links/${item.id}/edit`);
   };
 
   const handleDelete = async (item: FooterLink) => {
@@ -85,14 +83,11 @@ export const FooterLinksManagement: React.FC = () => {
 
   const handleView = (item: FooterLink) => {
     setSelectedLink(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddLink = () => {
-    setSelectedLink(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/footer-links/new');
   };
 
   const handleCloseModal = () => {
@@ -118,7 +113,6 @@ export const FooterLinksManagement: React.FC = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Footer Links</h1>
@@ -133,7 +127,6 @@ export const FooterLinksManagement: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="text-sm text-gray-600 mb-1">Total Links</div>
@@ -153,7 +146,6 @@ export const FooterLinksManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={footerLinks}
@@ -166,7 +158,7 @@ export const FooterLinksManagement: React.FC = () => {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         footerLink={selectedLink}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

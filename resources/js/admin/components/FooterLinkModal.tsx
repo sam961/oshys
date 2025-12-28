@@ -6,6 +6,7 @@ import type { FooterLink } from '../../types';
 import toast from 'react-hot-toast';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import TranslatableField from './TranslatableField';
 
 interface FooterLinkModalProps {
   isOpen: boolean;
@@ -105,11 +106,16 @@ export const FooterLinkModal: React.FC<FooterLinkModalProps> = ({ isOpen, onClos
     display_order: 0,
     is_active: true,
     open_in_new_tab: false,
+    title_translations: { ar: '' },
+    content_translations: { ar: '' },
   });
+
+  const [contentLanguage, setContentLanguage] = useState<'en' | 'ar'>('en');
 
   const isViewMode = mode === 'view';
 
-  const editor = useEditor({
+  // English content editor
+  const editorEn = useEditor({
     extensions: [StarterKit],
     content: formData.content || '',
     editable: !isViewMode,
@@ -117,6 +123,19 @@ export const FooterLinkModal: React.FC<FooterLinkModalProps> = ({ isOpen, onClos
       setFormData(prev => ({ ...prev, content: editor.getHTML() }));
     },
   });
+
+  // Arabic content editor
+  const editorAr = useEditor({
+    extensions: [StarterKit],
+    content: formData.content_translations.ar || '',
+    editable: !isViewMode,
+    onUpdate: ({ editor }) => {
+      setFormData(prev => ({ ...prev, content_translations: { ...prev.content_translations, ar: editor.getHTML() } }));
+    },
+  });
+
+  // Get active editor based on selected language
+  const activeEditor = contentLanguage === 'en' ? editorEn : editorAr;
 
   useEffect(() => {
     if (footerLink && mode !== 'create') {
@@ -126,9 +145,14 @@ export const FooterLinkModal: React.FC<FooterLinkModalProps> = ({ isOpen, onClos
         display_order: footerLink.display_order,
         is_active: footerLink.is_active,
         open_in_new_tab: footerLink.open_in_new_tab,
+        title_translations: (footerLink as any).title_translations || { ar: '' },
+        content_translations: (footerLink as any).content_translations || { ar: '' },
       });
-      if (editor) {
-        editor.commands.setContent(footerLink.content || '');
+      if (editorEn) {
+        editorEn.commands.setContent(footerLink.content || '');
+      }
+      if (editorAr) {
+        editorAr.commands.setContent((footerLink as any).content_translations?.ar || '');
       }
     } else if (mode === 'create') {
       setFormData({
@@ -137,19 +161,27 @@ export const FooterLinkModal: React.FC<FooterLinkModalProps> = ({ isOpen, onClos
         display_order: 0,
         is_active: true,
         open_in_new_tab: false,
+        title_translations: { ar: '' },
+        content_translations: { ar: '' },
       });
-      if (editor) {
-        editor.commands.setContent('');
+      if (editorEn) {
+        editorEn.commands.setContent('');
+      }
+      if (editorAr) {
+        editorAr.commands.setContent('');
       }
     }
-  }, [footerLink, mode, editor]);
+  }, [footerLink, mode, editorEn, editorAr]);
 
   // Update editor editable state when mode changes
   useEffect(() => {
-    if (editor) {
-      editor.setEditable(!isViewMode);
+    if (editorEn) {
+      editorEn.setEditable(!isViewMode);
     }
-  }, [isViewMode, editor]);
+    if (editorAr) {
+      editorAr.setEditable(!isViewMode);
+    }
+  }, [isViewMode, editorEn, editorAr]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,11 +192,17 @@ export const FooterLinkModal: React.FC<FooterLinkModalProps> = ({ isOpen, onClos
     }
 
     try {
+      const submitData = {
+        ...formData,
+        title_translations: JSON.stringify(formData.title_translations),
+        content_translations: JSON.stringify(formData.content_translations),
+      };
+
       if (mode === 'create') {
-        await createFooterLink(formData).unwrap();
+        await createFooterLink(submitData).unwrap();
         toast.success('Footer page created successfully');
       } else {
-        await updateFooterLink({ id: footerLink!.id, data: formData }).unwrap();
+        await updateFooterLink({ id: footerLink!.id, data: submitData }).unwrap();
         toast.success('Footer page updated successfully');
       }
       onClose();
@@ -231,38 +269,81 @@ export const FooterLinkModal: React.FC<FooterLinkModalProps> = ({ isOpen, onClos
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {/* Title */}
+              <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                {/* Title with TranslatableField */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Page Title *
-                  </label>
-                  <input
-                    type="text"
+                  <TranslatableField
+                    label="Page Title"
                     name="title"
                     value={formData.title}
-                    onChange={handleChange}
-                    disabled={isViewMode}
+                    translationValue={formData.title_translations.ar}
+                    onChangeEnglish={(value) => setFormData(prev => ({ ...prev, title: value }))}
+                    onChangeArabic={(value) => setFormData(prev => ({ ...prev, title_translations: { ...prev.title_translations, ar: value } }))}
                     required
                     placeholder="e.g. Privacy Policy, Terms and Conditions"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                    placeholderAr="مثال: سياسة الخصوصية، الشروط والأحكام"
+                    disabled={isViewMode}
                   />
                   <p className="mt-1 text-xs text-gray-500">
                     The URL will be auto-generated as /pages/privacy-policy based on the title
                   </p>
                 </div>
 
-                {/* Content - Rich Text Editor */}
+                {/* Content - Rich Text Editor with Language Toggle */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Page Content
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Page Content
+                    </label>
+                    {/* Language Toggle for Content */}
+                    <div className="flex items-center gap-1">
+                      <div className="flex bg-gray-100 rounded-lg p-0.5">
+                        <button
+                          type="button"
+                          onClick={() => setContentLanguage('en')}
+                          className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                            contentLanguage === 'en'
+                              ? 'bg-white text-primary-600 shadow-sm'
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                        >
+                          EN
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setContentLanguage('ar')}
+                          className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                            contentLanguage === 'ar'
+                              ? 'bg-white text-primary-600 shadow-sm'
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                        >
+                          AR
+                        </button>
+                      </div>
+                      {/* Status indicators */}
+                      <div className="flex items-center gap-1 ml-2">
+                        <span className={`w-2 h-2 rounded-full ${formData.content ? 'bg-green-500' : 'bg-gray-300'}`} title="English content" />
+                        <span className={`w-2 h-2 rounded-full ${formData.content_translations.ar ? 'bg-green-500' : 'bg-gray-300'}`} title="Arabic content" />
+                      </div>
+                    </div>
+                  </div>
                   <div className={`border border-gray-300 rounded-lg overflow-hidden ${isViewMode ? 'bg-gray-100' : ''}`}>
-                    {!isViewMode && <MenuBar editor={editor} />}
-                    <EditorContent
-                      editor={editor}
-                      className="prose max-w-none p-4 min-h-[200px] focus:outline-none"
-                    />
+                    {!isViewMode && <MenuBar editor={activeEditor} />}
+                    {/* English Editor */}
+                    <div className={contentLanguage === 'en' ? '' : 'hidden'}>
+                      <EditorContent
+                        editor={editorEn}
+                        className="prose max-w-none p-4 min-h-[200px] focus:outline-none"
+                      />
+                    </div>
+                    {/* Arabic Editor */}
+                    <div className={contentLanguage === 'ar' ? '' : 'hidden'} dir="rtl">
+                      <EditorContent
+                        editor={editorAr}
+                        className="prose max-w-none p-4 min-h-[200px] focus:outline-none text-right"
+                      />
+                    </div>
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
                     Enter the page content that will be displayed when users click the link
@@ -281,7 +362,7 @@ export const FooterLinkModal: React.FC<FooterLinkModalProps> = ({ isOpen, onClos
                     onChange={handleChange}
                     disabled={isViewMode}
                     min="0"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                   />
                   <p className="mt-1 text-xs text-gray-500">
                     Lower numbers appear first in the footer

@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateEventMutation, useUpdateEventMutation } from '../../services/api';
 import type { Event } from '../../types';
 import toast from 'react-hot-toast';
-import LanguageTabs from './LanguageTabs';
-import TranslatableInput from './TranslatableInput';
+import TranslatableField from './TranslatableField';
 
 interface EventModalProps {
   isOpen: boolean;
@@ -17,9 +16,6 @@ interface EventModalProps {
 export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, mode }) => {
   const [createEvent, { isLoading: isCreating }] = useCreateEventMutation();
   const [updateEvent, { isLoading: isUpdating }] = useUpdateEventMutation();
-
-  // Add locale state
-  const [currentLocale, setCurrentLocale] = useState<'en' | 'ar'>('en');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -107,21 +103,6 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
     }
   };
 
-  // Handle translatable field changes
-  const handleTranslatableChange = (field: string, value: string, locale: 'en' | 'ar') => {
-    if (locale === 'en') {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [`${field}_translations`]: {
-          ...prev[`${field}_translations` as keyof typeof prev] as Record<string, string>,
-          [locale]: value,
-        },
-      }));
-    }
-  };
-
   const isViewMode = mode === 'view';
   const isLoading = isCreating || isUpdating;
 
@@ -160,53 +141,48 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                {/* Language Tabs */}
-                {!isViewMode && (
-                  <LanguageTabs
-                    activeLocale={currentLocale}
-                    onLocaleChange={setCurrentLocale}
-                  />
-                )}
-
-                {/* Translatable Fields */}
-                <TranslatableInput
+              <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                {/* Translatable Fields with per-field language toggle */}
+                <TranslatableField
                   label="Event Title"
                   name="title"
                   value={formData.title}
-                  translations={formData.title_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('title', value, locale)}
+                  translationValue={formData.title_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, title: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, title_translations: { ...prev.title_translations, ar: value } }))}
                   required
                   placeholder="Enter event title"
+                  placeholderAr="أدخل عنوان الحدث"
+                  disabled={isViewMode}
                 />
 
-                <TranslatableInput
+                <TranslatableField
                   label="Description"
                   name="description"
                   value={formData.description}
-                  translations={formData.description_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('description', value, locale)}
+                  translationValue={formData.description_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, description: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, description_translations: { ...prev.description_translations, ar: value } }))}
                   type="textarea"
                   required
                   rows={3}
                   placeholder="Enter event description"
+                  placeholderAr="أدخل وصف الحدث"
+                  disabled={isViewMode}
                 />
 
-                <TranslatableInput
+                <TranslatableField
                   label="Location"
                   name="location"
                   value={formData.location}
-                  translations={formData.location_translations}
-                  currentLocale={currentLocale}
-                  onChange={(value, locale) => handleTranslatableChange('location', value, locale)}
+                  translationValue={formData.location_translations.ar}
+                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, location_translations: { ...prev.location_translations, ar: value } }))}
                   placeholder="Enter event location"
+                  placeholderAr="أدخل موقع الحدث"
+                  disabled={isViewMode}
                 />
 
-                {/* Non-translatable fields only show when on English tab */}
-                {currentLocale === 'en' && (
-                  <>
                 {/* Event Type */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -218,7 +194,7 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
                     onChange={handleChange}
                     disabled={isViewMode}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                   >
                     <option value="workshop">Workshop</option>
                     <option value="course">Course</option>
@@ -240,7 +216,7 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
                       onChange={handleChange}
                       disabled={isViewMode}
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                   <div>
@@ -253,7 +229,7 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
                       value={formData.end_date}
                       onChange={handleChange}
                       disabled={isViewMode}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>
@@ -272,7 +248,7 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
                       disabled={isViewMode}
                       step="0.01"
                       min="0"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                   <div>
@@ -286,7 +262,7 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
                       onChange={handleChange}
                       disabled={isViewMode}
                       min="1"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
                 </div>
@@ -305,8 +281,6 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, 
                     <span className="text-sm text-gray-700">Active</span>
                   </label>
                 </div>
-                  </>
-                )}
 
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">

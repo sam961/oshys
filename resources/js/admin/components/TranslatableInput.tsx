@@ -40,8 +40,9 @@ const TranslatableInput: React.FC<TranslatableInputProps> = ({
   };
 
   const inputClassName = `
-    mt-1 block w-full rounded-md border-gray-300 shadow-sm
-    focus:border-blue-500 focus:ring-blue-500 sm:text-sm
+    mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm
+    focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20
+    text-base placeholder:text-gray-400
     ${currentLocale === 'ar' ? 'text-right' : 'text-left'}
     ${className}
   `;

@@ -42,7 +42,7 @@ export const Settings: React.FC = () => {
                 type="text"
                 value={settings.siteName}
                 onChange={(e) => handleChange('siteName', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400"
               />
             </div>
 
@@ -54,7 +54,7 @@ export const Settings: React.FC = () => {
                 type="email"
                 value={settings.siteEmail}
                 onChange={(e) => handleChange('siteEmail', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400"
               />
             </div>
 
@@ -66,7 +66,7 @@ export const Settings: React.FC = () => {
                 type="tel"
                 value={settings.sitePhone}
                 onChange={(e) => handleChange('sitePhone', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400"
               />
             </div>
 
@@ -78,7 +78,7 @@ export const Settings: React.FC = () => {
                 value={settings.siteAddress}
                 onChange={(e) => handleChange('siteAddress', e.target.value)}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 resize-none"
               />
             </div>
           </div>
@@ -95,7 +95,7 @@ export const Settings: React.FC = () => {
               <select
                 value={settings.currency}
                 onChange={(e) => handleChange('currency', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400"
               >
                 <option value="SAR">SAR - Saudi Riyal</option>
                 <option value="USD">USD - US Dollar</option>
@@ -110,7 +110,7 @@ export const Settings: React.FC = () => {
               <select
                 value={settings.language}
                 onChange={(e) => handleChange('language', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400"
               >
                 <option value="en">English</option>
                 <option value="ar">Arabic</option>

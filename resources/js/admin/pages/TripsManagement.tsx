@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
 import { TripModal } from '../components/TripModal';
@@ -9,11 +10,12 @@ import { useTranslation } from 'react-i18next';
 
 export const TripsManagement: React.FC = () => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const { data: trips = [], isLoading, error } = useGetTripsQuery({});
   const [deleteTrip] = useDeleteTripMutation();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   const columns = [
     {
@@ -58,9 +60,7 @@ export const TripsManagement: React.FC = () => {
   ];
 
   const handleEdit = (item: Trip) => {
-    setSelectedTrip(item);
-    setModalMode('edit');
-    setModalOpen(true);
+    navigate(`/admin/trips/${item.id}/edit`);
   };
 
   const handleDelete = async (item: Trip) => {
@@ -77,14 +77,11 @@ export const TripsManagement: React.FC = () => {
 
   const handleView = (item: Trip) => {
     setSelectedTrip(item);
-    setModalMode('view');
     setModalOpen(true);
   };
 
   const handleAddTrip = () => {
-    setSelectedTrip(null);
-    setModalMode('create');
-    setModalOpen(true);
+    navigate('/admin/trips/new');
   };
 
   const handleCloseModal = () => {
@@ -110,7 +107,6 @@ export const TripsManagement: React.FC = () => {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('trips.title')}</h1>
@@ -125,7 +121,6 @@ export const TripsManagement: React.FC = () => {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="text-sm text-gray-600 mb-1">Total Trips</div>
@@ -145,7 +140,6 @@ export const TripsManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={trips}
@@ -158,7 +152,7 @@ export const TripsManagement: React.FC = () => {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         trip={selectedTrip}
-        mode={modalMode}
+        mode="view"
       />
     </div>
   );

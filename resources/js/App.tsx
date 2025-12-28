@@ -30,7 +30,17 @@ import { TeamManagement } from './admin/pages/TeamManagement';
 import { BannerManagement } from './admin/pages/BannerManagement';
 import { InitiativesManagement } from './admin/pages/InitiativesManagement';
 import { FooterLinksManagement } from './admin/pages/FooterLinksManagement';
+import { BookingsManagement } from './admin/pages/BookingsManagement';
 import { Settings } from './admin/pages/Settings';
+import { ProductEditPage } from './admin/pages/ProductEditPage';
+import { CourseEditPage } from './admin/pages/CourseEditPage';
+import { TripEditPage } from './admin/pages/TripEditPage';
+import { BlogEditPage } from './admin/pages/BlogEditPage';
+import { EventEditPage } from './admin/pages/EventEditPage';
+import { BannerEditPage } from './admin/pages/BannerEditPage';
+import { InitiativeEditPage } from './admin/pages/InitiativeEditPage';
+import { FooterLinkEditPage } from './admin/pages/FooterLinkEditPage';
+import { TeamMemberEditPage } from './admin/pages/TeamMemberEditPage';
 
 // Simple scroll to top on navigation (except back/forward)
 const ScrollToTop: React.FC = () => {
@@ -62,15 +72,34 @@ const AppRoutes: React.FC = () => {
         <Routes>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="bookings" element={<BookingsManagement />} />
             <Route path="products" element={<ProductsManagement />} />
+            <Route path="products/new" element={<ProductEditPage />} />
+            <Route path="products/:id/edit" element={<ProductEditPage />} />
             <Route path="courses" element={<CoursesManagement />} />
+            <Route path="courses/new" element={<CourseEditPage />} />
+            <Route path="courses/:id/edit" element={<CourseEditPage />} />
             <Route path="trips" element={<TripsManagement />} />
+            <Route path="trips/new" element={<TripEditPage />} />
+            <Route path="trips/:id/edit" element={<TripEditPage />} />
             <Route path="blog" element={<BlogManagement />} />
+            <Route path="blog/new" element={<BlogEditPage />} />
+            <Route path="blog/:id/edit" element={<BlogEditPage />} />
             <Route path="events" element={<EventsManagement />} />
+            <Route path="events/new" element={<EventEditPage />} />
+            <Route path="events/:id/edit" element={<EventEditPage />} />
             <Route path="team" element={<TeamManagement />} />
+            <Route path="team/new" element={<TeamMemberEditPage />} />
+            <Route path="team/:id/edit" element={<TeamMemberEditPage />} />
             <Route path="banners" element={<BannerManagement />} />
+            <Route path="banners/new" element={<BannerEditPage />} />
+            <Route path="banners/:id/edit" element={<BannerEditPage />} />
             <Route path="initiatives" element={<InitiativesManagement />} />
+            <Route path="initiatives/new" element={<InitiativeEditPage />} />
+            <Route path="initiatives/:id/edit" element={<InitiativeEditPage />} />
             <Route path="footer-links" element={<FooterLinksManagement />} />
+            <Route path="footer-links/new" element={<FooterLinkEditPage />} />
+            <Route path="footer-links/:id/edit" element={<FooterLinkEditPage />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>

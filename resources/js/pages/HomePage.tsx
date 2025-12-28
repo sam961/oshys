@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Package, Compass, GraduationCap, ArrowRight, Gift, ShoppingBag, Instagram, Facebook, MessageCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HeroSlider } from '../components/features/HeroSlider';
 import { EventsCalendar } from '../components/features/EventsCalendar';
+import { BookingModal } from '../components/features/BookingModal';
+import { FeaturedInstructor } from '../components/features/FeaturedInstructor';
 import { Section, Card, Button, GridSkeleton, HorizontalScroll } from '../components/ui';
 import { LiquidBackground, WaveBackground } from '../components/animations';
 import { services } from '../data/mockData';
@@ -13,6 +15,36 @@ import type { Course, Trip, Product, BlogPost } from '../types';
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
+
+  // Booking modal state
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [bookingType, setBookingType] = useState<'course' | 'trip'>('course');
+
+  const handleCourseClick = (e: React.MouseEvent, course: Course) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedCourse(course);
+    setSelectedTrip(null);
+    setBookingType('course');
+    setIsBookingOpen(true);
+  };
+
+  const handleTripClick = (e: React.MouseEvent, trip: Trip) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedTrip(trip);
+    setSelectedCourse(null);
+    setBookingType('trip');
+    setIsBookingOpen(true);
+  };
+
+  const handleCloseBooking = () => {
+    setIsBookingOpen(false);
+    setSelectedCourse(null);
+    setSelectedTrip(null);
+  };
 
   // Fetch featured data from API
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useGetCoursesQuery({ active: true, featured: true });
@@ -24,6 +56,9 @@ export const HomePage: React.FC = () => {
     <div className="overflow-hidden">
       {/* Hero Slider */}
       <HeroSlider />
+
+      {/* Featured Instructor Section */}
+      <FeaturedInstructor />
 
       {/* Tagline Section */}
       <Section background="gradient" className="text-center relative overflow-hidden">
@@ -241,7 +276,7 @@ export const HomePage: React.FC = () => {
                         {trip.difficulty}
                       </span>
                     </div>
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-full" onClick={(e) => handleTripClick(e, trip)}>
                       {t('trips.bookNow')}
                     </Button>
                   </Card>
@@ -286,12 +321,12 @@ export const HomePage: React.FC = () => {
           <>
             <HorizontalScroll itemCount={Math.min(courses.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
               {courses.slice(0, 3).map((course) => (
-                  <Card key={course.id} className="h-full shrink-0 w-[80vw] snap-center sm:w-auto">
+                  <Card key={course.id} className="h-full shrink-0 w-[80vw] snap-center sm:w-auto group cursor-pointer">
                     <div className="relative overflow-hidden rounded-xl mb-4">
                       <img
                         src={course.image || '/placeholder.svg'}
                         alt={course.name}
-                        className="w-full h-40 sm:h-48 object-cover hover:scale-105 transition-transform duration-300"
+                        className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute top-4 right-4 bg-accent-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
                         {course.level}
@@ -303,7 +338,7 @@ export const HomePage: React.FC = () => {
                       <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
                       <span className="text-base sm:text-lg font-bold text-primary-600">SAR {course.price}</span>
                     </div>
-                    <Button variant="primary" className="w-full">
+                    <Button variant="primary" className="w-full" onClick={(e) => handleCourseClick(e, course)}>
                       {t('home.enrollNow')}
                     </Button>
                   </Card>
@@ -511,6 +546,16 @@ export const HomePage: React.FC = () => {
           </motion.div>
         </Card>
       </Section>
+
+      {/* Booking Modal */}
+      {(selectedCourse || selectedTrip) && (
+        <BookingModal
+          isOpen={isBookingOpen}
+          onClose={handleCloseBooking}
+          item={(bookingType === 'course' ? selectedCourse : selectedTrip)!}
+          type={bookingType}
+        />
+      )}
     </div>
   );
 };

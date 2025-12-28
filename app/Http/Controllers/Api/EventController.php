@@ -8,12 +8,14 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    use TranslatableController;
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = Event::with('images');
+        $query = Event::with(['images', 'translations']);
 
         // Filter by active status
         if ($request->has('active')) {
@@ -52,6 +54,9 @@ class EventController extends Controller
 
         $events = $query->orderBy('start_date', 'asc')->get();
 
+        // Add translations to response
+        $events = $this->transformWithTranslations($events);
+
         return response()->json($events);
     }
 
@@ -70,11 +75,21 @@ class EventController extends Controller
             'is_active' => 'boolean',
             'max_participants' => 'nullable|integer|min:1',
             'price' => 'nullable|numeric|min:0',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'location_translations' => 'nullable',
         ]);
+
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['description_translations'], $validated['location_translations']);
 
         $event = Event::create($validated);
 
-        return response()->json($event, 201);
+        // Save translations
+        $this->saveTranslationsFromRequest($event, $request);
+
+        return response()->json($event->load('translations'), 201);
     }
 
     /**
@@ -82,8 +97,8 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        $event = Event::with('images')->findOrFail($id);
-        return response()->json($event);
+        $event = Event::with(['images', 'translations'])->findOrFail($id);
+        return response()->json($event->toArrayWithTranslations());
     }
 
     /**
@@ -103,11 +118,21 @@ class EventController extends Controller
             'is_active' => 'boolean',
             'max_participants' => 'nullable|integer|min:1',
             'price' => 'nullable|numeric|min:0',
+            // Translation fields
+            'title_translations' => 'nullable',
+            'description_translations' => 'nullable',
+            'location_translations' => 'nullable',
         ]);
+
+        // Remove translation fields from validated data
+        unset($validated['title_translations'], $validated['description_translations'], $validated['location_translations']);
 
         $event->update($validated);
 
-        return response()->json($event);
+        // Save translations
+        $this->saveTranslationsFromRequest($event, $request);
+
+        return response()->json($event->load('translations'));
     }
 
     /**

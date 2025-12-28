@@ -14,9 +14,10 @@ interface DataTableProps {
   onEdit?: (item: any) => void;
   onDelete?: (item: any) => void;
   onView?: (item: any) => void;
+  customActions?: (item: any) => React.ReactNode;
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ columns, data, onEdit, onDelete, onView }) => {
+export const DataTable: React.FC<DataTableProps> = ({ columns, data, onEdit, onDelete, onView, customActions }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div className="overflow-x-auto">
@@ -54,6 +55,7 @@ export const DataTable: React.FC<DataTableProps> = ({ columns, data, onEdit, onD
                 ))}
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
+                    {customActions && customActions(row)}
                     {onView && (
                       <button
                         onClick={() => onView(row)}
