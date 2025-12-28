@@ -56,7 +56,7 @@ export const Navbar: React.FC = () => {
       ],
     },
     { name: t('nav.blog'), href: '/blog' },
-    { name: 'Initiatives', href: '/initiatives' },
+    { name: t('nav.initiatives'), href: '/initiatives' },
     { name: t('nav.contact'), href: '/contact' },
   ];
 

@@ -27,9 +27,9 @@ export const InitiativesPage: React.FC = () => {
             className="text-center text-white"
           >
             <Heart className="w-16 h-16 mx-auto mb-6" />
-            <h1 className="text-6xl font-bold mb-4">Social Initiatives</h1>
+            <h1 className="text-6xl font-bold mb-4">{t('initiatives.heroTitle')}</h1>
             <p className="text-2xl text-white/90">
-              Making a difference in our community
+              {t('initiatives.heroSubtitle')}
             </p>
           </motion.div>
         </div>
@@ -43,11 +43,11 @@ export const InitiativesPage: React.FC = () => {
           </div>
         ) : error ? (
           <div className="text-center py-12">
-            <p className="text-red-600">Failed to load initiatives</p>
+            <p className="text-red-600">{t('initiatives.loadingError')}</p>
           </div>
         ) : initiatives.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600">No initiatives available yet</p>
+            <p className="text-gray-600">{t('initiatives.noInitiatives')}</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -80,7 +80,7 @@ export const InitiativesPage: React.FC = () => {
                       ) : (
                         <div className="w-full h-56 bg-gray-100 flex flex-col items-center justify-center">
                           <Heart className="w-16 h-16 text-gray-300 mb-2" />
-                          <p className="text-sm text-gray-400">No image</p>
+                          <p className="text-sm text-gray-400">{t('initiatives.noImage')}</p>
                           {initiative.category && (
                             <div className="absolute top-4 left-4">
                               <span className="bg-primary-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
@@ -113,7 +113,7 @@ export const InitiativesPage: React.FC = () => {
                     </p>
 
                     <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
-                      Learn More
+                      {t('initiatives.learnMore')}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </Card>
@@ -132,14 +132,13 @@ export const InitiativesPage: React.FC = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-4">Partner With Us</h2>
+            <h2 className="text-4xl font-bold mb-4">{t('initiatives.ctaTitle')}</h2>
             <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
-              Join us in making a positive impact. Whether you're a business or organization,
-              we'd love to collaborate on meaningful initiatives.
+              {t('initiatives.ctaDescription')}
             </p>
             <Link to="/contact">
               <Button variant="secondary" className="bg-white text-primary-600">
-                Get In Touch
+                {t('initiatives.getInTouch')}
               </Button>
             </Link>
           </motion.div>

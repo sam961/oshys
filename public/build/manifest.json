@@ -1,6 +1,6 @@
 {
-  "_browser-ponyfill-CBrH4PKy.js": {
-    "file": "assets/browser-ponyfill-CBrH4PKy.js",
+  "_browser-ponyfill-BXkkPwj8.js": {
+    "file": "assets/browser-ponyfill-BXkkPwj8.js",
     "name": "browser-ponyfill",
     "isDynamicEntry": true,
     "imports": [
@@ -8,7 +8,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-C-oJDyNK.css",
+    "file": "assets/app-B2onkGf-.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -16,15 +16,15 @@
     ]
   },
   "resources/js/main.tsx": {
-    "file": "assets/main-BBVCZGq6.js",
+    "file": "assets/main-NrdSL3Qu.js",
     "name": "main",
     "src": "resources/js/main.tsx",
     "isEntry": true,
     "dynamicImports": [
-      "_browser-ponyfill-CBrH4PKy.js"
+      "_browser-ponyfill-BXkkPwj8.js"
     ],
     "css": [
-      "assets/app-C-oJDyNK.css"
+      "assets/app-B2onkGf-.css"
     ]
   }
 }

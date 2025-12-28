@@ -6,6 +6,7 @@
     "trips": "Trips",
     "shop": "Shop",
     "blog": "Blog",
+    "initiatives": "Initiatives",
     "contact": "Contact",
     "language": "Language"
   },
@@ -241,5 +242,16 @@
     "whyContact4": "Group booking discounts available",
     "visitCenterTitle": "Visit Our Diving Center",
     "visitCenterLocation": "Dammam, Eastern Province, Saudi Arabia"
+  },
+  "initiatives": {
+    "heroTitle": "Social Initiatives",
+    "heroSubtitle": "Making a difference in our community",
+    "noInitiatives": "No initiatives available yet",
+    "loadingError": "Failed to load initiatives",
+    "learnMore": "Learn More",
+    "noImage": "No image",
+    "ctaTitle": "Partner With Us",
+    "ctaDescription": "Join us in making a positive impact. Whether you're a business or organization, we'd love to collaborate on meaningful initiatives.",
+    "getInTouch": "Get In Touch"
   }
 }
