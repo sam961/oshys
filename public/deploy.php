@@ -111,9 +111,13 @@ try {
         // 'npm ci 2>&1',
         // 'npm run build 2>&1',
 
+        // Create storage symlink (if not exists)
+        'php artisan storage:link 2>&1',
+
         // Set proper permissions
-        'chmod -R 755 storage 2>&1',
-        'chmod -R 755 bootstrap/cache 2>&1',
+        'chmod -R 775 storage 2>&1',
+        'chmod -R 775 bootstrap/cache 2>&1',
+        'chmod -R 775 storage/app/public 2>&1',
     ];
 
     $output = [];
