@@ -226,7 +226,19 @@
     "noProducts": "No products found in this category.",
     "addToCart": "Add to Cart",
     "outOfStock": "Out of Stock",
-    "loadingError": "Failed to load products. Please try again later."
+    "inStock": "In Stock",
+    "loadingError": "Failed to load products. Please try again later.",
+    "totalProducts": "Products",
+    "categories": "Categories",
+    "sortDefault": "Sort: Default",
+    "sortPriceLow": "Price: Low to High",
+    "sortPriceHigh": "Price: High to Low",
+    "sortName": "Name: A-Z",
+    "results": "results",
+    "noImage": "No image",
+    "addToWishlist": "Add to Wishlist",
+    "quickView": "Quick View",
+    "reviews": "reviews"
   },
   "pages": {
     "courses": {

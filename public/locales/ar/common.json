@@ -226,7 +226,19 @@
     "noProducts": "لم يتم العثور على منتجات في هذه الفئة.",
     "addToCart": "أضف للسلة",
     "outOfStock": "غير متوفر",
-    "loadingError": "فشل تحميل المنتجات. يرجى المحاولة مرة أخرى لاحقاً."
+    "inStock": "متوفر",
+    "loadingError": "فشل تحميل المنتجات. يرجى المحاولة مرة أخرى لاحقاً.",
+    "totalProducts": "منتجات",
+    "categories": "فئات",
+    "sortDefault": "الترتيب: الافتراضي",
+    "sortPriceLow": "السعر: من الأقل للأعلى",
+    "sortPriceHigh": "السعر: من الأعلى للأقل",
+    "sortName": "الاسم: أ-ي",
+    "results": "نتائج",
+    "noImage": "لا توجد صورة",
+    "addToWishlist": "أضف للمفضلة",
+    "quickView": "عرض سريع",
+    "reviews": "تقييمات"
   },
   "pages": {
     "courses": {

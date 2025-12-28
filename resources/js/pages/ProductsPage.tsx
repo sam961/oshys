@@ -135,7 +135,7 @@ export const ProductsPage: React.FC = () => {
                       ? 'bg-white text-primary-600 shadow'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
-                  title="Grid View"
+                  title={t('common.gridView')}
                 >
                   <Grid3x3 className="w-5 h-5" />
                 </motion.button>
@@ -148,7 +148,7 @@ export const ProductsPage: React.FC = () => {
                       ? 'bg-white text-primary-600 shadow'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
-                  title="List View"
+                  title={t('common.listView')}
                 >
                   <List className="w-5 h-5" />
                 </motion.button>
@@ -197,7 +197,7 @@ export const ProductsPage: React.FC = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="p-2 bg-white rounded-full shadow-lg hover:bg-primary-50 transition-colors"
-                      title="Add to Wishlist"
+                      title={t('products.addToWishlist')}
                     >
                       <Heart className="w-4 h-4 text-gray-700" />
                     </motion.button>
@@ -205,7 +205,7 @@ export const ProductsPage: React.FC = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="p-2 bg-white rounded-full shadow-lg hover:bg-primary-50 transition-colors"
-                      title="Quick View"
+                      title={t('products.quickView')}
                     >
                       <Eye className="w-4 h-4 text-gray-700" />
                     </motion.button>
@@ -315,15 +315,15 @@ export const ProductsPage: React.FC = () => {
                         <div className="flex items-center gap-3 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
                             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span>4.8 (120 reviews)</span>
+                            <span>4.8 (120 {t('products.reviews')})</span>
                           </div>
                           {product.in_stock ? (
                             <span className="text-green-600 flex items-center gap-1">
                               <TrendingUp className="w-4 h-4" />
-                              In Stock
+                              {t('products.inStock')}
                             </span>
                           ) : (
-                            <span className="text-red-600">Out of Stock</span>
+                            <span className="text-red-600">{t('products.outOfStock')}</span>
                           )}
                         </div>
                       </div>
