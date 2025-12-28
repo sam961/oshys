@@ -24,7 +24,7 @@ i18n
 
     // Backend configuration
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/locales/{{lng}}/{{ns}}.json?v=' + Date.now(),
     },
 
     // Language detection options
