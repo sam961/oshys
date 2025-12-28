@@ -12,7 +12,7 @@ import {
   CalendarCheck,
   Info
 } from 'lucide-react';
-import { Section, Button } from '../components/ui';
+import { Section, Button, SaudiRiyalPrice } from '../components/ui';
 import { useGetEventQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
@@ -227,9 +227,10 @@ export const EventDetailPage: React.FC = () => {
                   {event.price ? (
                     <>
                       <p className="text-sm text-gray-500 mb-1">Event Price</p>
-                      <p className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                        SAR {event.price}
-                      </p>
+                      <SaudiRiyalPrice
+                        amount={event.price}
+                        className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent"
+                      />
                     </>
                   ) : (
                     <span className="inline-block px-6 py-3 bg-green-100 text-green-700 rounded-full text-xl font-bold">

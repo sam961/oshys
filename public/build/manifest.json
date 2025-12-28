@@ -1,11 +1,15 @@
 {
-  "_browser-ponyfill-BpWQMY6M.js": {
-    "file": "assets/browser-ponyfill-BpWQMY6M.js",
+  "_browser-ponyfill-C71IsXI5.js": {
+    "file": "assets/browser-ponyfill-C71IsXI5.js",
     "name": "browser-ponyfill",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/main.tsx"
     ]
+  },
+  "node_modules/@abdulrysr/saudi-riyal-new-symbol-font/saudiriyalsymbol.ttf": {
+    "file": "assets/saudiriyalsymbol-EbZ3gI_7.ttf",
+    "src": "node_modules/@abdulrysr/saudi-riyal-new-symbol-font/saudiriyalsymbol.ttf"
   },
   "resources/css/app.css": {
     "file": "assets/app-bxNcG0t_.css",
@@ -16,16 +20,19 @@
     ]
   },
   "resources/js/main.tsx": {
-    "file": "assets/main-BWai4_Xu.js",
+    "file": "assets/main-C63P3aqP.js",
     "name": "main",
     "src": "resources/js/main.tsx",
     "isEntry": true,
     "dynamicImports": [
-      "_browser-ponyfill-BpWQMY6M.js"
+      "_browser-ponyfill-C71IsXI5.js"
     ],
     "css": [
-      "assets/main-DfPQBmNf.css",
+      "assets/main-CMG5WzTX.css",
       "assets/app-bxNcG0t_.css"
+    ],
+    "assets": [
+      "assets/saudiriyalsymbol-EbZ3gI_7.ttf"
     ]
   }
 }

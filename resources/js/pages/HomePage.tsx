@@ -7,7 +7,7 @@ import { HeroSlider } from '../components/features/HeroSlider';
 import { EventsCalendar } from '../components/features/EventsCalendar';
 import { BookingModal } from '../components/features/BookingModal';
 import { FeaturedInstructor } from '../components/features/FeaturedInstructor';
-import { Section, Card, Button, GridSkeleton, HorizontalScroll } from '../components/ui';
+import { Section, Card, Button, GridSkeleton, HorizontalScroll, SaudiRiyalPrice } from '../components/ui';
 import { LiquidBackground, WaveBackground } from '../components/animations';
 import { services } from '../data/mockData';
 import { useGetCoursesQuery, useGetTripsQuery, useGetProductsQuery, useGetBlogPostsQuery } from '../services/api';
@@ -265,7 +265,10 @@ export const HomePage: React.FC = () => {
                         className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <div className="absolute top-4 right-4 bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg">
-                        <p className="font-bold text-primary-600 text-sm sm:text-base">SAR {trip.price}</p>
+                        <SaudiRiyalPrice
+                          amount={trip.price}
+                          className="font-bold text-primary-600 text-sm sm:text-base"
+                        />
                       </div>
                     </div>
                     <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
@@ -336,7 +339,7 @@ export const HomePage: React.FC = () => {
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
-                      <span className="text-base sm:text-lg font-bold text-primary-600">SAR {course.price}</span>
+                      <SaudiRiyalPrice amount={course.price} className="text-base sm:text-lg font-bold text-primary-600" />
                     </div>
                     <Button variant="primary" className="w-full" onClick={(e) => handleCourseClick(e, course)}>
                       {t('home.enrollNow')}
@@ -401,7 +404,7 @@ export const HomePage: React.FC = () => {
                     <h3 className="text-base sm:text-lg font-bold mb-2 line-clamp-2">{product.name}</h3>
                     <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">{product.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-lg sm:text-xl font-bold text-primary-600">SAR {product.price}</span>
+                      <SaudiRiyalPrice amount={product.price} className="text-lg sm:text-xl font-bold text-primary-600" />
                       <Button size="sm" variant="ghost">
                         <ShoppingBag className="w-4 h-4" />
                       </Button>

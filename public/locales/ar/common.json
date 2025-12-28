@@ -277,8 +277,7 @@
       "certificate": "شهادة",
       "certificateIncluded": "شهادة مضمنة",
       "lifetimeAccess": "وصول مدى الحياة",
-      "addToFavorites": "أضف للمفضلة",
-      "currency": "ر.س"
+      "addToFavorites": "أضف للمفضلة"
     },
     "trips": {
       "heroTitle": "هل أنت مستعد للمغامرة؟",
@@ -317,7 +316,6 @@
       "bookNow": "احجز الآن",
       "spotsAvailable": "أماكن متاحة",
       "addToFavorites": "أضف للمفضلة",
-      "currency": "ر.س",
       "rating": "{{rating}}",
       "reviews": "({{count}} تقييمات)"
     },
@@ -404,7 +402,6 @@
     "maxParticipants": "الحد الأقصى {{count}} مشارك",
     "max": "الحد الأقصى {{count}}",
     "price": "السعر",
-    "currency": "ر.س",
     "free": "مجاني",
     "freeEvent": "فعالية مجانية",
     "viewDetails": "عرض التفاصيل",

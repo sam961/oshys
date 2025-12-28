@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Mail, Phone, Loader2, CheckCircle, Clock, MapPin, Award, Users } from 'lucide-react';
-import { Button } from '../ui';
+import { Button, SaudiRiyalPrice } from '../ui';
 import { useCreateBookingMutation } from '../../services/api';
 import { useTranslation } from 'react-i18next';
 import type { Course, Trip } from '../../types';
@@ -184,9 +184,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
                       </>
                     )}
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-primary-600">
-                        SAR {item.price}
-                      </div>
+                      <SaudiRiyalPrice
+                        amount={item.price}
+                        className="text-2xl font-bold text-primary-600"
+                      />
                       <p className="text-xs text-gray-500">{t('booking.price')}</p>
                     </div>
                   </div>

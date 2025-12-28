@@ -242,8 +242,7 @@
     "noImage": "No image",
     "addToWishlist": "Add to Wishlist",
     "quickView": "Quick View",
-    "reviews": "reviews",
-    "currency": "SAR"
+    "reviews": "reviews"
   },
   "pages": {
     "courses": {
@@ -278,8 +277,7 @@
       "certificate": "Certificate",
       "certificateIncluded": "Certificate Included",
       "lifetimeAccess": "Lifetime Access",
-      "addToFavorites": "Add to Favorites",
-      "currency": "SAR"
+      "addToFavorites": "Add to Favorites"
     },
     "trips": {
       "heroTitle": "Ready For Adventure?",
@@ -318,7 +316,6 @@
       "bookNow": "Book Now",
       "spotsAvailable": "Spots Available",
       "addToFavorites": "Add to Favorites",
-      "currency": "SAR",
       "rating": "{{rating}}",
       "reviews": "({{count}} reviews)"
     },
@@ -405,7 +402,6 @@
     "maxParticipants": "Max {{count}} participants",
     "max": "Max {{count}}",
     "price": "Price",
-    "currency": "SAR",
     "free": "Free",
     "freeEvent": "Free Event",
     "viewDetails": "View Details",
