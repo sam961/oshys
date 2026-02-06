@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, MessageCircle, Mail, Phone, MapPin, Waves } from 'lucide-react';
+import { Instagram, Twitter, Ghost, MessageCircle, Mail, Phone, MapPin, Waves } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useGetFooterLinksQuery } from '../../services/api';
 
 const socialLinks = [
-  { Icon: Instagram, href: '#', label: 'Instagram' },
-  { Icon: Facebook, href: '#', label: 'Facebook' },
-  { Icon: MessageCircle, href: '#', label: 'WhatsApp' },
+  { Icon: Instagram, href: 'https://www.instagram.com/OSHYS_OCEANS', label: 'Instagram' },
+  { Icon: Twitter, href: 'https://twitter.com/OSHYS_OCEANS', label: 'Twitter' },
+  { Icon: Ghost, href: 'https://www.snapchat.com/add/OSHYS_OCEANS', label: 'Snapchat' },
+  { Icon: MessageCircle, href: 'https://wa.me/966541000233', label: 'WhatsApp' },
 ];
 
 export const Footer: React.FC = () => {
@@ -25,7 +26,7 @@ export const Footer: React.FC = () => {
     services: [
       { name: t('footer.divingCourses'), href: '/shop/courses' },
       { name: t('footer.divingTrips'), href: '/shop/trips' },
-      { name: t('footer.equipment'), href: '/shop/products' },
+      { name: t('footer.equipment'), href: 'https://coralsandshells.sa' },
     ],
   };
 
@@ -75,8 +76,8 @@ export const Footer: React.FC = () => {
                 <Waves className="w-7 h-7 text-white" />
               </motion.div>
               <div>
-                <span className="text-2xl font-bold text-white block">Coral & Shells</span>
-                <span className="text-sm text-gray-400">Diving Center</span>
+                <span className="text-2xl font-bold text-white block">{t('brand.name')}</span>
+                <span className="text-sm text-gray-400">{t('brand.subtitle')}</span>
               </div>
             </Link>
             <p className="text-gray-400 mb-6 leading-relaxed">
@@ -87,7 +88,7 @@ export const Footer: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Phone className="w-4 h-4 text-primary-400" />
-                <span>+966 50 123 4567</span>
+                <span>+966 54 100 0233</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="w-4 h-4 text-primary-400" />
@@ -154,6 +155,8 @@ export const Footer: React.FC = () => {
                 <motion.a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   whileHover={{ y: -3 }}
                   className="bg-gray-800 hover:bg-gradient-to-br hover:from-primary-600 hover:to-accent-600 p-3 rounded-lg transition-all"
                   aria-label={label}

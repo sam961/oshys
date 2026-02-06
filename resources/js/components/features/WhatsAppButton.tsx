@@ -1,10 +1,12 @@
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export const WhatsAppButton: React.FC = () => {
-  const whatsappNumber = '+966123456789'; // Replace with actual WhatsApp number
-  const message = 'Hello! I would like to inquire about your diving services.';
+  const { t } = useTranslation();
+  const whatsappNumber = '+966541000233';
+  const message = t('whatsapp.defaultMessage');
 
   const handleClick = () => {
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;

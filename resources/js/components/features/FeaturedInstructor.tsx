@@ -92,11 +92,11 @@ export const FeaturedInstructor: React.FC = () => {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Award className="w-5 h-5 text-primary-600" />
-                  <span className="text-sm font-semibold text-gray-900">Certifications</span>
+                  <span className="text-sm font-semibold text-gray-900">{t('common.certifications')}</span>
                 </div>
                 <p className="text-xs text-gray-600 line-clamp-2">
                   {instructor.certifications.slice(0, 2).join(', ')}
-                  {instructor.certifications.length > 2 && ` +${instructor.certifications.length - 2} more`}
+                  {instructor.certifications.length > 2 && ` ${t('common.more', { count: instructor.certifications.length - 2 })}`}
                 </p>
               </motion.div>
             )}

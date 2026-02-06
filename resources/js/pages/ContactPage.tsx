@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Instagram, Facebook, MessageCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Instagram, Twitter, Ghost, MessageCircle } from 'lucide-react';
 import { Section, Card, Button } from '../components/ui';
 import { useTranslation } from 'react-i18next';
 
@@ -33,18 +33,27 @@ export const ContactPage: React.FC = () => {
   return (
     <div className="pt-20">
       {/* Hero */}
-      <Section background="gradient" className="text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-              {t('contactPage.heroTitle')}
-            </span>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {t('contactPage.heroDescription')}
-          </p>
-        </motion.div>
-      </Section>
+      <div className="relative h-96 overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1596436889106-be35e843f974?w=1920&h=600&fit=crop"
+          alt="Contact Us"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-accent-900/80" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center text-white"
+          >
+            <Mail className="w-16 h-16 mx-auto mb-6" />
+            <h1 className="text-6xl font-bold mb-4">{t('contactPage.heroTitle')}</h1>
+            <p className="text-2xl text-white/90">
+              {t('contactPage.heroDescription')}
+            </p>
+          </motion.div>
+        </div>
+      </div>
 
       {/* Contact Info Cards */}
       <Section background="white">
@@ -59,8 +68,7 @@ export const ContactPage: React.FC = () => {
                 <Phone className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{t('contactPage.callUs')}</h3>
-              <p className="text-gray-600">+966 50 123 4567</p>
-              <p className="text-gray-600">+966 55 987 6543</p>
+              <p className="text-gray-600">+966 54 100 0233</p>
             </Card>
           </motion.div>
 
@@ -220,19 +228,33 @@ export const ContactPage: React.FC = () => {
                 <h4 className="font-semibold text-lg mb-4">{t('contactPage.connectWithUs')}</h4>
                 <div className="flex gap-4">
                   <a
-                    href="#"
+                    href="https://www.instagram.com/OSHYS_OCEANS"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-gradient-to-br from-primary-500 to-accent-500 text-white p-3 rounded-full hover:scale-110 transition-transform"
                   >
                     <Instagram className="w-6 h-6" />
                   </a>
                   <a
-                    href="#"
+                    href="https://twitter.com/OSHYS_OCEANS"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-gradient-to-br from-primary-500 to-accent-500 text-white p-3 rounded-full hover:scale-110 transition-transform"
                   >
-                    <Facebook className="w-6 h-6" />
+                    <Twitter className="w-6 h-6" />
                   </a>
                   <a
-                    href="#"
+                    href="https://www.snapchat.com/add/OSHYS_OCEANS"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-br from-primary-500 to-accent-500 text-white p-3 rounded-full hover:scale-110 transition-transform"
+                  >
+                    <Ghost className="w-6 h-6" />
+                  </a>
+                  <a
+                    href="https://wa.me/966541000233"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-gradient-to-br from-primary-500 to-accent-500 text-white p-3 rounded-full hover:scale-110 transition-transform"
                   >
                     <MessageCircle className="w-6 h-6" />

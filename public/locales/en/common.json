@@ -113,7 +113,15 @@
     "results": "results",
     "dontMissOut": "Don't Miss Out!",
     "subscribeNewsletter": "Subscribe to our newsletter to stay updated on upcoming events, workshops, and exclusive offers.",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "certifications": "Certifications",
+    "more": "+{{count}} more"
+  },
+  "ui": {
+    "swipeToSeeMore": "Swipe to see more"
+  },
+  "whatsapp": {
+    "defaultMessage": "Hello! I would like to inquire about your diving services."
   },
   "courses": {
     "title": "Diving Courses",
@@ -378,6 +386,7 @@
     "heroTitle": "Upcoming Events",
     "heroSubtitle": "Join us for exciting workshops, courses, diving trips, and more. Don't miss out on our upcoming events!",
     "upcoming": "Upcoming",
+    "pastEvent": "Past Event",
     "workshops": "Workshops",
     "trips": "Trips",
     "allEvents": "All Events",
@@ -418,9 +427,13 @@
     "eventsOn": "Events on",
     "upcomingEvents": "Upcoming Events",
     "event": "Event",
+    "events": "Events",
     "noEventsOnDate": "No events on this date.",
     "viewUpcomingEvents": "View upcoming events",
-    "noUpcomingEvents": "No upcoming events at the moment."
+    "noUpcomingEvents": "No upcoming events at the moment.",
+    "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "weekdaysShort": ["S", "M", "T", "W", "T", "F", "S"],
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
   },
   "brand": {
     "name": "Coral & Shells",

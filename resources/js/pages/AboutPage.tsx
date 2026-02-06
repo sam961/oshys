@@ -5,7 +5,6 @@ import { Section, Card } from '../components/ui';
 import { CountUp } from '../components/animations';
 import { stats } from '../data/mockData';
 import { useGetTeamMembersQuery } from '../services/api';
-import type { TeamMember } from '../types';
 import { useTranslation } from 'react-i18next';
 
 export const AboutPage: React.FC = () => {
@@ -39,35 +38,28 @@ export const AboutPage: React.FC = () => {
 
   return (
     <div className="pt-20">
-      {/* Hero Section */}
-      <Section background="gradient" className="text-center relative overflow-hidden !py-12 sm:!py-16 lg:!py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto relative z-10"
-        >
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6">
-            <span className="block mb-2 sm:mb-4">{t('about.heroTitle')}</span>
-            <span
-              className="block text-primary-600"
-              style={{
-                background: 'linear-gradient(to right, var(--color-primary-600), var(--color-accent-600))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                paddingTop: '0.3em',
-                paddingBottom: '0.1em',
-                lineHeight: '1.3',
-              }}
-            >
-              {t('about.heroName')}
-            </span>
-          </h1>
-          <p className="text-2xl text-gray-700 mb-4">
-            {t('about.heroSubtitle')}
-          </p>
-        </motion.div>
-      </Section>
+      {/* Hero */}
+      <div className="relative h-96 overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=600&fit=crop"
+          alt="About Us"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-accent-900/80" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center text-white"
+          >
+            <Users className="w-16 h-16 mx-auto mb-6" />
+            <h1 className="text-6xl font-bold mb-4">{t('about.heroTitle')}</h1>
+            <p className="text-2xl text-white/90">
+              {t('about.heroSubtitle')}
+            </p>
+          </motion.div>
+        </div>
+      </div>
 
       {/* Main Content */}
       <Section background="white" className="!py-10 sm:!py-12 lg:!py-16">

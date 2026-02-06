@@ -132,31 +132,6 @@ export const BlogPage: React.FC = () => {
         )}
       </Section>
 
-      {/* Newsletter Section */}
-      <Section background="gradient">
-        <Card className="bg-gradient-to-r from-primary-600 to-accent-600 text-white text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl font-bold mb-4">{t('pages.blog.newsletterTitle')}</h2>
-            <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
-              {t('pages.blog.newsletterDescription')}
-            </p>
-            <div className="max-w-md mx-auto flex gap-3">
-              <input
-                type="email"
-                placeholder={t('pages.blog.emailPlaceholder')}
-                className="flex-1 px-6 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white"
-              />
-              <Button variant="secondary" className="bg-white text-primary-600">
-                {t('pages.blog.subscribe')}
-              </Button>
-            </div>
-          </motion.div>
-        </Card>
-      </Section>
     </div>
   );
 };

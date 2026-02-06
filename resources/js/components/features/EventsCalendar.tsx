@@ -4,13 +4,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Loader2, ArrowRight, X } from 'lucide-react';
 import { Button } from '../ui';
 import { useGetEventsQuery } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 import type { Event } from '../../types';
 
 export const EventsCalendar: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [mobilePopup, setMobilePopup] = useState<{ date: Date; events: Event[] } | null>(null);
   const navigate = useNavigate();
+
+  const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
 
   // Fetch events from API
   const { data: eventsData = [], isLoading: eventsLoading, error: eventsError } = useGetEventsQuery({ active: true });
@@ -39,10 +43,8 @@ export const EventsCalendar: React.FC = () => {
     return acc;
   }, {} as Record<string, typeof eventsData>);
 
-  // Get month name
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
-
+  // Get month name from translations
+  const monthNames = t('calendar.months', { returnObjects: true }) as string[];
   const monthName = monthNames[currentMonth.getMonth()];
   const year = currentMonth.getFullYear();
 
@@ -113,6 +115,10 @@ export const EventsCalendar: React.FC = () => {
     return date.toDateString() === today.toDateString();
   };
 
+  // Get weekday names from translations
+  const weekdaysShort = t('calendar.weekdaysShort', { returnObjects: true }) as string[];
+  const weekdays = t('calendar.weekdays', { returnObjects: true }) as string[];
+
   return (
     <div className="grid lg:grid-cols-2 gap-8">
       {/* Calendar */}
@@ -146,10 +152,10 @@ export const EventsCalendar: React.FC = () => {
 
         {/* Weekday headers */}
         <div className="grid grid-cols-7 gap-1 lg:gap-2 mb-2">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
+          {weekdaysShort.map((day, idx) => (
             <div key={idx} className="text-center text-xs lg:text-sm font-semibold text-gray-600 py-1 lg:py-2">
               <span className="lg:hidden">{day}</span>
-              <span className="hidden lg:inline">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][idx]}</span>
+              <span className="hidden lg:inline">{weekdays[idx]}</span>
             </div>
           ))}
         </div>
@@ -195,7 +201,7 @@ export const EventsCalendar: React.FC = () => {
                     ))}
                     {dayEvents.length > 2 && (
                       <div className={`text-[8px] ${isDateSelected(day) ? 'text-white/80' : 'text-primary-600'}`}>
-                        +{dayEvents.length - 2} more
+                        {t('common.more', { count: dayEvents.length - 2 })}
                       </div>
                     )}
                   </div>
@@ -213,15 +219,15 @@ export const EventsCalendar: React.FC = () => {
         <div className="hidden lg:flex mt-6 items-center gap-4 text-sm flex-wrap">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-primary-100 rounded"></div>
-            <span className="text-gray-600">Has Events</span>
+            <span className="text-gray-600">{t('calendar.hasEvents')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-gradient-to-br from-primary-600 to-accent-600 rounded"></div>
-            <span className="text-gray-600">Selected</span>
+            <span className="text-gray-600">{t('calendar.selected')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 border-2 border-primary-400 rounded"></div>
-            <span className="text-gray-600">Today</span>
+            <span className="text-gray-600">{t('calendar.today')}</span>
           </div>
         </div>
 
@@ -231,7 +237,7 @@ export const EventsCalendar: React.FC = () => {
             to="/events"
             className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors"
           >
-            View All Events <ArrowRight className="w-4 h-4" />
+            {t('events.viewAllEvents')} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
@@ -242,7 +248,7 @@ export const EventsCalendar: React.FC = () => {
               onClick={() => setSelectedDate(null)}
               className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
             >
-              ← Clear selection
+              ← {t('calendar.clearSelection')}
             </button>
           </div>
         )}
@@ -268,7 +274,7 @@ export const EventsCalendar: React.FC = () => {
             >
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <h3 className="font-bold text-lg">
-                  {mobilePopup.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                  {mobilePopup.date.toLocaleDateString(dateLocale, { month: 'long', day: 'numeric' })}
                 </h3>
                 <button
                   onClick={() => setMobilePopup(null)}
@@ -289,13 +295,13 @@ export const EventsCalendar: React.FC = () => {
                     <p className="text-sm text-gray-600 line-clamp-2 mb-2">{event.description}</p>
                     <div className="flex items-center gap-2 text-xs text-gray-500">
                       <span>
-                        {new Date(event.start_date).toLocaleTimeString('en-US', {
+                        {new Date(event.start_date).toLocaleTimeString(dateLocale, {
                           hour: 'numeric',
                           minute: '2-digit',
                         })}
                       </span>
                       <span className="px-2 py-0.5 bg-primary-200 text-primary-700 rounded-full capitalize">
-                        {event.type}
+                        {t(`events.${event.type}`, event.type)}
                       </span>
                     </div>
                   </Link>
@@ -316,13 +322,13 @@ export const EventsCalendar: React.FC = () => {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold text-gray-900">
             {selectedDate
-              ? `Events on ${selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
-              : 'Upcoming Events'
+              ? `${t('calendar.eventsOn')} ${selectedDate.toLocaleDateString(dateLocale, { month: 'long', day: 'numeric', year: 'numeric' })}`
+              : t('calendar.upcomingEvents')
             }
           </h3>
           {selectedDate && (
             <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold">
-              {selectedDateEvents.length} {selectedDateEvents.length === 1 ? 'Event' : 'Events'}
+              {selectedDateEvents.length} {selectedDateEvents.length === 1 ? t('calendar.event') : t('calendar.events')}
             </span>
           )}
         </div>
@@ -332,19 +338,19 @@ export const EventsCalendar: React.FC = () => {
           </div>
         ) : eventsError ? (
           <div className="text-center py-12 bg-white rounded-xl shadow-lg p-6">
-            <p className="text-red-600">Failed to load events. Please try again later.</p>
+            <p className="text-red-600">{t('events.loadingError')}</p>
           </div>
         ) : selectedDate ? (
           // Show events for selected date
           selectedDateEvents.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-xl shadow-lg p-6">
               <CalendarIcon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-              <p className="text-gray-600 mb-4">No events on this date.</p>
+              <p className="text-gray-600 mb-4">{t('calendar.noEventsOnDate')}</p>
               <button
                 onClick={() => setSelectedDate(null)}
                 className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
               >
-                View upcoming events
+                {t('calendar.viewUpcomingEvents')}
               </button>
             </div>
           ) : (
@@ -366,20 +372,20 @@ export const EventsCalendar: React.FC = () => {
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2">{event.description}</p>
                         <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                           <span>
-                            {new Date(event.start_date).toLocaleTimeString('en-US', {
+                            {new Date(event.start_date).toLocaleTimeString(dateLocale, {
                               hour: 'numeric',
                               minute: '2-digit',
                             })}
                           </span>
                           <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold capitalize">
-                            {event.type}
+                            {t(`events.${event.type}`, event.type)}
                           </span>
                           {event.location && (
                             <span className="text-gray-600">{event.location}</span>
                           )}
                         </div>
                         <div className="mt-3 flex items-center gap-1 text-primary-600 text-sm font-medium">
-                          View Details <ArrowRight className="w-4 h-4" />
+                          {t('events.viewDetails')} <ArrowRight className="w-4 h-4" />
                         </div>
                       </div>
                     </div>
@@ -392,13 +398,13 @@ export const EventsCalendar: React.FC = () => {
                   className="text-primary-600 hover:text-primary-700 font-medium transition-colors flex items-center gap-2"
                 >
                   <CalendarIcon className="w-4 h-4" />
-                  View upcoming events
+                  {t('calendar.viewUpcomingEvents')}
                 </button>
                 <Link
                   to="/events"
                   className="text-primary-600 hover:text-primary-700 font-medium transition-colors flex items-center gap-2"
                 >
-                  All Events <ArrowRight className="w-4 h-4" />
+                  {t('events.allEvents')} <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -406,7 +412,7 @@ export const EventsCalendar: React.FC = () => {
         ) : upcomingEvents.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl shadow-lg p-6">
             <CalendarIcon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600">No upcoming events at the moment.</p>
+            <p className="text-gray-600">{t('calendar.noUpcomingEvents')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -425,27 +431,27 @@ export const EventsCalendar: React.FC = () => {
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">{event.description}</p>
                       <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                         <span>
-                          {new Date(event.start_date).toLocaleDateString('en-US', {
+                          {new Date(event.start_date).toLocaleDateString(dateLocale, {
                             month: 'long',
                             day: 'numeric',
                             year: 'numeric',
                           })}
                         </span>
                         <span>
-                          {new Date(event.start_date).toLocaleTimeString('en-US', {
+                          {new Date(event.start_date).toLocaleTimeString(dateLocale, {
                             hour: 'numeric',
                             minute: '2-digit',
                           })}
                         </span>
                         <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold capitalize">
-                          {event.type}
+                          {t(`events.${event.type}`, event.type)}
                         </span>
                         {event.location && (
                           <span className="text-gray-600">{event.location}</span>
                         )}
                       </div>
                       <div className="mt-3 flex items-center gap-1 text-primary-600 text-sm font-medium">
-                        View Details <ArrowRight className="w-4 h-4" />
+                        {t('events.viewDetails')} <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
                   </div>
@@ -457,7 +463,7 @@ export const EventsCalendar: React.FC = () => {
                 to="/events"
                 className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium transition-colors"
               >
-                View All Events <ArrowRight className="w-4 h-4" />
+                {t('events.viewAllEvents')} <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>

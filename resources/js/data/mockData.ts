@@ -7,7 +7,7 @@ export const services = [
     description: 'Premium quality diving equipment and gear for all your underwater adventures.',
     icon: 'Package',
     image: null,
-    link: '/shop/products',
+    link: 'https://coralsandshells.sa',
   },
   {
     id: 2,

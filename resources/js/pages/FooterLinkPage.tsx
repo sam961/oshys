@@ -7,7 +7,8 @@ import { useGetFooterLinkBySlugQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
 export const FooterLinkPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
   const { slug } = useParams<{ slug: string }>();
   const { data: page, isLoading, error } = useGetFooterLinkBySlugQuery(slug || '');
 
@@ -69,7 +70,7 @@ export const FooterLinkPage: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="text-lg text-gray-300"
           >
-            {t('common.lastUpdated', 'Last updated')}: {new Date(page.updated_at).toLocaleDateString('en-US', {
+            {t('common.lastUpdated', 'Last updated')}: {new Date(page.updated_at).toLocaleDateString(dateLocale, {
               month: 'long',
               day: 'numeric',
               year: 'numeric',

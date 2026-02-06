@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface HorizontalScrollProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   className = '',
   itemCount,
 }) => {
+  const { t } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -51,7 +53,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
           className="flex items-center gap-1"
         >
-          <span>Swipe to see more</span>
+          <span>{t('ui.swipeToSeeMore')}</span>
           <ChevronRight className="w-4 h-4" />
         </motion.div>
       </div>

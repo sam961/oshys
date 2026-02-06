@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, Clock, BarChart3, Loader2, Filter, Grid3x3, List, Heart, BookOpen, Users, Award, Star, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, Clock, BarChart3, Loader2, Filter, Grid3x3, List, BookOpen, Users, Award, Star, CheckCircle2 } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { BookingModal } from '../components/features/BookingModal';
@@ -204,22 +204,6 @@ export const CoursesPage: React.FC = () => {
             {sortedCourses.map((course) => (
               viewMode === 'grid' ? (
                 <Card key={course.id} className="h-full group cursor-pointer overflow-hidden relative">
-                  {/* Quick Actions */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    className="absolute top-3 right-3 flex flex-col gap-2 z-10"
-                  >
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 bg-white rounded-full shadow-lg hover:bg-accent-50 transition-colors"
-                      title={t('pages.courses.addToFavorites')}
-                    >
-                      <Heart className="w-4 h-4 text-gray-700" />
-                    </motion.button>
-                  </motion.div>
-
                   <div className="relative overflow-hidden rounded-xl mb-4">
                     {(course as any).image_url ? (
                       <img
@@ -318,17 +302,10 @@ export const CoursesPage: React.FC = () => {
 
                     <div className="flex-1 flex flex-col justify-between py-2">
                       <div>
-                        <div className="flex items-start justify-between mb-2">
+                        <div className="mb-2">
                           <h3 className="text-2xl font-bold group-hover:text-accent-600 transition-colors">
                             {course.name}
                           </h3>
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="p-2 hover:bg-accent-50 rounded-full transition-colors"
-                          >
-                            <Heart className="w-5 h-5 text-gray-700" />
-                          </motion.button>
                         </div>
                         <p className="text-gray-600 mb-4 line-clamp-2">{course.description}</p>
 

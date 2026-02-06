@@ -7,7 +7,8 @@ import { useGetSocialInitiativeQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
 export const InitiativeDetailPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
   const { id } = useParams<{ id: string }>();
   const { data: initiative, isLoading, error } = useGetSocialInitiativeQuery(Number(id));
 
@@ -23,8 +24,8 @@ export const InitiativeDetailPage: React.FC = () => {
     return (
       <div className="pt-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Initiative Not Found</h1>
-          <p className="text-gray-600">The initiative you're looking for doesn't exist or has been removed.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('common.initiativeNotFound')}</h1>
+          <p className="text-gray-600">{t('common.initiativeNotFoundMessage')}</p>
         </div>
       </div>
     );
@@ -80,12 +81,12 @@ export const InitiativeDetailPage: React.FC = () => {
               <Calendar className="w-5 h-5" />
               <span>
                 {initiative.published_at
-                  ? new Date(initiative.published_at).toLocaleDateString('en-US', {
+                  ? new Date(initiative.published_at).toLocaleDateString(dateLocale, {
                       month: 'long',
                       day: 'numeric',
                       year: 'numeric',
                     })
-                  : new Date(initiative.created_at).toLocaleDateString('en-US', {
+                  : new Date(initiative.created_at).toLocaleDateString(dateLocale, {
                       month: 'long',
                       day: 'numeric',
                       year: 'numeric',
@@ -94,7 +95,7 @@ export const InitiativeDetailPage: React.FC = () => {
             </div>
             <button className="ml-auto flex items-center gap-2 text-primary-600 hover:text-primary-700 transition-colors">
               <Share2 className="w-5 h-5" />
-              <span className="font-medium">Share</span>
+              <span className="font-medium">{t('common.share')}</span>
             </button>
           </motion.div>
 

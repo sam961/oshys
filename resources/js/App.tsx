@@ -6,7 +6,6 @@ import { Footer } from './components/layout/Footer';
 import { WhatsAppButton } from './components/features/WhatsAppButton';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
-import { ProductsPage } from './pages/ProductsPage';
 import { CoursesPage } from './pages/CoursesPage';
 import { TripsPage } from './pages/TripsPage';
 import { BlogPage } from './pages/BlogPage';
@@ -110,7 +109,6 @@ const AppRoutes: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
-              <Route path="/shop/products" element={<ProductsPage />} />
               <Route path="/shop/courses" element={<CoursesPage />} />
               <Route path="/shop/trips" element={<TripsPage />} />
               <Route path="/blog" element={<BlogPage />} />

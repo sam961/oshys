@@ -6,3 +6,7 @@ export { useSmoothScroll } from './SmoothScroll';
 export { ParallaxSection, ParallaxImage } from './ParallaxSection';
 export { ScrollToTop } from './ScrollToTop';
 export { CountUp } from './CountUp';
+export { UnderwaterOverlay } from './UnderwaterOverlay';
+export { SeaLifeDecorations } from './SeaLifeDecorations';
+export { DivingDecorations } from './DivingDecorations';
+export { OceanDecorations } from './OceanDecorations';

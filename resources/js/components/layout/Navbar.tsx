@@ -1,39 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown, Waves, CalendarDays } from 'lucide-react';
+import { Menu, X, Waves, CalendarDays, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { LanguageSwitcher } from '../shared/LanguageSwitcher';
+
+interface NavItem {
+  name: string;
+  href: string;
+  external?: boolean;
+}
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleCalendarClick = () => {
     if (location.pathname === '/') {
-      // Already on home page, just scroll to calendar
       const element = document.getElementById('calendar');
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      // Set flag in sessionStorage and navigate to home page
       sessionStorage.setItem('scrollToCalendar', 'true');
       navigate('/');
     }
   };
 
-  // Handle scroll to calendar after navigation
   useEffect(() => {
     if (location.pathname === '/' && sessionStorage.getItem('scrollToCalendar') === 'true') {
-      // Clear the flag first
       sessionStorage.removeItem('scrollToCalendar');
-      // Wait for page to render and ScrollToTop to finish
       setTimeout(() => {
         const element = document.getElementById('calendar');
         if (element) {
@@ -43,21 +43,18 @@ export const Navbar: React.FC = () => {
     }
   }, [location.pathname]);
 
-  const navigation = [
+  const mainNav: NavItem[] = [
     { name: t('nav.home'), href: '/' },
     { name: t('nav.about'), href: '/about' },
-    {
-      name: t('nav.shop'),
-      href: '/shop',
-      dropdown: [
-        { name: t('shop.allProducts'), href: '/shop/products' },
-        { name: t('courses.allCourses'), href: '/shop/courses' },
-        { name: t('trips.allTrips'), href: '/shop/trips' },
-      ],
-    },
     { name: t('nav.blog'), href: '/blog' },
     { name: t('nav.initiatives'), href: '/initiatives' },
     { name: t('nav.contact'), href: '/contact' },
+  ];
+
+  const shopNav: NavItem[] = [
+    { name: t('nav.shop'), href: 'https://coralsandshells.sa', external: true },
+    { name: t('courses.allCourses'), href: '/shop/courses' },
+    { name: t('trips.allTrips'), href: '/shop/trips' },
   ];
 
   useEffect(() => {
@@ -70,7 +67,6 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     setIsOpen(false);
-    setActiveDropdown(null);
   }, [location]);
 
   return (
@@ -97,53 +93,52 @@ export const Navbar: React.FC = () => {
               </motion.div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                  Coral & Shells
+                  {t('brand.name')}
                 </span>
-                <span className="text-xs text-gray-600">Diving Center</span>
+                <span className="text-xs text-gray-600">{t('brand.subtitle')}</span>
               </div>
             </Link>
           </div>
 
           {/* Desktop Navigation - Center */}
           <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
-            {navigation.map((item) => (
-              <div
-                key={item.name}
-                className="relative"
-                onMouseEnter={() => item.dropdown && setActiveDropdown(item.name)}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                {item.dropdown ? (
-                  <>
-                    <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-primary-50">
-                      {item.name}
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                    <AnimatePresence>
-                      {activeDropdown === item.name && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden"
-                        >
-                          {item.dropdown.map((subItem) => (
-                            <Link
-                              key={subItem.name}
-                              to={subItem.href}
-                              className="block px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
-                            >
-                              {subItem.name}
-                            </Link>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </>
+            {mainNav.map((item) => (
+              <div key={item.name} className="relative">
+                <Link
+                  to={item.href}
+                  className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-primary-50"
+                >
+                  {item.name}
+                  {location.pathname === item.href && (
+                    <motion.div
+                      layoutId="navbar-indicator"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-600 to-accent-600"
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </Link>
+              </div>
+            ))}
+
+            {/* Divider */}
+            <div className="w-px h-5 bg-gray-300 mx-2" />
+
+            {shopNav.map((item) => (
+              <div key={item.name} className="relative">
+                {item.external ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors rounded-lg hover:bg-primary-50"
+                  >
+                    {item.name}
+                    <ExternalLink className="w-3 h-3 opacity-50" />
+                  </a>
                 ) : (
                   <Link
                     to={item.href}
-                    className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-primary-50"
+                    className="relative px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors rounded-lg hover:bg-primary-50"
                   >
                     {item.name}
                     {location.pathname === item.href && (
@@ -159,17 +154,19 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          {/* Right Side - Calendar, Language Switcher and Book Now Button */}
+          {/* Right Side - Calendar, Language Switcher and {t('common.bookNow')} Button */}
           <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
             <button
               onClick={handleCalendarClick}
               className="p-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
-              title="View Calendar"
+              title={t('brand.viewCalendar')}
             >
               <CalendarDays className="w-5 h-5" />
             </button>
             <LanguageSwitcher />
-            <Button size="sm">Book Now</Button>
+            <Link to="/contact">
+              <Button size="sm">{t('common.bookNow')}</Button>
+            </Link>
           </div>
 
           {/* Mobile - Calendar Icon and Menu Button */}
@@ -177,7 +174,7 @@ export const Navbar: React.FC = () => {
             <button
               onClick={handleCalendarClick}
               className="p-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
-              title="View Calendar"
+              title={t('brand.viewCalendar')}
             >
               <CalendarDays className="w-5 h-5" />
             </button>
@@ -201,44 +198,43 @@ export const Navbar: React.FC = () => {
             className="lg:hidden bg-white border-t border-gray-200"
           >
             <div className="px-4 py-4 space-y-2">
-              {navigation.map((item) => (
+              {mainNav.map((item) => (
                 <div key={item.name}>
-                  {item.dropdown ? (
-                    <>
-                      <button
-                        onClick={() =>
-                          setActiveDropdown(activeDropdown === item.name ? null : item.name)
-                        }
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-gray-700 hover:bg-primary-50 transition-colors"
-                      >
-                        {item.name}
-                        <ChevronDown
-                          className={`w-4 h-4 transition-transform ${
-                            activeDropdown === item.name ? 'rotate-180' : ''
-                          }`}
-                        />
-                      </button>
-                      {activeDropdown === item.name && (
-                        <div className="ml-4 mt-2 space-y-1">
-                          {item.dropdown.map((subItem) => (
-                            <Link
-                              key={subItem.name}
-                              to={subItem.href}
-                              className="block px-4 py-2 text-sm text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                            >
-                              {subItem.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </>
+                  <Link
+                    to={item.href}
+                    className={`block px-4 py-3 rounded-lg transition-colors ${
+                      location.pathname === item.href
+                        ? 'bg-primary-50 text-primary-600 font-medium'
+                        : 'text-gray-700 hover:bg-primary-50'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                </div>
+              ))}
+
+              {/* Divider */}
+              <div className="h-px bg-gray-200 mx-4" />
+
+              {shopNav.map((item) => (
+                <div key={item.name}>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between px-4 py-3 rounded-lg text-primary-600 hover:bg-primary-50 transition-colors"
+                    >
+                      {item.name}
+                      <ExternalLink className="w-4 h-4 opacity-50" />
+                    </a>
                   ) : (
                     <Link
                       to={item.href}
                       className={`block px-4 py-3 rounded-lg transition-colors ${
                         location.pathname === item.href
                           ? 'bg-primary-50 text-primary-600 font-medium'
-                          : 'text-gray-700 hover:bg-primary-50'
+                          : 'text-primary-600 hover:bg-primary-50'
                       }`}
                     >
                       {item.name}
@@ -246,11 +242,14 @@ export const Navbar: React.FC = () => {
                   )}
                 </div>
               ))}
+
               <div className="pt-2 space-y-2">
                 <div className="px-4">
                   <LanguageSwitcher />
                 </div>
-                <Button className="w-full" size="sm">Book Now</Button>
+                <Link to="/contact">
+                  <Button className="w-full" size="sm">{t('common.bookNow')}</Button>
+                </Link>
               </div>
             </div>
           </motion.div>

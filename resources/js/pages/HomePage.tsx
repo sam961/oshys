@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, Compass, GraduationCap, ArrowRight, Gift, ShoppingBag, Instagram, Facebook, MessageCircle, Loader2 } from 'lucide-react';
+import { Package, Compass, GraduationCap, ArrowRight, Gift, ShoppingBag, Instagram, Twitter, Ghost, MessageCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Lottie from 'lottie-react';
 import { HeroSlider } from '../components/features/HeroSlider';
 import { EventsCalendar } from '../components/features/EventsCalendar';
 import { BookingModal } from '../components/features/BookingModal';
 import { FeaturedInstructor } from '../components/features/FeaturedInstructor';
 import { Section, Card, Button, GridSkeleton, HorizontalScroll, SaudiRiyalPrice } from '../components/ui';
-import { LiquidBackground, WaveBackground } from '../components/animations';
+import { LiquidBackground, WaveBackground, UnderwaterOverlay, SeaLifeDecorations, DivingDecorations, OceanDecorations } from '../components/animations';
 import { services } from '../data/mockData';
 import { useGetCoursesQuery, useGetTripsQuery, useGetProductsQuery, useGetBlogPostsQuery } from '../services/api';
 import type { Course, Trip, Product, BlogPost } from '../types';
@@ -46,6 +47,15 @@ export const HomePage: React.FC = () => {
     setSelectedTrip(null);
   };
 
+  // Lottie diver animation
+  const [diverData, setDiverData] = useState<object | null>(null);
+  useEffect(() => {
+    fetch('/animations/snorkeling.json')
+      .then((res) => res.json())
+      .then(setDiverData)
+      .catch(() => {});
+  }, []);
+
   // Fetch featured data from API
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useGetCoursesQuery({ active: true, featured: true });
   const { data: trips = [], isLoading: tripsLoading, error: tripsError } = useGetTripsQuery({ active: true, featured: true });
@@ -65,6 +75,30 @@ export const HomePage: React.FC = () => {
         {/* Animated liquid background */}
         <LiquidBackground />
         <WaveBackground variant="primary" opacity={0.05} />
+        <UnderwaterOverlay bubbleCount={20} showLightRays={false} showWave={false} />
+
+        {/* Lottie Diver - Left side */}
+        {diverData && (
+          <motion.div
+            className="absolute left-[-2%] bottom-[5%] w-[200px] h-[200px] sm:w-[280px] sm:h-[280px] lg:w-[380px] lg:h-[380px] pointer-events-none hidden sm:block"
+            animate={{
+              y: [0, -12, 0, 8, 0],
+              x: [0, 6, 0, -4, 0],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            aria-hidden="true"
+          >
+            <Lottie
+              animationData={diverData}
+              loop
+              className="w-full h-full opacity-80 drop-shadow-[0_0_25px_rgba(6,182,212,0.2)]"
+            />
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -87,7 +121,7 @@ export const HomePage: React.FC = () => {
           {/* Social Media Icons */}
           <div className="flex gap-6 justify-center mb-8">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/OSHYS_OCEANS"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-700 hover:text-primary-600 transition-colors"
@@ -95,42 +129,55 @@ export const HomePage: React.FC = () => {
               <Instagram className="w-6 h-6" />
             </a>
             <a
-              href="https://wa.me/"
+              href="https://twitter.com/OSHYS_OCEANS"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 hover:text-primary-600 transition-colors"
+            >
+              <Twitter className="w-6 h-6" />
+            </a>
+            <a
+              href="https://www.snapchat.com/add/OSHYS_OCEANS"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 hover:text-primary-600 transition-colors"
+            >
+              <Ghost className="w-6 h-6" />
+            </a>
+            <a
+              href="https://wa.me/966541000233"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-700 hover:text-primary-600 transition-colors"
             >
               <MessageCircle className="w-6 h-6" />
             </a>
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              <Facebook className="w-6 h-6" />
-            </a>
           </div>
 
           <div className="flex gap-4 justify-center">
-            <Button size="lg">
-              {t('home.bookCourse')}
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-            <Button variant="outline" size="lg">
-              {t('home.exploreTrips')}
-            </Button>
+            <Link to="/shop/courses">
+              <Button size="lg">
+                {t('home.bookCourse')}
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+            <Link to="/shop/trips">
+              <Button variant="outline" size="lg">
+                {t('home.exploreTrips')}
+              </Button>
+            </Link>
           </div>
         </motion.div>
       </Section>
 
       {/* Services Section */}
-      <Section background="white">
+      <Section background="white" className="relative overflow-hidden">
+        <SeaLifeDecorations />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-16 relative z-10"
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
             {t('home.servicesTitle')}
@@ -140,7 +187,7 @@ export const HomePage: React.FC = () => {
           </p>
         </motion.div>
 
-        <HorizontalScroll itemCount={services.length} className="md:grid-cols-3">
+        <HorizontalScroll itemCount={services.length} className="md:grid-cols-3 relative z-10">
           {services.map((service, index) => {
             const icons = {
               Package: Package,
@@ -149,8 +196,17 @@ export const HomePage: React.FC = () => {
             };
             const Icon = icons[service.icon as keyof typeof icons];
 
+            const isExternal = service.link.startsWith('http');
+            const Wrapper = isExternal
+              ? (props: { children: React.ReactNode }) => (
+                  <a href={service.link} target="_blank" rel="noopener noreferrer" className="shrink-0 w-[80vw] snap-center sm:w-auto">{props.children}</a>
+                )
+              : (props: { children: React.ReactNode }) => (
+                  <Link to={service.link} className="shrink-0 w-[80vw] snap-center sm:w-auto">{props.children}</Link>
+                );
+
             return (
-              <Link key={service.id} to={service.link} className="shrink-0 w-[80vw] snap-center sm:w-auto">
+              <Wrapper key={service.id}>
                 <Card className="group cursor-pointer h-full">
                     <div className="relative overflow-hidden rounded-xl mb-6">
                       <img
@@ -174,15 +230,16 @@ export const HomePage: React.FC = () => {
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </div>
                 </Card>
-              </Link>
+              </Wrapper>
             );
           })}
         </HorizontalScroll>
       </Section>
 
       {/* More About Us Section */}
-      <Section background="gray">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <Section background="gray" className="relative overflow-hidden">
+        <DivingDecorations />
+        <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -217,27 +274,31 @@ export const HomePage: React.FC = () => {
       </Section>
 
       {/* Calendar Section */}
-      <Section background="white" id="calendar">
+      <Section background="white" id="calendar" className="relative overflow-hidden">
+        <OceanDecorations variant="jellyfish" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-12 relative z-10"
         >
           <h2 className="text-4xl font-bold mb-4">{t('home.calendarTitle')}</h2>
           <p className="text-xl text-gray-600">{t('home.calendarSubtitle')}</p>
         </motion.div>
 
-        <EventsCalendar />
+        <div className="relative z-10">
+          <EventsCalendar />
+        </div>
       </Section>
 
       {/* Featured Trips */}
-      <Section background="gradient">
+      <Section background="gradient" className="relative overflow-hidden">
+        <OceanDecorations variant="waves" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-16 relative z-10"
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
             {t('home.tripsTitle')}
@@ -247,64 +308,67 @@ export const HomePage: React.FC = () => {
           </p>
         </motion.div>
 
-        {tripsLoading ? (
-          <GridSkeleton count={3} />
-        ) : tripsError ? (
-          <div className="text-center py-12">
-            <p className="text-red-600">{t('home.loadingError')}</p>
-          </div>
-        ) : (
-          <>
-            <HorizontalScroll itemCount={Math.min(trips.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
-              {trips.slice(0, 3).map((trip) => (
-                  <Card key={trip.id} className="group cursor-pointer overflow-hidden shrink-0 w-[80vw] snap-center sm:w-auto">
-                    <div className="relative overflow-hidden rounded-xl mb-4">
-                      <img
-                        src={trip.image || '/placeholder.svg'}
-                        alt={trip.name}
-                        className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute top-4 right-4 bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg">
-                        <SaudiRiyalPrice
-                          amount={trip.price}
-                          className="font-bold text-primary-600 text-sm sm:text-base"
-                        />
-                      </div>
-                    </div>
-                    <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{trip.description}</p>
-                    <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500 mb-4">
-                      <span>{trip.duration}</span>
-                      <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full">
-                        {trip.difficulty}
-                      </span>
-                    </div>
-                    <Button variant="outline" className="w-full" onClick={(e) => handleTripClick(e, trip)}>
-                      {t('trips.bookNow')}
-                    </Button>
-                  </Card>
-              ))}
-            </HorizontalScroll>
-
-            <div className="text-center mt-12">
-              <Link to="/shop/trips">
-                <Button size="lg">
-                  {t('home.viewAllTrips')}
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
-              </Link>
+        <div className="relative z-10">
+          {tripsLoading ? (
+            <GridSkeleton count={3} />
+          ) : tripsError ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">{t('home.loadingError')}</p>
             </div>
-          </>
-        )}
+          ) : (
+            <>
+              <HorizontalScroll itemCount={Math.min(trips.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
+                {trips.slice(0, 3).map((trip) => (
+                    <Card key={trip.id} className="group cursor-pointer overflow-hidden shrink-0 w-[80vw] snap-center sm:w-auto">
+                      <div className="relative overflow-hidden rounded-xl mb-4">
+                        <img
+                          src={trip.image || '/placeholder.svg'}
+                          alt={trip.name}
+                          className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute top-4 right-4 bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg">
+                          <SaudiRiyalPrice
+                            amount={trip.price}
+                            className="font-bold text-primary-600 text-sm sm:text-base"
+                          />
+                        </div>
+                      </div>
+                      <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{trip.description}</p>
+                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500 mb-4">
+                        <span>{trip.duration}</span>
+                        <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full">
+                          {trip.difficulty}
+                        </span>
+                      </div>
+                      <Button variant="outline" className="w-full" onClick={(e) => handleTripClick(e, trip)}>
+                        {t('trips.bookNow')}
+                      </Button>
+                    </Card>
+                ))}
+              </HorizontalScroll>
+
+              <div className="text-center mt-12">
+                <Link to="/shop/trips">
+                  <Button size="lg">
+                    {t('home.viewAllTrips')}
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
       </Section>
 
       {/* Featured Courses */}
-      <Section background="white">
+      <Section background="white" className="relative overflow-hidden">
+        <OceanDecorations variant="reef" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-16 relative z-10"
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
             {t('home.coursesTitle')}
@@ -314,58 +378,61 @@ export const HomePage: React.FC = () => {
           </p>
         </motion.div>
 
-        {coursesLoading ? (
-          <GridSkeleton count={3} />
-        ) : coursesError ? (
-          <div className="text-center py-12">
-            <p className="text-red-600">{t('home.loadingError')}</p>
-          </div>
-        ) : (
-          <>
-            <HorizontalScroll itemCount={Math.min(courses.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
-              {courses.slice(0, 3).map((course) => (
-                  <Card key={course.id} className="h-full shrink-0 w-[80vw] snap-center sm:w-auto group cursor-pointer">
-                    <div className="relative overflow-hidden rounded-xl mb-4">
-                      <img
-                        src={course.image || '/placeholder.svg'}
-                        alt={course.name}
-                        className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-4 right-4 bg-accent-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
-                        {course.level}
-                      </div>
-                    </div>
-                    <h3 className="text-lg sm:text-xl font-bold mb-2">{course.name}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
-                      <SaudiRiyalPrice amount={course.price} className="text-base sm:text-lg font-bold text-primary-600" />
-                    </div>
-                    <Button variant="primary" className="w-full" onClick={(e) => handleCourseClick(e, course)}>
-                      {t('home.enrollNow')}
-                    </Button>
-                  </Card>
-              ))}
-            </HorizontalScroll>
-
-            <div className="text-center mt-12">
-              <Link to="/shop/courses">
-                <Button size="lg" variant="outline">
-                  {t('home.viewAllCourses')}
-                </Button>
-              </Link>
+        <div className="relative z-10">
+          {coursesLoading ? (
+            <GridSkeleton count={3} />
+          ) : coursesError ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">{t('home.loadingError')}</p>
             </div>
-          </>
-        )}
+          ) : (
+            <>
+              <HorizontalScroll itemCount={Math.min(courses.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
+                {courses.slice(0, 3).map((course) => (
+                    <Card key={course.id} className="h-full shrink-0 w-[80vw] snap-center sm:w-auto group cursor-pointer">
+                      <div className="relative overflow-hidden rounded-xl mb-4">
+                        <img
+                          src={course.image || '/placeholder.svg'}
+                          alt={course.name}
+                          className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute top-4 right-4 bg-accent-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
+                          {course.level}
+                        </div>
+                      </div>
+                      <h3 className="text-lg sm:text-xl font-bold mb-2">{course.name}</h3>
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
+                        <SaudiRiyalPrice amount={course.price} className="text-base sm:text-lg font-bold text-primary-600" />
+                      </div>
+                      <Button variant="primary" className="w-full" onClick={(e) => handleCourseClick(e, course)}>
+                        {t('home.enrollNow')}
+                      </Button>
+                    </Card>
+                ))}
+              </HorizontalScroll>
+
+              <div className="text-center mt-12">
+                <Link to="/shop/courses">
+                  <Button size="lg" variant="outline">
+                    {t('home.viewAllCourses')}
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
       </Section>
 
       {/* Featured Products */}
-      <Section background="gray">
+      <Section background="gray" className="relative overflow-hidden">
+        <OceanDecorations variant="treasure" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-16 relative z-10"
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
             {t('home.productsTitle')}
@@ -375,64 +442,67 @@ export const HomePage: React.FC = () => {
           </p>
         </motion.div>
 
-        {productsLoading ? (
-          <GridSkeleton count={4} />
-        ) : productsError ? (
-          <div className="text-center py-12">
-            <p className="text-red-600">{t('home.loadingError')}</p>
-          </div>
-        ) : (
-          <>
-            <HorizontalScroll itemCount={Math.min(products.length, 4)} className="sm:grid-cols-2 lg:grid-cols-4">
-              {products.slice(0, 4).map((product) => (
-                <div key={product.id} className="shrink-0 w-[65vw] snap-center sm:w-auto">
-                  <Card className="group cursor-pointer h-full">
-                    <div className="relative overflow-hidden rounded-xl mb-4">
-                      <img
-                        src={product.image || '/placeholder.svg'}
-                        alt={product.name}
-                        className="w-full h-36 sm:h-40 object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      {!product.in_stock && (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <span className="bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold">
-                            {t('home.outOfStock')}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="text-base sm:text-lg font-bold mb-2 line-clamp-2">{product.name}</h3>
-                    <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">{product.description}</p>
-                    <div className="flex items-center justify-between">
-                      <SaudiRiyalPrice amount={product.price} className="text-lg sm:text-xl font-bold text-primary-600" />
-                      <Button size="sm" variant="ghost">
-                        <ShoppingBag className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </Card>
-                </div>
-              ))}
-            </HorizontalScroll>
-
-            <div className="text-center mt-12">
-              <Link to="/shop/products">
-                <Button size="lg">
-                  <ShoppingBag className="w-5 h-5" />
-                  {t('home.shopAllProducts')}
-                </Button>
-              </Link>
+        <div className="relative z-10">
+          {productsLoading ? (
+            <GridSkeleton count={4} />
+          ) : productsError ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">{t('home.loadingError')}</p>
             </div>
-          </>
-        )}
+          ) : (
+            <>
+              <HorizontalScroll itemCount={Math.min(products.length, 4)} className="sm:grid-cols-2 lg:grid-cols-4">
+                {products.slice(0, 4).map((product) => (
+                  <div key={product.id} className="shrink-0 w-[65vw] snap-center sm:w-auto">
+                    <Card className="group cursor-pointer h-full">
+                      <div className="relative overflow-hidden rounded-xl mb-4">
+                        <img
+                          src={product.image || '/placeholder.svg'}
+                          alt={product.name}
+                          className="w-full h-36 sm:h-40 object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                        {!product.in_stock && (
+                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                            <span className="bg-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold">
+                              {t('home.outOfStock')}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="text-base sm:text-lg font-bold mb-2 line-clamp-2">{product.name}</h3>
+                      <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">{product.description}</p>
+                      <div className="flex items-center justify-between">
+                        <SaudiRiyalPrice amount={product.price} className="text-lg sm:text-xl font-bold text-primary-600" />
+                        <Button size="sm" variant="ghost">
+                          <ShoppingBag className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </Card>
+                  </div>
+                ))}
+              </HorizontalScroll>
+
+              <div className="text-center mt-12">
+                <a href="https://coralsandshells.sa" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg">
+                    <ShoppingBag className="w-5 h-5" />
+                    {t('home.shopAllProducts')}
+                  </Button>
+                </a>
+              </div>
+            </>
+          )}
+        </div>
       </Section>
 
       {/* Blog Posts Section - Hidden on mobile */}
-      <Section background="white" className="hidden sm:block">
+      <Section background="white" className="hidden sm:block relative overflow-hidden">
+        <OceanDecorations variant="deep-sea" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-16 relative z-10"
         >
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
             {t('home.blogTitle')}
@@ -442,69 +512,72 @@ export const HomePage: React.FC = () => {
           </p>
         </motion.div>
 
-        {blogPostsLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
-          </div>
-        ) : blogPostsError ? (
-          <div className="text-center py-12">
-            <p className="text-red-600">{t('home.loadingError')}</p>
-          </div>
-        ) : (
-          <>
-            <HorizontalScroll itemCount={Math.min(blogPosts.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
-              {blogPosts.slice(0, 3).map((post) => (
-                <div key={post.id} className="shrink-0 w-[80vw] snap-center sm:w-auto">
-                  <Link to="/blog">
-                    <Card className="group cursor-pointer h-full overflow-hidden">
-                      <div className="relative overflow-hidden rounded-xl mb-4">
-                        <img
-                          src={post.image || '/placeholder.svg'}
-                          alt={post.title}
-                          className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        {post.category && (
-                          <div className="absolute top-4 left-4">
-                            <span className="bg-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold text-primary-600">
-                              {post.category.name}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs sm:text-sm text-gray-500 mb-2">
-                        {post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}
-                        {post.author && ` • ${post.author.name}`}
-                      </p>
-                      <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
-                        {post.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{post.excerpt}</p>
-                      <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
-                        {t('home.readMore')}
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </Card>
-                  </Link>
-                </div>
-              ))}
-            </HorizontalScroll>
-
-            <div className="text-center mt-12">
-              <Link to="/blog">
-                <Button size="lg" variant="outline">
-                  {t('home.viewAllPosts')}
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
-              </Link>
+        <div className="relative z-10">
+          {blogPostsLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
             </div>
-          </>
-        )}
+          ) : blogPostsError ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">{t('home.loadingError')}</p>
+            </div>
+          ) : (
+            <>
+              <HorizontalScroll itemCount={Math.min(blogPosts.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
+                {blogPosts.slice(0, 3).map((post) => (
+                  <div key={post.id} className="shrink-0 w-[80vw] snap-center sm:w-auto">
+                    <Link to="/blog">
+                      <Card className="group cursor-pointer h-full overflow-hidden">
+                        <div className="relative overflow-hidden rounded-xl mb-4">
+                          <img
+                            src={post.image || '/placeholder.svg'}
+                            alt={post.title}
+                            className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          {post.category && (
+                            <div className="absolute top-4 left-4">
+                              <span className="bg-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold text-primary-600">
+                                {post.category.name}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs sm:text-sm text-gray-500 mb-2">
+                          {post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}
+                          {post.author && ` • ${post.author.name}`}
+                        </p>
+                        <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{post.excerpt}</p>
+                        <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
+                          {t('home.readMore')}
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </Card>
+                    </Link>
+                  </div>
+                ))}
+              </HorizontalScroll>
+
+              <div className="text-center mt-12">
+                <Link to="/blog">
+                  <Button size="lg" variant="outline">
+                    {t('home.viewAllPosts')}
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
       </Section>
 
       {/* CTA Section */}
       <Section background="white">
         <Card className="bg-gradient-to-r from-primary-600 via-accent-600 to-secondary-600 text-white text-center relative overflow-hidden">
-          {/* Animated waves */}
+          {/* Animated ocean overlay */}
+          <UnderwaterOverlay bubbleCount={15} showLightRays={false} showWave={false} />
           <div className="absolute inset-0 opacity-10">
             <motion.div
               animate={{ x: [0, 100, 0] }}

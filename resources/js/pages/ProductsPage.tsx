@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Filter, Loader2, Grid3x3, List, Heart, Eye, Star, TrendingUp } from 'lucide-react';
+import { ShoppingBag, Filter, Loader2, Grid3x3, List, Star, TrendingUp } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, ScrollReveal, WaveBackground } from '../components/animations';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../services/api';
@@ -187,30 +187,6 @@ export const ProductsPage: React.FC = () => {
             {sortedProducts.map((product) => (
               viewMode === 'grid' ? (
                 <Card key={product.id} className="group cursor-pointer h-full overflow-hidden relative">
-                  {/* Quick Actions Overlay */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    className="absolute top-3 right-3 flex flex-col gap-2 z-10"
-                  >
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 bg-white rounded-full shadow-lg hover:bg-primary-50 transition-colors"
-                      title={t('products.addToWishlist')}
-                    >
-                      <Heart className="w-4 h-4 text-gray-700" />
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 bg-white rounded-full shadow-lg hover:bg-primary-50 transition-colors"
-                      title={t('products.quickView')}
-                    >
-                      <Eye className="w-4 h-4 text-gray-700" />
-                    </motion.button>
-                  </motion.div>
-
                   <div className="relative overflow-hidden rounded-xl mb-4">
                     {(product as any).image_url ? (
                       <img
@@ -298,19 +274,10 @@ export const ProductsPage: React.FC = () => {
 
                     <div className="flex-1 flex flex-col justify-between py-2">
                       <div>
-                        <div className="flex items-start justify-between mb-2">
+                        <div className="mb-2">
                           <h3 className="text-2xl font-bold group-hover:text-primary-600 transition-colors">
                             {product.name}
                           </h3>
-                          <div className="flex gap-2">
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              className="p-2 hover:bg-primary-50 rounded-full transition-colors"
-                            >
-                              <Heart className="w-5 h-5 text-gray-700" />
-                            </motion.button>
-                          </div>
                         </div>
                         <p className="text-gray-600 mb-4 line-clamp-3">{product.description}</p>
                         <div className="flex items-center gap-3 text-sm text-gray-500">

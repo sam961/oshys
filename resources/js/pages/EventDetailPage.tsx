@@ -17,12 +17,14 @@ import { useGetEventQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
 export const EventDetailPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { data: event, isLoading, error } = useGetEventQuery(Number(id));
 
+  const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
+
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(dateLocale, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -31,7 +33,7 @@ export const EventDetailPage: React.FC = () => {
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
+    return new Date(dateString).toLocaleTimeString(dateLocale, {
       hour: 'numeric',
       minute: '2-digit',
     });
@@ -51,7 +53,7 @@ export const EventDetailPage: React.FC = () => {
   };
 
   const getTypeLabel = (type: string) => {
-    return type.charAt(0).toUpperCase() + type.slice(1);
+    return t(`events.${type}`, type.charAt(0).toUpperCase() + type.slice(1));
   };
 
   const isUpcoming = event ? new Date(event.start_date) >= new Date() : false;
@@ -69,8 +71,8 @@ export const EventDetailPage: React.FC = () => {
       <div className="pt-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-          <p className="text-gray-600">The event you're looking for doesn't exist or has been removed.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('common.eventNotFound')}</h1>
+          <p className="text-gray-600">{t('common.eventNotFoundMessage')}</p>
         </div>
       </div>
     );
@@ -139,11 +141,11 @@ export const EventDetailPage: React.FC = () => {
           {isUpcoming ? (
             <span className="px-4 py-2 bg-green-500 text-white rounded-full font-semibold flex items-center gap-2">
               <CalendarCheck className="w-4 h-4" />
-              Upcoming
+              {t('events.upcoming')}
             </span>
           ) : (
             <span className="px-4 py-2 bg-gray-500 text-white rounded-full font-semibold">
-              Past Event
+              {t('events.pastEvent')}
             </span>
           )}
         </div>
@@ -163,7 +165,7 @@ export const EventDetailPage: React.FC = () => {
               >
                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Info className="w-6 h-6 text-primary-600" />
-                  About This Event
+                  {t('events.aboutThisEvent')}
                 </h2>
                 <div className="prose prose-lg max-w-none text-gray-600">
                   <p className="leading-relaxed">{event.description}</p>
@@ -177,15 +179,15 @@ export const EventDetailPage: React.FC = () => {
                 transition={{ delay: 0.4 }}
                 className="bg-gray-50 rounded-2xl p-6"
               >
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Event Schedule</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('events.eventSchedule')}</h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                       <Calendar className="w-6 h-6 text-primary-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">Start Date</p>
-                      <p className="text-gray-600">{formatDate(event.start_date)} at {formatTime(event.start_date)}</p>
+                      <p className="font-semibold text-gray-900">{t('events.startDate')}</p>
+                      <p className="text-gray-600">{formatDate(event.start_date)} {t('events.at')} {formatTime(event.start_date)}</p>
                     </div>
                   </div>
                   {event.end_date && (
@@ -194,8 +196,8 @@ export const EventDetailPage: React.FC = () => {
                         <CalendarCheck className="w-6 h-6 text-accent-600" />
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">End Date</p>
-                        <p className="text-gray-600">{formatDate(event.end_date)} at {formatTime(event.end_date)}</p>
+                        <p className="font-semibold text-gray-900">{t('events.endDate')}</p>
+                        <p className="text-gray-600">{formatDate(event.end_date)} {t('events.at')} {formatTime(event.end_date)}</p>
                       </div>
                     </div>
                   )}
@@ -205,7 +207,7 @@ export const EventDetailPage: React.FC = () => {
                         <MapPin className="w-6 h-6 text-green-600" />
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">Location</p>
+                        <p className="font-semibold text-gray-900">{t('common.location')}</p>
                         <p className="text-gray-600">{event.location}</p>
                       </div>
                     </div>
@@ -226,7 +228,7 @@ export const EventDetailPage: React.FC = () => {
                 <div className="text-center mb-6 pb-6 border-b border-gray-200">
                   {event.price ? (
                     <>
-                      <p className="text-sm text-gray-500 mb-1">Event Price</p>
+                      <p className="text-sm text-gray-500 mb-1">{t('events.eventPrice')}</p>
                       <SaudiRiyalPrice
                         amount={event.price}
                         className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent"
@@ -234,7 +236,7 @@ export const EventDetailPage: React.FC = () => {
                     </>
                   ) : (
                     <span className="inline-block px-6 py-3 bg-green-100 text-green-700 rounded-full text-xl font-bold">
-                      Free Event
+                      {t('common.freeEvent')}
                     </span>
                   )}
                 </div>
@@ -246,8 +248,8 @@ export const EventDetailPage: React.FC = () => {
                       <Tag className="w-5 h-5 text-primary-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Type</p>
-                      <p className="font-semibold text-gray-900 capitalize">{event.type}</p>
+                      <p className="text-sm text-gray-500">{t('common.type')}</p>
+                      <p className="font-semibold text-gray-900 capitalize">{getTypeLabel(event.type)}</p>
                     </div>
                   </div>
 
@@ -257,8 +259,8 @@ export const EventDetailPage: React.FC = () => {
                         <Users className="w-5 h-5 text-accent-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">Capacity</p>
-                        <p className="font-semibold text-gray-900">{event.max_participants} participants</p>
+                        <p className="text-sm text-gray-500">{t('common.capacity')}</p>
+                        <p className="font-semibold text-gray-900">{event.max_participants} {t('common.participants')}</p>
                       </div>
                     </div>
                   )}
@@ -268,9 +270,9 @@ export const EventDetailPage: React.FC = () => {
                       <CalendarCheck className="w-5 h-5 text-green-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Status</p>
+                      <p className="text-sm text-gray-500">{t('common.status')}</p>
                       <p className={`font-semibold ${isUpcoming ? 'text-green-600' : 'text-gray-500'}`}>
-                        {isUpcoming ? 'Open for Registration' : 'Event Ended'}
+                        {isUpcoming ? t('common.openForRegistration') : t('common.eventEnded')}
                       </p>
                     </div>
                   </div>
@@ -281,7 +283,7 @@ export const EventDetailPage: React.FC = () => {
                   <div className="space-y-3">
                     <Link to="/contact" className="block">
                       <Button variant="primary" className="w-full" size="lg">
-                        Register Now
+                        {t('common.registerNow')}
                       </Button>
                     </Link>
                     <button
@@ -294,20 +296,20 @@ export const EventDetailPage: React.FC = () => {
                           });
                         } else {
                           navigator.clipboard.writeText(window.location.href);
-                          alert('Link copied to clipboard!');
+                          alert(t('common.linkCopied'));
                         }
                       }}
                       className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
                     >
                       <Share2 className="w-5 h-5" />
-                      Share Event
+                      {t('common.shareEvent')}
                     </button>
                   </div>
                 )}
 
                 {!isUpcoming && (
                   <div className="text-center py-4 bg-gray-100 rounded-lg">
-                    <p className="text-gray-600">This event has ended</p>
+                    <p className="text-gray-600">{t('common.thisEventHasEnded')}</p>
                   </div>
                 )}
               </motion.div>

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useGetBannersQuery } from '../../services/api';
+import { UnderwaterOverlay } from '../animations/UnderwaterOverlay';
 
 export const HeroSlider: React.FC = () => {
   const { data: banners = [], isLoading, refetch } = useGetBannersQuery({ active: true, position: 'hero' });
@@ -123,6 +124,9 @@ export const HeroSlider: React.FC = () => {
           </div>
         </motion.div>
       </AnimatePresence>
+
+      {/* Underwater Animation Overlay */}
+      <UnderwaterOverlay className="z-2" />
 
       {/* Navigation Arrows */}
       <button
