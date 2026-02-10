@@ -25,6 +25,7 @@ class Trip extends Model
         'is_featured',
         'certification_required',
         'max_participants',
+        'number_of_dives',
         'included_items',
     ];
 

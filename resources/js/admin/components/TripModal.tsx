@@ -33,6 +33,7 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
     is_featured: false,
     certification_required: false,
     max_participants: null as number | null,
+    number_of_dives: null as number | null,
     included_items: [] as string[],
     // Add translation fields
     name_translations: { ar: '' },
@@ -61,6 +62,7 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
         is_featured: trip.is_featured,
         certification_required: trip.certification_required,
         max_participants: trip.max_participants || null,
+        number_of_dives: trip.number_of_dives || null,
         included_items: trip.included_items || [],
         // Load translations if available
         name_translations: (trip as any).name_translations || { ar: '' },
@@ -89,6 +91,7 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
         is_featured: false,
         certification_required: false,
         max_participants: null,
+        number_of_dives: null,
         included_items: [],
         name_translations: { ar: '' },
         description_translations: { ar: '' },
@@ -130,6 +133,9 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
       }
       if (formData.max_participants) {
         submitData.append('max_participants', formData.max_participants.toString());
+      }
+      if (formData.number_of_dives) {
+        submitData.append('number_of_dives', formData.number_of_dives.toString());
       }
       if (formData.included_items.length > 0) {
         submitData.append('included_items', JSON.stringify(formData.included_items));
@@ -301,8 +307,8 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                   />
                 </div>
 
-                {/* Price and Max Participants */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Price, Max Participants, Number of Dives */}
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Price (SAR) *
@@ -330,6 +336,21 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                       onChange={handleChange}
                       disabled={isViewMode}
                       min="1"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Number of Dives
+                    </label>
+                    <input
+                      type="number"
+                      name="number_of_dives"
+                      value={formData.number_of_dives || ''}
+                      onChange={handleChange}
+                      disabled={isViewMode}
+                      min="1"
+                      placeholder="e.g. 4"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>

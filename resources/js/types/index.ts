@@ -50,6 +50,7 @@ export interface Trip {
   is_featured: boolean;
   certification_required: boolean;
   max_participants?: number;
+  number_of_dives?: number;
   included_items?: string[];
   created_at: string;
   updated_at: string;

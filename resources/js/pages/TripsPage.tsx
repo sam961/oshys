@@ -264,14 +264,18 @@ export const TripsPage: React.FC = () => {
                         <Clock className="w-4 h-4 text-secondary-600" />
                         <span>{trip.duration}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Users className="w-4 h-4 text-secondary-600" />
-                        <span>{t('pages.trips.maxParticipants', { count: 12 })}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Anchor className="w-4 h-4 text-secondary-600" />
-                        <span>{t('pages.trips.dives', { count: 4 })}</span>
-                      </div>
+                      {trip.max_participants && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Users className="w-4 h-4 text-secondary-600" />
+                          <span>{t('pages.trips.maxParticipants', { count: trip.max_participants })}</span>
+                        </div>
+                      )}
+                      {trip.number_of_dives && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Anchor className="w-4 h-4 text-secondary-600" />
+                          <span>{t('pages.trips.dives', { count: trip.number_of_dives })}</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-3 border-t border-gray-100">
@@ -344,14 +348,18 @@ export const TripsPage: React.FC = () => {
                             <Clock className="w-5 h-5 text-secondary-600" />
                             <span>{trip.duration}</span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Users className="w-5 h-5 text-secondary-600" />
-                            <span>{t('pages.trips.smallGroups', { count: 12 })}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Anchor className="w-5 h-5 text-secondary-600" />
-                            <span>{t('pages.trips.diveSites', { count: 4 })}</span>
-                          </div>
+                          {trip.max_participants && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Users className="w-5 h-5 text-secondary-600" />
+                              <span>{t('pages.trips.smallGroups', { count: trip.max_participants })}</span>
+                            </div>
+                          )}
+                          {trip.number_of_dives && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Anchor className="w-5 h-5 text-secondary-600" />
+                              <span>{t('pages.trips.diveSites', { count: trip.number_of_dives })}</span>
+                            </div>
+                          )}
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                             <span>{t('pages.trips.rating', { rating: '4.8' })} {t('pages.trips.reviews', { count: 95 })}</span>

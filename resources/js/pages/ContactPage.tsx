@@ -68,7 +68,7 @@ export const ContactPage: React.FC = () => {
                 <Phone className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{t('contactPage.callUs')}</h3>
-              <p className="text-gray-600">+966 54 100 0233</p>
+              <p className="text-gray-600" dir="ltr">+966 54 100 0233</p>
             </Card>
           </motion.div>
 
@@ -83,8 +83,7 @@ export const ContactPage: React.FC = () => {
                 <Mail className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{t('contactPage.emailUs')}</h3>
-              <p className="text-gray-600">info@coralsandshells.sa</p>
-              <p className="text-gray-600">support@coralsandshells.sa</p>
+              <p className="text-gray-600">oshysoceans@gmail.com</p>
             </Card>
           </motion.div>
 
@@ -94,14 +93,16 @@ export const ContactPage: React.FC = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="text-center group cursor-pointer hover:shadow-xl transition-shadow">
-              <div className="bg-gradient-to-br from-primary-500 to-accent-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <MapPin className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">{t('contactPage.visitUs')}</h3>
-              <p className="text-gray-600">{t('footer.location')}</p>
-              <p className="text-gray-600">{t('contactPage.easternProvince')}</p>
-            </Card>
+            <a href="https://www.google.com/maps?q=Corals+and+shells+center+%D9%85%D8%B1%D9%83%D8%B2+%D9%85%D8%B1%D8%AC%D8%A7%D9%86+%D9%88%D8%B5%D8%AF%D9%81,+Al+Khobar+34742,+Saudi+Arabia" target="_blank" rel="noopener noreferrer">
+              <Card className="text-center group cursor-pointer hover:shadow-xl transition-shadow">
+                <div className="bg-gradient-to-br from-primary-500 to-accent-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <MapPin className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">{t('contactPage.visitUs')}</h3>
+                <p className="text-gray-600">{t('footer.location')}</p>
+                <p className="text-gray-600">{t('contactPage.easternProvince')}</p>
+              </Card>
+            </a>
           </motion.div>
         </div>
 

@@ -88,11 +88,11 @@ export const Footer: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Phone className="w-4 h-4 text-primary-400" />
-                <span>+966 54 100 0233</span>
+                <span dir="ltr">+966 54 100 0233</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="w-4 h-4 text-primary-400" />
-                <span>info@coralsandshells.sa</span>
+                <span>oshysoceans@gmail.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="w-4 h-4 text-primary-400" />
@@ -137,7 +137,7 @@ export const Footer: React.FC = () => {
               ) : (
                 // Fallback links if no dynamic links are available
                 <>
-                  {renderLink({ name: t('footer.faqs'), href: '#' }, 'faqs')}
+                  {renderLink({ name: t('footer.faqs'), href: '/faqs' }, 'faqs')}
                   {renderLink({ name: t('footer.privacyPolicy'), href: '#' }, 'privacy')}
                   {renderLink({ name: t('footer.termsConditions'), href: '#' }, 'terms')}
                 </>

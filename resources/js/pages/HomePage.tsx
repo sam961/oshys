@@ -211,7 +211,7 @@ export const HomePage: React.FC = () => {
                     <div className="relative overflow-hidden rounded-xl mb-6">
                       <img
                         src={service.image || '/placeholder.svg'}
-                        alt={service.title}
+                        alt={t(`home.service${service.id}Title`)}
                         className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-primary-900/80 to-transparent" />
@@ -222,9 +222,9 @@ export const HomePage: React.FC = () => {
                       </div>
                     </div>
                     <h3 className="text-xl sm:text-2xl font-bold mb-3 group-hover:text-primary-600 transition-colors">
-                      {service.title}
+                      {t(`home.service${service.id}Title`)}
                     </h3>
-                    <p className="text-gray-600 mb-4 text-sm sm:text-base">{service.description}</p>
+                    <p className="text-gray-600 mb-4 text-sm sm:text-base">{t(`home.service${service.id}Description`)}</p>
                     <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
                       {t('home.learnMore')}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -335,8 +335,11 @@ export const HomePage: React.FC = () => {
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
                       <p className="text-gray-600 text-sm mb-4 line-clamp-2">{trip.description}</p>
-                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500 mb-4">
+                      <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm text-gray-500 mb-4">
                         <span>{trip.duration}</span>
+                        {trip.number_of_dives && (
+                          <span>{t('pages.trips.dives', { count: trip.number_of_dives })}</span>
+                        )}
                         <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full">
                           {trip.difficulty}
                         </span>

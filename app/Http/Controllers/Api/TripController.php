@@ -76,6 +76,7 @@ class TripController extends Controller
             'is_featured' => 'nullable',
             'certification_required' => 'nullable',
             'max_participants' => 'nullable|integer|min:1',
+            'number_of_dives' => 'nullable|integer|min:1',
             'included_items' => 'nullable',
             // Translation fields
             'name_translations' => 'nullable',
@@ -154,6 +155,7 @@ class TripController extends Controller
             'is_featured' => 'nullable',
             'certification_required' => 'nullable',
             'max_participants' => 'nullable|integer|min:1',
+            'number_of_dives' => 'nullable|integer|min:1',
             'included_items' => 'nullable',
             // Translation fields
             'name_translations' => 'nullable',

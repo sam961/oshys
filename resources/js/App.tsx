@@ -16,6 +16,7 @@ import { EventDetailPage } from './pages/EventDetailPage';
 import { InitiativesPage } from './pages/InitiativesPage';
 import { InitiativeDetailPage } from './pages/InitiativeDetailPage';
 import { FooterLinkPage } from './pages/FooterLinkPage';
+import { FAQPage } from './pages/FAQPage';
 
 // Admin imports
 import { AdminLayout } from './admin/layouts/AdminLayout';
@@ -118,6 +119,7 @@ const AppRoutes: React.FC = () => {
               <Route path="/events/:id" element={<EventDetailPage />} />
               <Route path="/initiatives" element={<InitiativesPage />} />
               <Route path="/initiatives/:id" element={<InitiativeDetailPage />} />
+              <Route path="/faqs" element={<FAQPage />} />
               <Route path="/pages/:slug" element={<FooterLinkPage />} />
             </Routes>
           </main>

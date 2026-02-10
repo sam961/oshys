@@ -53,7 +53,7 @@ export const AboutPage: React.FC = () => {
             className="text-center text-white"
           >
             <Users className="w-16 h-16 mx-auto mb-6" />
-            <h1 className="text-6xl font-bold mb-4">{t('about.heroTitle')}</h1>
+            <h1 className="text-6xl font-bold mb-4">{t('about.heroTitle')} <span className="bg-gradient-to-r from-primary-300 to-accent-300 bg-clip-text text-transparent">{t('about.heroName')}</span></h1>
             <p className="text-2xl text-white/90">
               {t('about.heroSubtitle')}
             </p>
@@ -214,29 +214,21 @@ export const AboutPage: React.FC = () => {
         </motion.div>
       </Section>
 
-      {/* Team Section */}
-      <Section background="white" className="!py-10 sm:!py-12 lg:!py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl font-bold mb-4">{t('about.teamTitle')}</h2>
-          <p className="text-xl text-gray-600">
-            {t('about.teamSubtitle')}
-          </p>
-        </motion.div>
+      {/* Team Section - only shown when team members exist */}
+      {!teamLoading && !teamError && team.length > 0 && (
+        <Section background="white" className="!py-10 sm:!py-12 lg:!py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold mb-4">{t('about.teamTitle')}</h2>
+            <p className="text-xl text-gray-600">
+              {t('about.teamSubtitle')}
+            </p>
+          </motion.div>
 
-        {teamLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
-          </div>
-        ) : teamError ? (
-          <div className="text-center py-12">
-            <p className="text-red-600">{t('about.teamLoadingError')}</p>
-          </div>
-        ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {team.map((member, index) => (
               <motion.div
@@ -285,8 +277,8 @@ export const AboutPage: React.FC = () => {
               </motion.div>
             ))}
           </div>
-        )}
-      </Section>
+        </Section>
+      )}
     </div>
   );
 };

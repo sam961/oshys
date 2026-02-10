@@ -21,6 +21,7 @@ interface FormData {
   is_featured: boolean;
   certification_required: boolean;
   max_participants: number | null;
+  number_of_dives: number | null;
   name_translations: { ar: string };
   description_translations: { ar: string };
   details_translations: { ar: string };
@@ -41,6 +42,7 @@ const initialFormData: FormData = {
   is_featured: false,
   certification_required: false,
   max_participants: null,
+  number_of_dives: null,
   name_translations: { ar: '' },
   description_translations: { ar: '' },
   details_translations: { ar: '' },
@@ -79,6 +81,7 @@ export const TripEditPage: React.FC = () => {
         is_featured: trip.is_featured,
         certification_required: trip.certification_required,
         max_participants: trip.max_participants || null,
+        number_of_dives: trip.number_of_dives || null,
         name_translations: (trip as any).name_translations || { ar: '' },
         description_translations: (trip as any).description_translations || { ar: '' },
         details_translations: (trip as any).details_translations || { ar: '' },
@@ -122,6 +125,7 @@ export const TripEditPage: React.FC = () => {
       submitData.append('certification_required', formData.certification_required ? '1' : '0');
       if (formData.category_id) submitData.append('category_id', formData.category_id.toString());
       if (formData.max_participants) submitData.append('max_participants', formData.max_participants.toString());
+      if (formData.number_of_dives) submitData.append('number_of_dives', formData.number_of_dives.toString());
       if (imageFile) submitData.append('image', imageFile);
       submitData.append('name_translations', JSON.stringify(formData.name_translations));
       submitData.append('description_translations', JSON.stringify(formData.description_translations));
@@ -183,6 +187,7 @@ export const TripEditPage: React.FC = () => {
               <div><label className="block text-sm font-medium text-gray-700 mb-2">Price (SAR) *</label><input type="number" value={formData.price} onChange={(e) => setFormData(p => ({ ...p, price: Number(e.target.value) }))} required step="0.01" min="0" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-2">Difficulty *</label><select value={formData.difficulty} onChange={(e) => setFormData(p => ({ ...p, difficulty: e.target.value as any }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option><option value="All Levels">All Levels</option></select></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-2">Max Participants</label><input type="number" value={formData.max_participants || ''} onChange={(e) => setFormData(p => ({ ...p, max_participants: e.target.value === '' ? null : Number(e.target.value) }))} min="1" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 mb-2">Number of Dives</label><input type="number" value={formData.number_of_dives || ''} onChange={(e) => setFormData(p => ({ ...p, number_of_dives: e.target.value === '' ? null : Number(e.target.value) }))} min="1" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" placeholder="e.g. 4" /></div>
             </div>
           </FormSection>
 

@@ -32,7 +32,7 @@ class TeamMemberController extends Controller
         }
 
         if (!$teamMember) {
-            return response()->json(null);
+            return response()->json(null, 204);
         }
 
         return response()->json($teamMember);
