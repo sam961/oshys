@@ -18,7 +18,7 @@ class CategoryController extends Controller
 
         // Filter by active status
         if ($request->has('active')) {
-            $query->where('is_active', $request->active);
+            $query->where('is_active', filter_var($request->active, FILTER_VALIDATE_BOOLEAN));
         }
 
         // Filter by type
@@ -56,7 +56,21 @@ class CategoryController extends Controller
 
         $category = Category::create($validated);
 
-        return response()->json($category, 201);
+        // Save translations
+        if ($request->has('name_translations')) {
+            $translations = is_string($request->name_translations) ? json_decode($request->name_translations, true) : $request->name_translations;
+            if ($translations) {
+                $category->saveTranslations('name', $translations);
+            }
+        }
+        if ($request->has('description_translations')) {
+            $translations = is_string($request->description_translations) ? json_decode($request->description_translations, true) : $request->description_translations;
+            if ($translations) {
+                $category->saveTranslations('description', $translations);
+            }
+        }
+
+        return response()->json($category->toArrayWithTranslations(), 201);
     }
 
     /**
@@ -65,7 +79,7 @@ class CategoryController extends Controller
     public function show($id)
     {
         $category = Category::findOrFail($id);
-        return response()->json($category);
+        return response()->json($category->toArrayWithTranslations());
     }
 
     /**
@@ -88,7 +102,21 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
-        return response()->json($category);
+        // Save translations
+        if ($request->has('name_translations')) {
+            $translations = is_string($request->name_translations) ? json_decode($request->name_translations, true) : $request->name_translations;
+            if ($translations) {
+                $category->saveTranslations('name', $translations);
+            }
+        }
+        if ($request->has('description_translations')) {
+            $translations = is_string($request->description_translations) ? json_decode($request->description_translations, true) : $request->description_translations;
+            if ($translations) {
+                $category->saveTranslations('description', $translations);
+            }
+        }
+
+        return response()->json($category->toArrayWithTranslations());
     }
 
     /**

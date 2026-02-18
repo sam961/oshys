@@ -127,20 +127,12 @@ export const Footer: React.FC = () => {
               {t('footer.support')}
             </h3>
             <ul className="space-y-3">
-              {dynamicFooterLinks.length > 0 ? (
-                dynamicFooterLinks.map((link) =>
-                  renderLink(
-                    { name: link.title, href: link.url, openInNewTab: link.open_in_new_tab },
-                    link.id
-                  )
+              {renderLink({ name: t('footer.faqs'), href: '/faqs' }, 'faqs')}
+              {dynamicFooterLinks.map((link) =>
+                renderLink(
+                  { name: link.title, href: link.url, openInNewTab: link.open_in_new_tab },
+                  link.id
                 )
-              ) : (
-                // Fallback links if no dynamic links are available
-                <>
-                  {renderLink({ name: t('footer.faqs'), href: '/faqs' }, 'faqs')}
-                  {renderLink({ name: t('footer.privacyPolicy'), href: '#' }, 'privacy')}
-                  {renderLink({ name: t('footer.termsConditions'), href: '#' }, 'terms')}
-                </>
               )}
             </ul>
           </div>

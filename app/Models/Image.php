@@ -18,6 +18,13 @@ class Image extends Model
         'order',
     ];
 
+    protected $appends = ['full_url'];
+
+    public function getFullUrlAttribute()
+    {
+        return asset('storage/' . $this->path);
+    }
+
     // Polymorphic relationship
     public function imageable()
     {

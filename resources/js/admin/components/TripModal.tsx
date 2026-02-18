@@ -22,25 +22,14 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    details: '',
     image: '',
     price: 0,
-    location: '',
-    duration: '',
-    difficulty: 'Beginner' as 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels',
     category_id: null as number | null,
     is_active: true,
     is_featured: false,
-    certification_required: false,
-    max_participants: null as number | null,
-    number_of_dives: null as number | null,
     included_items: [] as string[],
-    // Add translation fields
     name_translations: { ar: '' },
     description_translations: { ar: '' },
-    details_translations: { ar: '' },
-    location_translations: { ar: '' },
-    duration_translations: { ar: '' },
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -51,25 +40,14 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
       setFormData({
         name: trip.name,
         description: trip.description,
-        details: trip.details || '',
         image: trip.image || '',
         price: Number(trip.price),
-        location: trip.location,
-        duration: trip.duration,
-        difficulty: trip.difficulty,
         category_id: trip.category_id || null,
         is_active: trip.is_active,
         is_featured: trip.is_featured,
-        certification_required: trip.certification_required,
-        max_participants: trip.max_participants || null,
-        number_of_dives: trip.number_of_dives || null,
         included_items: trip.included_items || [],
-        // Load translations if available
         name_translations: (trip as any).name_translations || { ar: '' },
         description_translations: (trip as any).description_translations || { ar: '' },
-        details_translations: (trip as any).details_translations || { ar: '' },
-        location_translations: (trip as any).location_translations || { ar: '' },
-        duration_translations: (trip as any).duration_translations || { ar: '' },
       });
       // Set image preview from existing trip
       if ((trip as any).image_url) {
@@ -80,24 +58,14 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
       setFormData({
         name: '',
         description: '',
-        details: '',
         image: '',
         price: 0,
-        location: '',
-        duration: '',
-        difficulty: 'Beginner',
         category_id: null,
         is_active: true,
         is_featured: false,
-        certification_required: false,
-        max_participants: null,
-        number_of_dives: null,
         included_items: [],
         name_translations: { ar: '' },
         description_translations: { ar: '' },
-        details_translations: { ar: '' },
-        location_translations: { ar: '' },
-        duration_translations: { ar: '' },
       });
       setImageFile(null);
       setImagePreview('');
@@ -119,23 +87,12 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
       // Add all form fields to FormData
       submitData.append('name', formData.name);
       submitData.append('description', formData.description);
-      submitData.append('details', formData.details);
       submitData.append('price', formData.price.toString());
-      submitData.append('location', formData.location);
-      submitData.append('duration', formData.duration);
-      submitData.append('difficulty', formData.difficulty);
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
-      submitData.append('certification_required', formData.certification_required ? '1' : '0');
 
       if (formData.category_id) {
         submitData.append('category_id', formData.category_id.toString());
-      }
-      if (formData.max_participants) {
-        submitData.append('max_participants', formData.max_participants.toString());
-      }
-      if (formData.number_of_dives) {
-        submitData.append('number_of_dives', formData.number_of_dives.toString());
       }
       if (formData.included_items.length > 0) {
         submitData.append('included_items', JSON.stringify(formData.included_items));
@@ -149,9 +106,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
       // Add translations
       submitData.append('name_translations', JSON.stringify(formData.name_translations));
       submitData.append('description_translations', JSON.stringify(formData.description_translations));
-      submitData.append('details_translations', JSON.stringify(formData.details_translations));
-      submitData.append('location_translations', JSON.stringify(formData.location_translations));
-      submitData.append('duration_translations', JSON.stringify(formData.duration_translations));
 
       if (mode === 'create') {
         await createTrip(submitData).unwrap();
@@ -265,115 +219,22 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                   disabled={isViewMode}
                 />
 
-                <TranslatableField
-                  label="Details"
-                  name="details"
-                  value={formData.details}
-                  translationValue={formData.details_translations.ar}
-                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, details: value }))}
-                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, details_translations: { ...prev.details_translations, ar: value } }))}
-                  type="textarea"
-                  rows={3}
-                  placeholder="Enter additional details"
-                  placeholderAr="أدخل تفاصيل إضافية"
-                  disabled={isViewMode}
-                />
-
-                {/* Location and Duration */}
-                <div className="grid grid-cols-2 gap-4">
-                  <TranslatableField
-                    label="Location"
-                    name="location"
-                    value={formData.location}
-                    translationValue={formData.location_translations.ar}
-                    onChangeEnglish={(value) => setFormData(prev => ({ ...prev, location: value }))}
-                    onChangeArabic={(value) => setFormData(prev => ({ ...prev, location_translations: { ...prev.location_translations, ar: value } }))}
-                    required
-                    placeholder="e.g. Red Sea"
-                    placeholderAr="مثال: البحر الأحمر"
-                    disabled={isViewMode}
-                  />
-                  <TranslatableField
-                    label="Duration"
-                    name="duration"
-                    value={formData.duration}
-                    translationValue={formData.duration_translations.ar}
-                    onChangeEnglish={(value) => setFormData(prev => ({ ...prev, duration: value }))}
-                    onChangeArabic={(value) => setFormData(prev => ({ ...prev, duration_translations: { ...prev.duration_translations, ar: value } }))}
-                    required
-                    placeholder="e.g. 3 days"
-                    placeholderAr="مثال: ٣ أيام"
-                    disabled={isViewMode}
-                  />
-                </div>
-
-                {/* Price, Max Participants, Number of Dives */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price (SAR) *
-                    </label>
-                    <input
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      required
-                      step="0.01"
-                      min="0"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Max Participants
-                    </label>
-                    <input
-                      type="number"
-                      name="max_participants"
-                      value={formData.max_participants || ''}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      min="1"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Number of Dives
-                    </label>
-                    <input
-                      type="number"
-                      name="number_of_dives"
-                      value={formData.number_of_dives || ''}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      min="1"
-                      placeholder="e.g. 4"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    />
-                  </div>
-                </div>
-
-                {/* Difficulty */}
+                {/* Price */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Difficulty Level *
+                    Price (SAR) *
                   </label>
-                  <select
-                    name="difficulty"
-                    value={formData.difficulty}
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
                     onChange={handleChange}
                     disabled={isViewMode}
                     required
+                    step="0.01"
+                    min="0"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                  >
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                    <option value="All Levels">All Levels</option>
-                  </select>
+                  />
                 </div>
 
                 {/* Category */}
@@ -419,7 +280,7 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                 </div>
 
                 {/* Checkboxes */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <label className="flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -441,17 +302,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                       className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm text-gray-700">Featured</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      name="certification_required"
-                      checked={formData.certification_required}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                    />
-                    <span className="text-sm text-gray-700">Cert Required</span>
                   </label>
                 </div>
 

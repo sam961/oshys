@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Filter, Loader2, Grid3x3, List, Star, TrendingUp } from 'lucide-react';
+import { ShoppingBag, Filter, Loader2, Grid3x3, List, TrendingUp } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, ScrollReveal, WaveBackground } from '../components/animations';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../services/api';
@@ -222,17 +222,13 @@ export const ProductsPage: React.FC = () => {
                     <h3 className="text-lg font-bold line-clamp-2 group-hover:text-primary-600 transition-colors">
                       {product.name}
                     </h3>
-                    <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
+                    <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
 
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="pt-2">
                       <SaudiRiyalPrice
                         amount={product.price}
                         className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent"
                       />
-                      <div className="flex items-center gap-1 text-sm text-gray-500">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span>4.8</span>
-                      </div>
                     </div>
 
                     <Button
@@ -279,12 +275,8 @@ export const ProductsPage: React.FC = () => {
                             {product.name}
                           </h3>
                         </div>
-                        <p className="text-gray-600 mb-4 line-clamp-3">{product.description}</p>
+                        <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
                         <div className="flex items-center gap-3 text-sm text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span>4.8 (120 {t('products.reviews')})</span>
-                          </div>
                           {product.in_stock ? (
                             <span className="text-green-600 flex items-center gap-1">
                               <TrendingUp className="w-4 h-4" />

@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
+import TranslatableRichText from '../components/TranslatableRichText';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { useGetProductQuery, useGetCategoriesQuery, useCreateProductMutation, useUpdateProductMutation } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -273,31 +274,23 @@ export const ProductEditPage: React.FC = () => {
                 placeholderAr="أدخل اسم المنتج"
               />
 
-              <TranslatableField
+              <TranslatableRichText
                 label="Description"
                 name="description"
                 value={formData.description}
                 translationValue={formData.description_translations.ar}
                 onChangeEnglish={(value) => setFormData(prev => ({ ...prev, description: value }))}
                 onChangeArabic={(value) => setFormData(prev => ({ ...prev, description_translations: { ar: value } }))}
-                type="textarea"
                 required
-                rows={3}
-                placeholder="Enter product description"
-                placeholderAr="أدخل وصف المنتج"
               />
 
-              <TranslatableField
+              <TranslatableRichText
                 label="Details"
                 name="details"
                 value={formData.details}
                 translationValue={formData.details_translations.ar}
                 onChangeEnglish={(value) => setFormData(prev => ({ ...prev, details: value }))}
                 onChangeArabic={(value) => setFormData(prev => ({ ...prev, details_translations: { ar: value } }))}
-                type="textarea"
-                rows={3}
-                placeholder="Enter additional details"
-                placeholderAr="أدخل تفاصيل إضافية"
               />
 
               <div>

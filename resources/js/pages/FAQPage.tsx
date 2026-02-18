@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, Search, ChevronDown, MessageCircle, Phone, Compass, Anchor, CreditCard, Shield, Package } from 'lucide-react';
+import { HelpCircle, Search, ChevronDown, MessageCircle, Phone, GraduationCap, Users, ClipboardList } from 'lucide-react';
 import { Section } from '../components/ui';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 const categoryIcons: Record<string, React.ElementType> = {
   general: HelpCircle,
-  courses: Compass,
-  trips: Anchor,
-  equipment: Package,
-  booking: CreditCard,
-  safety: Shield,
+  programs: GraduationCap,
+  participants: Users,
+  registration: ClipboardList,
 };
 
-const categoryKeys = ['general', 'courses', 'trips', 'equipment', 'booking', 'safety'] as const;
+const categoryQuestionCounts: Record<string, number> = {
+  general: 3,
+  programs: 3,
+  participants: 3,
+  registration: 4,
+};
+
+const categoryKeys = ['general', 'programs', 'participants', 'registration'] as const;
 
 interface FAQItemProps {
   question: string;
@@ -78,7 +83,7 @@ export const FAQPage: React.FC = () => {
 
   // Build all FAQ items for search
   const allItems = categoryKeys.flatMap(cat =>
-    [1, 2, 3].map(i => ({
+    Array.from({ length: categoryQuestionCounts[cat] }, (_, i) => i + 1).map(i => ({
       category: cat,
       key: `${cat}-${i}`,
       question: t(`faq.${cat}.q${i}`),

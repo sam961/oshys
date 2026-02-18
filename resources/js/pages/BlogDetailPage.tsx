@@ -113,7 +113,7 @@ export const BlogDetailPage: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="text-xl text-gray-700 mb-8 p-6 bg-gray-50 rounded-xl border-l-4 border-primary-600"
             >
-              {post.excerpt}
+              <div dangerouslySetInnerHTML={{ __html: post.excerpt }} />
             </motion.div>
           )}
 

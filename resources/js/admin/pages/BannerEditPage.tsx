@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
+import TranslatableRichText from '../components/TranslatableRichText';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { useGetBannerQuery, useCreateBannerMutation, useUpdateBannerMutation } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -141,7 +142,7 @@ export const BannerEditPage: React.FC = () => {
           <FormSection title="Banner Content" description="Title, description, and button">
             <div className="space-y-5">
               <TranslatableField label="Banner Title" name="title" value={formData.title} translationValue={formData.title_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, title: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, title_translations: { ar: v } }))} required placeholder="Enter banner title" placeholderAr="أدخل عنوان البانر" />
-              <TranslatableField label="Description" name="description" value={formData.description} translationValue={formData.description_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, description: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, description_translations: { ar: v } }))} type="textarea" rows={3} placeholder="Enter banner description" placeholderAr="أدخل وصف البانر" />
+              <TranslatableRichText label="Description" name="description" value={formData.description} translationValue={formData.description_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, description: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, description_translations: { ar: v } }))} />
               <TranslatableField label="Button Text" name="button_text" value={formData.button_text} translationValue={formData.button_text_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, button_text: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, button_text_translations: { ar: v } }))} placeholder="e.g. Learn More" placeholderAr="مثال: اعرف المزيد" />
               <div><label className="block text-sm font-medium text-gray-700 mb-2">Button Link</label><input type="text" value={formData.button_link} onChange={(e) => setFormData(p => ({ ...p, button_link: e.target.value }))} placeholder="/courses" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
             </div>

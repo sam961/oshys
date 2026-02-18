@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, Clock, BarChart3, Loader2, Filter, Grid3x3, List, BookOpen, Users, Award, Star, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, Clock, Loader2, Filter, Grid3x3, List, BookOpen } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { BookingModal } from '../components/features/BookingModal';
@@ -43,7 +43,7 @@ export const CoursesPage: React.FC = () => {
       case 'price-high':
         return parseFloat(b.price) - parseFloat(a.price);
       case 'duration':
-        return a.duration.localeCompare(b.duration);
+        return (a.duration || '').localeCompare(b.duration || '');
       default:
         return 0;
     }
@@ -220,54 +220,39 @@ export const CoursesPage: React.FC = () => {
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-                      <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
-                        {course.level}
-                      </span>
-                      <div className="flex items-center gap-1 text-white text-sm">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">4.9</span>
+                    {course.level && (
+                      <div className="absolute bottom-3 left-3">
+                        <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
+                          {course.level}
+                        </span>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="space-y-4">
                     <h3 className="text-xl font-bold line-clamp-2 group-hover:text-accent-600 transition-colors">
                       {course.name}
                     </h3>
+                    {course.subtitle && (
+                      <p className="text-sm text-gray-500 font-medium">{course.subtitle}</p>
+                    )}
 
-                    <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
-                      {course.description}
-                    </p>
+                    <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
 
-                    <div className="flex flex-wrap gap-2">
+                    {course.duration && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Clock className="w-4 h-4 text-accent-600" />
                         <span>{course.duration}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <BookOpen className="w-4 h-4 text-accent-600" />
-                        <span>{t('pages.courses.modules', { count: 12 })}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Users className="w-4 h-4 text-accent-600" />
-                        <span>{t('pages.courses.studentsEnrolled', { count: 50 })}</span>
-                      </div>
-                    </div>
+                    )}
 
                     <div className="pt-3 border-t border-gray-100">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <p className="text-xs text-gray-500">{t('pages.courses.startingFrom')}</p>
-                          <SaudiRiyalPrice
-                            amount={course.price}
-                            className="text-2xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent"
-                          />
-                        </div>
-                        <div className="flex items-center gap-1 text-sm">
-                          <Award className="w-4 h-4 text-accent-600" />
-                          <span className="text-gray-600">{t('pages.courses.certificate')}</span>
-                        </div>
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-500">{t('pages.courses.startingFrom')}</p>
+                        <SaudiRiyalPrice
+                          amount={course.price}
+                          className="text-2xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent"
+                        />
                       </div>
                       <Button variant="primary" className="w-full" size="sm" onClick={(e) => handleEnrollClick(e, course)}>
                         {t('pages.courses.enrollNow')}
@@ -293,11 +278,13 @@ export const CoursesPage: React.FC = () => {
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      <div className="absolute bottom-3 left-3">
-                        <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
-                          {course.level}
-                        </span>
-                      </div>
+                      {course.level && (
+                        <div className="absolute bottom-3 left-3">
+                          <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
+                            {course.level}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex-1 flex flex-col justify-between py-2">
@@ -306,38 +293,20 @@ export const CoursesPage: React.FC = () => {
                           <h3 className="text-2xl font-bold group-hover:text-accent-600 transition-colors">
                             {course.name}
                           </h3>
+                          {course.subtitle && (
+                            <p className="text-sm text-gray-500 font-medium mt-1">{course.subtitle}</p>
+                          )}
                         </div>
-                        <p className="text-gray-600 mb-4 line-clamp-2">{course.description}</p>
+                        <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
 
-                        <div className="flex flex-wrap gap-4 mb-4">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Clock className="w-5 h-5 text-accent-600" />
-                            <span>{course.duration}</span>
+                        {course.duration && (
+                          <div className="flex flex-wrap gap-4 mb-4">
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Clock className="w-5 h-5 text-accent-600" />
+                              <span>{course.duration}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <BookOpen className="w-5 h-5 text-accent-600" />
-                            <span>{t('pages.courses.modules', { count: 12 })}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Users className="w-5 h-5 text-accent-600" />
-                            <span>{t('pages.courses.studentsEnrolled', { count: 50 })}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span>{t('pages.courses.rating', { rating: '4.9' })} {t('pages.courses.reviews', { count: 120 })}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          <span className="px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-xs font-semibold flex items-center gap-1">
-                            <Award className="w-3 h-3" />
-                            {t('pages.courses.certificateIncluded')}
-                          </span>
-                          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" />
-                            {t('pages.courses.lifetimeAccess')}
-                          </span>
-                        </div>
+                        )}
                       </div>
 
                       <div className="flex items-center justify-between mt-4">

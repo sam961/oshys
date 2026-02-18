@@ -1,29 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Loader2, Bold, Italic, List, ListOrdered, Heading2, Undo, Redo } from 'lucide-react';
+import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
+import TranslatableRichText from '../components/TranslatableRichText';
 import { useGetFooterLinkQuery, useCreateFooterLinkMutation, useUpdateFooterLinkMutation } from '../../services/api';
 import toast from 'react-hot-toast';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-
-const MenuBar = ({ editor }: { editor: any }) => {
-  if (!editor) return null;
-  return (
-    <div className="flex flex-wrap gap-1 p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-      <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bold') ? 'bg-gray-200 text-primary-600' : 'text-gray-600'}`}><Bold className="w-4 h-4" /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('italic') ? 'bg-gray-200 text-primary-600' : 'text-gray-600'}`}><Italic className="w-4 h-4" /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200 text-primary-600' : 'text-gray-600'}`}><Heading2 className="w-4 h-4" /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bulletList') ? 'bg-gray-200 text-primary-600' : 'text-gray-600'}`}><List className="w-4 h-4" /></button>
-      <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('orderedList') ? 'bg-gray-200 text-primary-600' : 'text-gray-600'}`}><ListOrdered className="w-4 h-4" /></button>
-      <div className="w-px h-6 bg-gray-300 mx-1 self-center" />
-      <button type="button" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} className="p-2 rounded hover:bg-gray-200 text-gray-600 disabled:opacity-50"><Undo className="w-4 h-4" /></button>
-      <button type="button" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} className="p-2 rounded hover:bg-gray-200 text-gray-600 disabled:opacity-50"><Redo className="w-4 h-4" /></button>
-    </div>
-  );
-};
 
 interface FormData {
   title: string;
@@ -55,23 +38,8 @@ export const FooterLinkEditPage: React.FC = () => {
   const [updateFooterLink, { isLoading: isUpdating }] = useUpdateFooterLinkMutation();
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [contentLanguage, setContentLanguage] = useState<'en' | 'ar'>('en');
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
-
-  const editorEn = useEditor({
-    extensions: [StarterKit],
-    content: formData.content || '',
-    onUpdate: ({ editor }) => setFormData(p => ({ ...p, content: editor.getHTML() })),
-  });
-
-  const editorAr = useEditor({
-    extensions: [StarterKit],
-    content: formData.content_translations.ar || '',
-    onUpdate: ({ editor }) => setFormData(p => ({ ...p, content_translations: { ar: editor.getHTML() } })),
-  });
-
-  const activeEditor = contentLanguage === 'en' ? editorEn : editorAr;
 
   useEffect(() => {
     if (footerLink && isEditMode) {
@@ -86,10 +54,8 @@ export const FooterLinkEditPage: React.FC = () => {
       };
       setFormData(loadedData);
       setInitialData(loadedData);
-      if (editorEn) editorEn.commands.setContent(footerLink.content || '');
-      if (editorAr) editorAr.commands.setContent((footerLink as any).content_translations?.ar || '');
     }
-  }, [footerLink, isEditMode, editorEn, editorAr]);
+  }, [footerLink, isEditMode]);
 
   useEffect(() => {
     setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialData));
@@ -159,21 +125,7 @@ export const FooterLinkEditPage: React.FC = () => {
             </FormSection>
 
             <FormSection title="Page Content" description="Rich text content for this page">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex bg-gray-100 rounded-lg p-0.5">
-                  <button type="button" onClick={() => setContentLanguage('en')} className={`px-3 py-1 text-xs font-medium rounded-md ${contentLanguage === 'en' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>EN</button>
-                  <button type="button" onClick={() => setContentLanguage('ar')} className={`px-3 py-1 text-xs font-medium rounded-md ${contentLanguage === 'ar' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>AR</button>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className={`w-2 h-2 rounded-full ${formData.content ? 'bg-green-500' : 'bg-gray-300'}`} title="English" />
-                  <span className={`w-2 h-2 rounded-full ${formData.content_translations.ar ? 'bg-green-500' : 'bg-gray-300'}`} title="Arabic" />
-                </div>
-              </div>
-              <div className="border border-gray-300 rounded-lg overflow-hidden">
-                <MenuBar editor={activeEditor} />
-                <div className={contentLanguage === 'en' ? '' : 'hidden'}><EditorContent editor={editorEn} className="prose max-w-none p-4 min-h-[300px] focus:outline-none" /></div>
-                <div className={contentLanguage === 'ar' ? '' : 'hidden'} dir="rtl"><EditorContent editor={editorAr} className="prose max-w-none p-4 min-h-[300px] focus:outline-none text-right" /></div>
-              </div>
+              <TranslatableRichText label="Content" name="content" value={formData.content} translationValue={formData.content_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, content: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, content_translations: { ar: v } }))} minHeight="300px" />
             </FormSection>
           </div>
 

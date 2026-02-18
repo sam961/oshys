@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Instagram, Twitter, Ghost, MessageCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Instagram, Twitter, Ghost, MessageCircle, Loader2 } from 'lucide-react';
 import { Section, Card, Button } from '../components/ui';
+import { useSendContactMessageMutation } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
 export const ContactPage: React.FC = () => {
@@ -13,14 +14,21 @@ export const ContactPage: React.FC = () => {
     message: '',
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const [sendContactMessage, { isLoading }] = useSendContactMessageMutation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
+    setError('');
+
+    try {
+      await sendContactMessage(formData).unwrap();
+      setIsSubmitted(true);
       setFormData({ name: '', email: '', phone: '', message: '' });
-    }, 3000);
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (err: any) {
+      setError(err?.data?.message || t('contactPage.sendError', 'Failed to send message. Please try again.'));
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -193,9 +201,15 @@ export const ContactPage: React.FC = () => {
                   />
                 </div>
 
-                <Button type="submit" size="lg" className="w-full">
-                  <Send className="w-5 h-5" />
-                  {t('contactPage.sendMessage')}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  {isLoading ? t('contactPage.sending', 'Sending...') : t('contactPage.sendMessage')}
                 </Button>
               </form>
             )}

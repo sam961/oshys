@@ -14,18 +14,11 @@ class Trip extends Model
         'name',
         'slug',
         'description',
-        'details',
         'image',
         'price',
-        'location',
-        'duration',
-        'difficulty',
         'category_id',
         'is_active',
         'is_featured',
-        'certification_required',
-        'max_participants',
-        'number_of_dives',
         'included_items',
     ];
 
@@ -33,7 +26,6 @@ class Trip extends Model
         'price' => 'decimal:2',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
-        'certification_required' => 'boolean',
         'included_items' => 'array',
     ];
 
@@ -43,8 +35,6 @@ class Trip extends Model
     public array $translatable = [
         'name',
         'description',
-        'details',
-        'location',
         'included_items',
     ];
 
@@ -56,7 +46,12 @@ class Trip extends Model
 
     public function images()
     {
-        return $this->morphMany(Image::class, 'imageable');
+        return $this->morphMany(Image::class, 'imageable')->orderBy('order');
+    }
+
+    public function mainImage()
+    {
+        return $this->morphOne(Image::class, 'imageable')->where('collection', 'main');
     }
 
     // Accessors

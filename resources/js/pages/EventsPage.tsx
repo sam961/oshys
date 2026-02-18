@@ -276,9 +276,7 @@ export const EventsPage: React.FC = () => {
                             {event.title}
                           </h3>
 
-                          <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
-                            {event.description}
-                          </p>
+                          <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description }} />
 
                           <div className="space-y-2 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
@@ -345,7 +343,7 @@ export const EventsPage: React.FC = () => {
                                   {getTypeLabel(event.type)}
                                 </span>
                               </div>
-                              <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
+                              <div className="text-gray-600 mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description }} />
 
                               <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">

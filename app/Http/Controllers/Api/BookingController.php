@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\BookingNotification;
 use App\Models\Booking;
 use App\Models\Course;
 use App\Models\Trip;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 
 class BookingController extends Controller
@@ -67,6 +69,13 @@ class BookingController extends Controller
             'status' => 'pending',
             'notes' => $validated['notes'] ?? null,
         ]);
+
+        // Send email notification
+        try {
+            Mail::to('oshysoceans@gmail.com')->send(new BookingNotification($booking));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send booking notification email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'message' => 'Booking submitted successfully',

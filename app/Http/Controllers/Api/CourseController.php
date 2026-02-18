@@ -58,12 +58,12 @@ class CourseController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:500',
             'description' => 'required|string',
-            'details' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'required|numeric|min:0',
-            'duration' => 'required|string',
-            'level' => 'required|in:Beginner,Intermediate,Advanced,All Levels',
+            'duration' => 'nullable|string',
+            'level' => 'nullable|in:Beginner,Intermediate,Advanced,All Levels',
             'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
@@ -71,8 +71,8 @@ class CourseController extends Controller
             'requirements' => 'nullable',
             // Translation fields
             'name_translations' => 'nullable',
+            'subtitle_translations' => 'nullable',
             'description_translations' => 'nullable',
-            'details_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans
@@ -95,7 +95,7 @@ class CourseController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $filename = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
             $path = $image->storeAs('courses', $filename, 'public');
             $validated['image'] = $path;
         }
@@ -103,7 +103,7 @@ class CourseController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         // Remove translation fields from validated data
-        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations']);
+        unset($validated['name_translations'], $validated['subtitle_translations'], $validated['description_translations']);
 
         $course = Course::create($validated);
 
@@ -118,7 +118,7 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::with(['category', 'translations'])->findOrFail($id);
+        $course = Course::with(['category', 'translations', 'images'])->findOrFail($id);
         return response()->json($course->toArrayWithTranslations());
     }
 
@@ -131,12 +131,12 @@ class CourseController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
+            'subtitle' => 'nullable|string|max:500',
             'description' => 'sometimes|required|string',
-            'details' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'sometimes|required|numeric|min:0',
-            'duration' => 'sometimes|required|string',
-            'level' => 'sometimes|required|in:Beginner,Intermediate,Advanced,All Levels',
+            'duration' => 'nullable|string',
+            'level' => 'nullable|in:Beginner,Intermediate,Advanced,All Levels',
             'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
@@ -144,8 +144,8 @@ class CourseController extends Controller
             'requirements' => 'nullable',
             // Translation fields
             'name_translations' => 'nullable',
+            'subtitle_translations' => 'nullable',
             'description_translations' => 'nullable',
-            'details_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans if present
@@ -171,13 +171,16 @@ class CourseController extends Controller
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($course->image && Storage::disk('public')->exists($course->image)) {
-                Storage::disk('public')->delete($course->image);
+            // Delete old image only if it's not tracked in the images table
+            if ($course->image) {
+                $trackedPaths = $course->images()->pluck('path')->toArray();
+                if (!in_array($course->image, $trackedPaths) && Storage::disk('public')->exists($course->image)) {
+                    Storage::disk('public')->delete($course->image);
+                }
             }
 
             $image = $request->file('image');
-            $filename = time() . '_' . Str::slug($validated['name'] ?? $course->name) . '.' . $image->getClientOriginalExtension();
+            $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
             $path = $image->storeAs('courses', $filename, 'public');
             $validated['image'] = $path;
         }
@@ -187,7 +190,7 @@ class CourseController extends Controller
         }
 
         // Remove translation fields from validated data
-        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations']);
+        unset($validated['name_translations'], $validated['subtitle_translations'], $validated['description_translations']);
 
         $course->update($validated);
 
@@ -204,9 +207,20 @@ class CourseController extends Controller
     {
         $course = Course::findOrFail($id);
 
-        // Delete image if exists
-        if ($course->image && Storage::disk('public')->exists($course->image)) {
-            Storage::disk('public')->delete($course->image);
+        // Delete main image file if exists and not tracked in images table
+        if ($course->image) {
+            $trackedPaths = $course->images()->pluck('path')->toArray();
+            if (!in_array($course->image, $trackedPaths) && Storage::disk('public')->exists($course->image)) {
+                Storage::disk('public')->delete($course->image);
+            }
+        }
+
+        // Delete all gallery image files and records
+        foreach ($course->images as $image) {
+            if (Storage::disk('public')->exists($image->path)) {
+                Storage::disk('public')->delete($image->path);
+            }
+            $image->delete();
         }
 
         $course->delete();

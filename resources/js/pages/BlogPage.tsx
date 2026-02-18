@@ -116,9 +116,7 @@ export const BlogPage: React.FC = () => {
                     {post.title}
                   </h3>
 
-                  <p className="text-gray-600 mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
+                  <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: post.excerpt }} />
 
                   <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
                     {t('pages.blog.readMore')}

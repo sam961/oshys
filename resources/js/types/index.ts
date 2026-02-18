@@ -14,13 +14,15 @@ export interface Category {
 export interface Course {
   id: number;
   name: string;
+  subtitle?: string;
   slug: string;
   description: string;
-  details?: string;
   image?: string;
+  image_url?: string;
+  images?: Image[];
   price: number;
-  duration: string;
-  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
+  duration?: string;
+  level?: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
   category_id?: number;
   category?: Category;
   is_active: boolean;
@@ -38,19 +40,14 @@ export interface Trip {
   name: string;
   slug: string;
   description: string;
-  details?: string;
   image?: string;
+  image_url?: string;
+  images?: Image[];
   price: number;
-  location: string;
-  duration: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
   category_id?: number;
   category?: Category;
   is_active: boolean;
   is_featured: boolean;
-  certification_required: boolean;
-  max_participants?: number;
-  number_of_dives?: number;
   included_items?: string[];
   created_at: string;
   updated_at: string;
@@ -217,6 +214,7 @@ export interface Image {
   filename: string;
   path: string;
   url: string;
+  full_url?: string;
   mime_type?: string;
   size?: number;
   imageable_id: number;

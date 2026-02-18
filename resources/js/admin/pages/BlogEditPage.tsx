@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
+import TranslatableRichText from '../components/TranslatableRichText';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { useGetBlogPostQuery, useGetCategoriesQuery, useCreateBlogPostMutation, useUpdateBlogPostMutation } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -143,8 +144,8 @@ export const BlogEditPage: React.FC = () => {
           <FormSection title="Content" description="Title, excerpt, and content">
             <div className="space-y-5">
               <TranslatableField label="Title" name="title" value={formData.title} translationValue={formData.title_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, title: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, title_translations: { ar: v } }))} required placeholder="Enter blog post title" placeholderAr="أدخل عنوان المقال" />
-              <TranslatableField label="Excerpt" name="excerpt" value={formData.excerpt} translationValue={formData.excerpt_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, excerpt: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, excerpt_translations: { ar: v } }))} type="textarea" required rows={2} placeholder="Enter a brief excerpt" placeholderAr="أدخل مقتطف قصير" />
-              <TranslatableField label="Content" name="content" value={formData.content} translationValue={formData.content_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, content: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, content_translations: { ar: v } }))} type="textarea" required rows={8} placeholder="Enter full blog post content" placeholderAr="أدخل محتوى المقال الكامل" />
+              <TranslatableRichText label="Excerpt" name="excerpt" value={formData.excerpt} translationValue={formData.excerpt_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, excerpt: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, excerpt_translations: { ar: v } }))} required />
+              <TranslatableRichText label="Content" name="content" value={formData.content} translationValue={formData.content_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, content: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, content_translations: { ar: v } }))} required minHeight="250px" />
             </div>
           </FormSection>
 

@@ -12,6 +12,7 @@ import type {
   Banner,
   FooterLink,
   Booking,
+  Image,
 } from '../types';
 
 // Define base query
@@ -33,7 +34,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Course', 'Trip', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Category', 'Setting', 'Banner', 'FooterLink', 'Booking'],
+  tagTypes: ['Course', 'CourseImage', 'Trip', 'TripImage', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Category', 'Setting', 'Banner', 'FooterLink', 'Booking'],
   endpoints: (builder) => ({
     // Courses
     getCourses: builder.query<Course[], { active?: boolean; featured?: boolean; level?: string; search?: string }>({
@@ -71,8 +72,40 @@ export const api = createApi({
       invalidatesTags: ['Course'],
     }),
 
+    // Course Images
+    uploadCourseImages: builder.mutation<Image[], { courseId: number; files: FormData }>({
+      query: ({ courseId, files }) => ({
+        url: `/courses/${courseId}/images`,
+        method: 'POST',
+        body: files,
+      }),
+      invalidatesTags: ['Course', 'CourseImage'],
+    }),
+    deleteCourseImage: builder.mutation<Image[], { courseId: number; imageId: number }>({
+      query: ({ courseId, imageId }) => ({
+        url: `/courses/${courseId}/images/${imageId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Course', 'CourseImage'],
+    }),
+    setCourseMainImage: builder.mutation<Image[], { courseId: number; imageId: number }>({
+      query: ({ courseId, imageId }) => ({
+        url: `/courses/${courseId}/images/${imageId}/set-main`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Course', 'CourseImage'],
+    }),
+    reorderCourseImages: builder.mutation<Image[], { courseId: number; order: { id: number; order: number }[] }>({
+      query: ({ courseId, order }) => ({
+        url: `/courses/${courseId}/images/reorder`,
+        method: 'PUT',
+        body: { order },
+      }),
+      invalidatesTags: ['CourseImage'],
+    }),
+
     // Trips
-    getTrips: builder.query<Trip[], { active?: boolean; featured?: boolean; difficulty?: string; search?: string }>({
+    getTrips: builder.query<Trip[], { active?: boolean; featured?: boolean; search?: string }>({
       query: (params) => ({
         url: '/trips',
         params,
@@ -105,6 +138,38 @@ export const api = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['Trip'],
+    }),
+
+    // Trip Images
+    uploadTripImages: builder.mutation<Image[], { tripId: number; files: FormData }>({
+      query: ({ tripId, files }) => ({
+        url: `/trips/${tripId}/images`,
+        method: 'POST',
+        body: files,
+      }),
+      invalidatesTags: ['Trip', 'TripImage'],
+    }),
+    deleteTripImage: builder.mutation<Image[], { tripId: number; imageId: number }>({
+      query: ({ tripId, imageId }) => ({
+        url: `/trips/${tripId}/images/${imageId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Trip', 'TripImage'],
+    }),
+    setTripMainImage: builder.mutation<Image[], { tripId: number; imageId: number }>({
+      query: ({ tripId, imageId }) => ({
+        url: `/trips/${tripId}/images/${imageId}/set-main`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Trip', 'TripImage'],
+    }),
+    reorderTripImages: builder.mutation<Image[], { tripId: number; order: { id: number; order: number }[] }>({
+      query: ({ tripId, order }) => ({
+        url: `/trips/${tripId}/images/reorder`,
+        method: 'PUT',
+        body: { order },
+      }),
+      invalidatesTags: ['TripImage'],
     }),
 
     // Products
@@ -481,6 +546,15 @@ export const api = createApi({
       }),
       invalidatesTags: ['Booking'],
     }),
+
+    // Contact
+    sendContactMessage: builder.mutation<{ message: string }, { name: string; email: string; phone?: string; message: string }>({
+      query: (body) => ({
+        url: '/contact',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -491,12 +565,20 @@ export const {
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
+  useUploadCourseImagesMutation,
+  useDeleteCourseImageMutation,
+  useSetCourseMainImageMutation,
+  useReorderCourseImagesMutation,
 
   useGetTripsQuery,
   useGetTripQuery,
   useCreateTripMutation,
   useUpdateTripMutation,
   useDeleteTripMutation,
+  useUploadTripImagesMutation,
+  useDeleteTripImageMutation,
+  useSetTripMainImageMutation,
+  useReorderTripImagesMutation,
 
   useGetProductsQuery,
   useGetProductQuery,
@@ -559,4 +641,6 @@ export const {
   useCreateBookingMutation,
   useUpdateBookingMutation,
   useDeleteBookingMutation,
+
+  useSendContactMessageMutation,
 } = api;

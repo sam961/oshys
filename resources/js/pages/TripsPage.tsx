@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, MapPin, Clock, Award, Loader2, Filter, Grid3x3, List, Users, Calendar, Anchor, Star, TrendingUp } from 'lucide-react';
+import { Compass, MapPin, Award, Loader2, Grid3x3, List, Calendar, Anchor, TrendingUp } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { BookingModal } from '../components/features/BookingModal';
@@ -10,9 +10,8 @@ import { useTranslation } from 'react-i18next';
 
 export const TripsPage: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high' | 'duration'>('default');
+  const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high'>('default');
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
@@ -25,24 +24,12 @@ export const TripsPage: React.FC = () => {
   // Fetch trips from API
   const { data: trips = [], isLoading: tripsLoading, error: tripsError } = useGetTripsQuery({ active: true });
 
-  const difficulties = [
-    { key: 'Beginner', label: t('pages.trips.beginner') },
-    { key: 'Intermediate', label: t('pages.trips.intermediate') },
-    { key: 'Advanced', label: t('pages.trips.advanced') },
-  ];
-
-  const filteredTrips = selectedDifficulty
-    ? trips.filter((t) => t.difficulty === selectedDifficulty)
-    : trips;
-
-  const sortedTrips = [...filteredTrips].sort((a, b) => {
+  const sortedTrips = [...trips].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
         return parseFloat(a.price) - parseFloat(b.price);
       case 'price-high':
         return parseFloat(b.price) - parseFloat(a.price);
-      case 'duration':
-        return a.duration.localeCompare(b.duration);
       default:
         return 0;
     }
@@ -92,44 +79,10 @@ export const TripsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Enhanced Filter & Toolbar */}
+      {/* Toolbar */}
       <div className="bg-white border-b border-gray-200 sticky top-20 z-40 shadow-sm">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* Difficulty Filters */}
-            <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide">
-              <Filter className="w-5 h-5 text-gray-600 flex-shrink-0" />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedDifficulty(null)}
-                className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
-                  selectedDifficulty === null
-                    ? 'bg-gradient-to-r from-secondary-600 to-secondary-500 text-white shadow-lg shadow-secondary-500/30'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {t('pages.trips.allLevels')}
-              </motion.button>
-              {difficulties.map((level) => (
-                <motion.button
-                  key={level.key}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedDifficulty(level.key)}
-                  className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
-                    selectedDifficulty === level.key
-                      ? 'bg-gradient-to-r from-secondary-600 to-secondary-500 text-white shadow-lg shadow-secondary-500/30'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {level.label}
-                </motion.button>
-              ))}
-            </div>
-
-            {/* View Controls */}
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-end gap-4">
               {/* Sort Dropdown */}
               <select
                 value={sortBy}
@@ -139,7 +92,6 @@ export const TripsPage: React.FC = () => {
                 <option value="default">{t('pages.trips.sortDefault')}</option>
                 <option value="price-low">{t('pages.trips.priceLowToHigh')}</option>
                 <option value="price-high">{t('pages.trips.priceHighToLow')}</option>
-                <option value="duration">{t('pages.trips.duration')}</option>
               </select>
 
               {/* View Toggle */}
@@ -174,7 +126,6 @@ export const TripsPage: React.FC = () => {
               <div className="hidden md:block text-sm text-gray-600">
                 {t('pages.trips.tripsCount', { count: sortedTrips.length })}
               </div>
-            </div>
           </div>
         </div>
       </div>
@@ -220,34 +171,6 @@ export const TripsPage: React.FC = () => {
                       </div>
                     )}
 
-                    <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
-                        trip.difficulty === 'Beginner'
-                          ? 'bg-green-500/90 text-white'
-                          : trip.difficulty === 'Intermediate'
-                          ? 'bg-yellow-500/90 text-white'
-                          : 'bg-red-500/90 text-white'
-                      }`}>
-                        {trip.difficulty}
-                      </span>
-                      {trip.certification_required && (
-                        <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                          <Award className="w-3 h-3" />
-                          {t('pages.trips.certRequired')}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-                      <div className="flex items-center gap-2 text-white text-sm">
-                        <MapPin className="w-4 h-4" />
-                        <span className="font-semibold">{trip.location || t('pages.trips.locationTBD')}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-white text-sm">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">4.8</span>
-                      </div>
-                    </div>
                   </div>
 
                   <div className="space-y-4">
@@ -255,28 +178,7 @@ export const TripsPage: React.FC = () => {
                       {trip.name}
                     </h3>
 
-                    <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
-                      {trip.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Clock className="w-4 h-4 text-secondary-600" />
-                        <span>{trip.duration}</span>
-                      </div>
-                      {trip.max_participants && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Users className="w-4 h-4 text-secondary-600" />
-                          <span>{t('pages.trips.maxParticipants', { count: trip.max_participants })}</span>
-                        </div>
-                      )}
-                      {trip.number_of_dives && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Anchor className="w-4 h-4 text-secondary-600" />
-                          <span>{t('pages.trips.dives', { count: trip.number_of_dives })}</span>
-                        </div>
-                      )}
-                    </div>
+                    <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />
 
                     <div className="pt-3 border-t border-gray-100">
                       <div className="flex items-center justify-between mb-3">
@@ -310,10 +212,6 @@ export const TripsPage: React.FC = () => {
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                          <div className="absolute bottom-3 left-3 flex items-center gap-2 text-white text-sm">
-                            <MapPin className="w-4 h-4" />
-                            <span className="font-semibold">{trip.location || t('pages.trips.locationTBD')}</span>
-                          </div>
                         </>
                       ) : (
                         <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center">
@@ -321,17 +219,6 @@ export const TripsPage: React.FC = () => {
                           <p className="text-xs text-gray-400">{t('pages.trips.noImage')}</p>
                         </div>
                       )}
-                      <div className="absolute top-3 left-3">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
-                          trip.difficulty === 'Beginner'
-                            ? 'bg-green-500/90 text-white'
-                            : trip.difficulty === 'Intermediate'
-                            ? 'bg-yellow-500/90 text-white'
-                            : 'bg-red-500/90 text-white'
-                        }`}>
-                          {trip.difficulty}
-                        </span>
-                      </div>
                     </div>
 
                     <div className="flex-1 flex flex-col justify-between py-2">
@@ -341,38 +228,9 @@ export const TripsPage: React.FC = () => {
                             {trip.name}
                           </h3>
                         </div>
-                        <p className="text-gray-600 mb-4 line-clamp-2">{trip.description}</p>
-
-                        <div className="flex flex-wrap gap-4 mb-4">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Clock className="w-5 h-5 text-secondary-600" />
-                            <span>{trip.duration}</span>
-                          </div>
-                          {trip.max_participants && (
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <Users className="w-5 h-5 text-secondary-600" />
-                              <span>{t('pages.trips.smallGroups', { count: trip.max_participants })}</span>
-                            </div>
-                          )}
-                          {trip.number_of_dives && (
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <Anchor className="w-5 h-5 text-secondary-600" />
-                              <span>{t('pages.trips.diveSites', { count: trip.number_of_dives })}</span>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span>{t('pages.trips.rating', { rating: '4.8' })} {t('pages.trips.reviews', { count: 95 })}</span>
-                          </div>
-                        </div>
+                        <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />
 
                         <div className="flex items-center gap-3">
-                          {trip.certification_required && (
-                            <span className="px-3 py-1 bg-secondary-100 text-secondary-700 rounded-full text-xs font-semibold flex items-center gap-1">
-                              <Award className="w-3 h-3" />
-                              {t('pages.trips.certificationRequired')}
-                            </span>
-                          )}
                           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
                             <TrendingUp className="w-3 h-3" />
                             {t('pages.trips.spotsAvailable')}

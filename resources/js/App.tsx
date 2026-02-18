@@ -41,6 +41,8 @@ import { BannerEditPage } from './admin/pages/BannerEditPage';
 import { InitiativeEditPage } from './admin/pages/InitiativeEditPage';
 import { FooterLinkEditPage } from './admin/pages/FooterLinkEditPage';
 import { TeamMemberEditPage } from './admin/pages/TeamMemberEditPage';
+import { CategoriesManagement } from './admin/pages/CategoriesManagement';
+import { CategoryEditPage } from './admin/pages/CategoryEditPage';
 
 // Simple scroll to top on navigation (except back/forward)
 const ScrollToTop: React.FC = () => {
@@ -97,6 +99,9 @@ const AppRoutes: React.FC = () => {
             <Route path="initiatives" element={<InitiativesManagement />} />
             <Route path="initiatives/new" element={<InitiativeEditPage />} />
             <Route path="initiatives/:id/edit" element={<InitiativeEditPage />} />
+            <Route path="categories" element={<CategoriesManagement />} />
+            <Route path="categories/new" element={<CategoryEditPage />} />
+            <Route path="categories/:id/edit" element={<CategoryEditPage />} />
             <Route path="footer-links" element={<FooterLinksManagement />} />
             <Route path="footer-links/new" element={<FooterLinkEditPage />} />
             <Route path="footer-links/:id/edit" element={<FooterLinkEditPage />} />

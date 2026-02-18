@@ -4,40 +4,42 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
-import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
-import { useGetCourseQuery, useGetCategoriesQuery, useCreateCourseMutation, useUpdateCourseMutation } from '../../services/api';
+import TranslatableRichText from '../components/TranslatableRichText';
+import { IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
+import { MultiImageGallery } from '../components/MultiImageGallery';
+import { useGetCourseQuery, useGetCategoriesQuery, useCreateCourseMutation, useUpdateCourseMutation, useUploadCourseImagesMutation, useDeleteCourseImageMutation, useSetCourseMainImageMutation, useReorderCourseImagesMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
   name: string;
+  subtitle: string;
   description: string;
-  details: string;
   price: number;
   duration: string;
-  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
+  level: string;
   category_id: number | null;
   is_active: boolean;
   is_featured: boolean;
   max_students: number | null;
   name_translations: { ar: string };
+  subtitle_translations: { ar: string };
   description_translations: { ar: string };
-  details_translations: { ar: string };
 }
 
 const initialFormData: FormData = {
   name: '',
+  subtitle: '',
   description: '',
-  details: '',
   price: 0,
   duration: '',
-  level: 'Beginner',
+  level: '',
   category_id: null,
   is_active: true,
   is_featured: false,
   max_students: null,
   name_translations: { ar: '' },
+  subtitle_translations: { ar: '' },
   description_translations: { ar: '' },
-  details_translations: { ar: '' },
 };
 
 export const CourseEditPage: React.FC = () => {
@@ -51,10 +53,12 @@ export const CourseEditPage: React.FC = () => {
   const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'course' });
   const [createCourse, { isLoading: isCreating }] = useCreateCourseMutation();
   const [updateCourse, { isLoading: isUpdating }] = useUpdateCourseMutation();
+  const [uploadCourseImages] = useUploadCourseImagesMutation();
+  const [deleteCourseImage] = useDeleteCourseImageMutation();
+  const [setCourseMainImage] = useSetCourseMainImageMutation();
+  const [reorderCourseImages] = useReorderCourseImagesMutation();
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
 
@@ -62,31 +66,28 @@ export const CourseEditPage: React.FC = () => {
     if (course && isEditMode) {
       const loadedData: FormData = {
         name: course.name,
-        description: course.description,
-        details: course.details || '',
+        subtitle: course.subtitle || '',
+        description: course.description || '',
         price: Number(course.price),
-        duration: course.duration,
-        level: course.level,
+        duration: course.duration || '',
+        level: course.level || '',
         category_id: course.category_id || null,
         is_active: course.is_active,
         is_featured: course.is_featured,
         max_students: course.max_students || null,
         name_translations: (course as any).name_translations || { ar: '' },
+        subtitle_translations: (course as any).subtitle_translations || { ar: '' },
         description_translations: (course as any).description_translations || { ar: '' },
-        details_translations: (course as any).details_translations || { ar: '' },
       };
       setFormData(loadedData);
       setInitialData(loadedData);
-      if ((course as any).image_url) {
-        setImagePreview((course as any).image_url);
-      }
     }
   }, [course, isEditMode]);
 
   useEffect(() => {
-    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialData) || imageFile !== null;
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialData);
     setIsDirty(hasChanges);
-  }, [formData, initialData, imageFile]);
+  }, [formData, initialData]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -115,11 +116,15 @@ export const CourseEditPage: React.FC = () => {
     try {
       const submitData = new FormData();
       submitData.append('name', formData.name);
+      submitData.append('subtitle', formData.subtitle);
       submitData.append('description', formData.description);
-      submitData.append('details', formData.details);
       submitData.append('price', formData.price.toString());
-      submitData.append('duration', formData.duration);
-      submitData.append('level', formData.level);
+      if (formData.duration) {
+        submitData.append('duration', formData.duration);
+      }
+      if (formData.level) {
+        submitData.append('level', formData.level);
+      }
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
 
@@ -129,35 +134,31 @@ export const CourseEditPage: React.FC = () => {
       if (formData.max_students) {
         submitData.append('max_students', formData.max_students.toString());
       }
-      if (imageFile) {
-        submitData.append('image', imageFile);
-      }
 
       submitData.append('name_translations', JSON.stringify(formData.name_translations));
+      submitData.append('subtitle_translations', JSON.stringify(formData.subtitle_translations));
       submitData.append('description_translations', JSON.stringify(formData.description_translations));
-      submitData.append('details_translations', JSON.stringify(formData.details_translations));
 
       if (isEditMode) {
         submitData.append('_method', 'PUT');
         await updateCourse({ id: Number(id), data: submitData }).unwrap();
         toast.success('Course updated successfully');
+        navigate('/admin/courses');
       } else {
-        await createCourse(submitData).unwrap();
-        toast.success('Course created successfully');
+        const newCourse = await createCourse(submitData).unwrap();
+        toast.success('Course created! You can now add images.');
+        navigate(`/admin/courses/${newCourse.id}/edit`);
       }
-      navigate('/admin/courses');
     } catch (error: any) {
+      console.error('Course save error:', error);
       if (error?.data?.errors) {
         Object.values(error.data.errors).flat().forEach((err: any) => toast.error(err));
+      } else if (error?.data?.message) {
+        toast.error(error.data.message);
       } else {
         toast.error(`Failed to ${isEditMode ? 'update' : 'create'} course`);
       }
     }
-  };
-
-  const handleImageCropped = (file: File, previewUrl: string) => {
-    setImageFile(file);
-    setImagePreview(previewUrl);
   };
 
   const isLoading = isCreating || isUpdating;
@@ -214,14 +215,14 @@ export const CourseEditPage: React.FC = () => {
                 onChangeEnglish={(value) => setFormData(prev => ({ ...prev, name: value }))}
                 onChangeArabic={(value) => setFormData(prev => ({ ...prev, name_translations: { ar: value } }))}
                 required placeholder="Enter course name" placeholderAr="أدخل اسم الدورة" />
-              <TranslatableField label="Description" name="description" value={formData.description} translationValue={formData.description_translations.ar}
+              <TranslatableField label="Subtitle" name="subtitle" value={formData.subtitle} translationValue={formData.subtitle_translations.ar}
+                onChangeEnglish={(value) => setFormData(prev => ({ ...prev, subtitle: value }))}
+                onChangeArabic={(value) => setFormData(prev => ({ ...prev, subtitle_translations: { ar: value } }))}
+                placeholder="Enter course subtitle" placeholderAr="أدخل العنوان الفرعي" />
+              <TranslatableRichText label="Details" name="description" value={formData.description} translationValue={formData.description_translations.ar}
                 onChangeEnglish={(value) => setFormData(prev => ({ ...prev, description: value }))}
                 onChangeArabic={(value) => setFormData(prev => ({ ...prev, description_translations: { ar: value } }))}
-                type="textarea" required rows={3} placeholder="Enter course description" placeholderAr="أدخل وصف الدورة" />
-              <TranslatableField label="Details" name="details" value={formData.details} translationValue={formData.details_translations.ar}
-                onChangeEnglish={(value) => setFormData(prev => ({ ...prev, details: value }))}
-                onChangeArabic={(value) => setFormData(prev => ({ ...prev, details_translations: { ar: value } }))}
-                type="textarea" rows={3} placeholder="Enter additional details" placeholderAr="أدخل تفاصيل إضافية" />
+                required />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                 <select value={formData.category_id || ''} onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value === '' ? null : Number(e.target.value) }))}
@@ -241,14 +242,15 @@ export const CourseEditPage: React.FC = () => {
                   required step="0.01" min="0" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Duration *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
                 <input type="text" value={formData.duration} onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-                  required placeholder="e.g. 4 weeks" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" />
+                  placeholder="e.g. 4 weeks" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Level *</label>
-                <select value={formData.level} onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value as any }))}
+                <label className="block text-sm font-medium text-gray-700 mb-2">Level</label>
+                <select value={formData.level} onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                  <option value="">No Level</option>
                   <option value="Beginner">Beginner</option>
                   <option value="Intermediate">Intermediate</option>
                   <option value="Advanced">Advanced</option>
@@ -263,8 +265,23 @@ export const CourseEditPage: React.FC = () => {
             </div>
           </FormSection>
 
-          <FormSection title="Course Image" description="Upload course image">
-            <ImageUploadWithCrop onImageCropped={handleImageCropped} currentPreview={imagePreview} guideline={IMAGE_GUIDELINES.course} />
+          <FormSection title="Course Images" description={isEditMode ? "Manage course images and set main image" : "Save the course first to upload images"}>
+            {isEditMode && course ? (
+              <MultiImageGallery
+                images={course.images || []}
+                mainImagePath={course.image}
+                guideline={IMAGE_GUIDELINES.course}
+                disabled={isLoading}
+                onUpload={async (files) => { await uploadCourseImages({ courseId: Number(id), files }).unwrap(); }}
+                onDelete={async (imageId) => { await deleteCourseImage({ courseId: Number(id), imageId }).unwrap(); }}
+                onSetMain={async (imageId) => { await setCourseMainImage({ courseId: Number(id), imageId }).unwrap(); }}
+                onReorder={async (order) => { await reorderCourseImages({ courseId: Number(id), order }).unwrap(); }}
+              />
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <p className="text-sm">Save the course first, then you can upload and manage images.</p>
+              </div>
+            )}
           </FormSection>
 
           <FormSection title="Status & Visibility" description="Control course visibility">

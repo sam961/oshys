@@ -473,64 +473,48 @@
   },
   "faq": {
     "heroTitle": "Frequently Asked Questions",
-    "heroSubtitle": "Find answers to the most common questions about our diving courses, trips, and services",
+    "heroSubtitle": "Find answers to the most common questions about our programs, courses, and services",
     "searchPlaceholder": "Search questions...",
     "noResults": "No questions found matching your search",
     "categories": {
       "general": "General",
-      "courses": "Courses & Training",
-      "trips": "Trips & Adventures",
-      "equipment": "Equipment",
-      "booking": "Booking & Payment",
-      "safety": "Safety"
+      "programs": "Programs & Training",
+      "participants": "Participants",
+      "registration": "Registration & Fees"
     },
     "general": {
-      "q1": "What is Coral & Shells?",
-      "a1": "Coral & Shells is a professional diving center based in the Eastern Province of Saudi Arabia. We offer diving courses, adventure trips, equipment, and community initiatives for all experience levels.",
-      "q2": "Do I need prior experience to join?",
-      "a2": "Not at all! We welcome complete beginners. Our courses are designed to take you from zero experience to a confident, certified diver. We also offer programs for experienced divers looking to advance their skills.",
-      "q3": "What age groups do you cater to?",
-      "a3": "We offer programs for all ages. We have specialized kids' swimming programs starting from age 6, as well as adult courses and family-friendly diving trips."
+      "q1": "Is Corals & Shells only a diving center?",
+      "a1": "No. Corals & Shells is a water sports center offering swimming programs, diving courses, and long-term training paths for children, adults, and families, delivered within clear structures and approved safety standards.",
+      "q2": "Are the programs suitable for everyone?",
+      "a2": "Not necessarily. Some programs require specific physical readiness, age criteria, or time commitment. Suitability is determined based on the program and may require prior assessment.",
+      "q3": "What is the difference between courses and paths?",
+      "a3": "Courses are fixed-duration programs with specific outcomes. Paths are structured, long-term programs based on progression, readiness, and consistency, rather than speed or volume."
     },
-    "courses": {
-      "q1": "What certifications do you offer?",
-      "a1": "We offer PADI-certified courses including Open Water Diver, Advanced Open Water, Rescue Diver, and various specialty courses. We also offer swimming school programs and freediving certifications.",
-      "q2": "How long does it take to get certified?",
-      "a2": "The PADI Open Water Diver course typically takes 3-5 days. This includes classroom sessions, confined water practice, and open water dives. Advanced courses vary in duration depending on the specialty.",
-      "q3": "What do the courses include?",
-      "a3": "Our courses include all necessary training materials, equipment rental during training, pool and open water sessions, and the international certification upon successful completion."
+    "programs": {
+      "q1": "Where does the training take place?",
+      "a1": "Training locations depend on the program and may include: swimming pools, open water (sea), or a combination of both. This will be clearly communicated before the program starts.",
+      "q2": "Do diving courses result in an internationally recognized certification?",
+      "a2": "Yes. Foundational diving courses conclude with internationally recognized certifications, depending on the course type and applied standards.",
+      "q3": "What happens if a participant is not ready for a program?",
+      "a3": "If a participant is not ready, we may: postpone participation, or recommend a more suitable alternative program. Safety and readiness are always the priority."
     },
-    "trips": {
-      "q1": "Where do your diving trips go?",
-      "a1": "We organize trips to various locations including the Arabian Gulf, Red Sea, and other exciting dive sites across the region. Each trip offers unique underwater experiences and marine life encounters.",
-      "q2": "What is included in a diving trip?",
-      "a2": "Our trips typically include transportation, diving equipment, guide services, meals during the trip, and insurance. Specific inclusions vary by trip — check each trip's details page for the full breakdown.",
-      "q3": "Do I need certification for trips?",
-      "a3": "Some trips require diving certification while others are open to all levels. Each trip listing clearly indicates whether certification is required. We also offer discover scuba experiences for non-certified divers on select trips."
+    "participants": {
+      "q1": "Do you offer programs for children?",
+      "a1": "Yes. We offer swimming and diving programs for children, designed according to age groups and delivered with a gradual, safety-focused approach that builds confidence in the water.",
+      "q2": "Are there programs specifically for women?",
+      "a2": "Yes. We offer women-only swimming programs, such as the Fear-Breaking Program, in a safe and supportive environment. In addition to our Blue Path Program that ensures safe swimmers. We also offer separate diving classes.",
+      "q3": "Do you offer family programs?",
+      "a3": "Yes. Family swimming and water activity programs are available and designed to suit different ages and ability levels."
     },
-    "equipment": {
-      "q1": "Do I need to bring my own equipment?",
-      "a1": "No, we provide all necessary equipment for our courses and trips. However, if you have your own gear, you're welcome to bring it. We also sell quality diving equipment through our shop.",
-      "q2": "What brands do you carry?",
-      "a2": "We carry top diving brands including Cressi, Mares, and other industry-leading manufacturers. All our equipment is regularly maintained and meets international safety standards.",
-      "q3": "Can I rent equipment separately?",
-      "a3": "Yes, we offer equipment rental for certified divers who want to dive independently. Contact us for rental rates and availability."
-    },
-    "booking": {
-      "q1": "How do I book a course or trip?",
-      "a1": "You can book directly through our website by selecting any course or trip and clicking the 'Book Now' button. You can also contact us via WhatsApp or email to make a booking.",
-      "q2": "What payment methods do you accept?",
-      "a2": "We accept bank transfers, cash payments at our center, and major credit/debit cards. Payment details are provided upon booking confirmation.",
-      "q3": "What is your cancellation policy?",
-      "a3": "Cancellations made more than 48 hours before the scheduled activity are eligible for a full refund. Cancellations within 48 hours may be subject to a cancellation fee. Please contact us for specific details."
-    },
-    "safety": {
-      "q1": "What safety measures do you have?",
-      "a1": "Safety is our top priority. All our instructors are certified and experienced. We maintain our equipment to the highest standards, follow international diving protocols, and carry comprehensive insurance for all activities.",
-      "q2": "Do I need medical clearance to dive?",
-      "a2": "All participants are required to complete a medical questionnaire before diving. Some medical conditions may require a doctor's clearance. We recommend consulting with your physician if you have any health concerns.",
-      "q3": "What happens in case of an emergency?",
-      "a3": "Our team is trained in emergency response and first aid. We carry emergency oxygen and first aid equipment on all trips. We also have established protocols with local emergency services and DAN (Divers Alert Network)."
+    "registration": {
+      "q1": "Can I register directly for any program?",
+      "a1": "Some programs allow direct registration. Others, especially long-term paths, require a prior assessment before acceptance.",
+      "q2": "Do you offer discounts or promotions?",
+      "a2": "No. All programs have approved fees, and no informal discounts or exceptions are offered. This ensures fairness, quality, and safety for all participants. Limited offers are subject to center scheduling for families and groups.",
+      "q3": "Are fees refundable or transferable?",
+      "a3": "Refund and change policies are governed by the Terms & Conditions of each program and will be clearly communicated before registration is confirmed.",
+      "q4": "How can I contact you or register?",
+      "a4": "You can contact us through the website or official communication channels. Your request will be reviewed and guided according to the relevant program and procedures."
     },
     "stillHaveQuestions": "Still Have Questions?",
     "contactDescription": "Can't find what you're looking for? Our team is happy to help.",

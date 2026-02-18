@@ -12,9 +12,9 @@ class Course extends Model
 
     protected $fillable = [
         'name',
+        'subtitle',
         'slug',
         'description',
-        'details',
         'image',
         'price',
         'duration',
@@ -38,8 +38,8 @@ class Course extends Model
      */
     public array $translatable = [
         'name',
+        'subtitle',
         'description',
-        'details',
         'requirements',
     ];
 
@@ -51,7 +51,12 @@ class Course extends Model
 
     public function images()
     {
-        return $this->morphMany(Image::class, 'imageable');
+        return $this->morphMany(Image::class, 'imageable')->orderBy('order');
+    }
+
+    public function mainImage()
+    {
+        return $this->morphOne(Image::class, 'imageable')->where('collection', 'main');
     }
 
     // Accessors

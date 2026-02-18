@@ -22,11 +22,10 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    details: '',
     image: '',
     price: 0,
     duration: '',
-    level: 'Beginner' as 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels',
+    level: '' as string,
     category_id: null as number | null,
     is_active: true,
     is_featured: false,
@@ -34,7 +33,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
     requirements: [] as string[],
     name_translations: { ar: '' },
     description_translations: { ar: '' },
-    details_translations: { ar: '' },
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -45,11 +43,10 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
       setFormData({
         name: course.name,
         description: course.description,
-        details: course.details || '',
         image: course.image || '',
         price: Number(course.price),
-        duration: course.duration,
-        level: course.level,
+        duration: course.duration || '',
+        level: course.level || '',
         category_id: course.category_id || null,
         is_active: course.is_active,
         is_featured: course.is_featured,
@@ -57,7 +54,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
         requirements: course.requirements || [],
         name_translations: (course as any).name_translations || { ar: '' },
         description_translations: (course as any).description_translations || { ar: '' },
-        details_translations: (course as any).details_translations || { ar: '' },
       });
       // Set image preview from existing course
       if ((course as any).image_url) {
@@ -68,11 +64,10 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
       setFormData({
         name: '',
         description: '',
-        details: '',
         image: '',
         price: 0,
         duration: '',
-        level: 'Beginner',
+        level: '',
         category_id: null,
         is_active: true,
         is_featured: false,
@@ -80,7 +75,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
         requirements: [],
         name_translations: { ar: '' },
         description_translations: { ar: '' },
-        details_translations: { ar: '' },
       });
       setImageFile(null);
       setImagePreview('');
@@ -102,10 +96,9 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
       // Add all form fields to FormData
       submitData.append('name', formData.name);
       submitData.append('description', formData.description);
-      submitData.append('details', formData.details);
       submitData.append('price', formData.price.toString());
-      submitData.append('duration', formData.duration);
-      submitData.append('level', formData.level);
+      if (formData.duration) submitData.append('duration', formData.duration);
+      if (formData.level) submitData.append('level', formData.level);
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
 
@@ -127,7 +120,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
       // Add translations
       submitData.append('name_translations', JSON.stringify(formData.name_translations));
       submitData.append('description_translations', JSON.stringify(formData.description_translations));
-      submitData.append('details_translations', JSON.stringify(formData.details_translations));
 
       if (mode === 'create') {
         await createCourse(submitData).unwrap();
@@ -241,20 +233,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
                   disabled={isViewMode}
                 />
 
-                <TranslatableField
-                  label="Details"
-                  name="details"
-                  value={formData.details}
-                  translationValue={formData.details_translations.ar}
-                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, details: value }))}
-                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, details_translations: { ...prev.details_translations, ar: value } }))}
-                  type="textarea"
-                  rows={3}
-                  placeholder="Enter additional details"
-                  placeholderAr="أدخل تفاصيل إضافية"
-                  disabled={isViewMode}
-                />
-
                 {/* Price and Duration */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -275,7 +253,7 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Duration *
+                      Duration
                     </label>
                     <input
                       type="text"
@@ -283,7 +261,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
                       value={formData.duration}
                       onChange={handleChange}
                       disabled={isViewMode}
-                      required
                       placeholder="e.g. 4 weeks"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
@@ -294,16 +271,16 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Level *
+                      Level
                     </label>
                     <select
                       name="level"
                       value={formData.level}
                       onChange={handleChange}
                       disabled={isViewMode}
-                      required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     >
+                      <option value="">No Level</option>
                       <option value="Beginner">Beginner</option>
                       <option value="Intermediate">Intermediate</option>
                       <option value="Advanced">Advanced</option>

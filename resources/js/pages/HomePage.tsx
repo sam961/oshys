@@ -334,7 +334,7 @@ export const HomePage: React.FC = () => {
                         </div>
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{trip.description}</p>
+                      <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />
                       <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm text-gray-500 mb-4">
                         <span>{trip.duration}</span>
                         {trip.number_of_dives && (
@@ -404,7 +404,7 @@ export const HomePage: React.FC = () => {
                         </div>
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{course.name}</h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
+                      <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
                       <div className="flex items-center justify-between mb-4">
                         <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
                         <SaudiRiyalPrice amount={course.price} className="text-base sm:text-lg font-bold text-primary-600" />
@@ -473,7 +473,7 @@ export const HomePage: React.FC = () => {
                         )}
                       </div>
                       <h3 className="text-base sm:text-lg font-bold mb-2 line-clamp-2">{product.name}</h3>
-                      <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">{product.description}</p>
+                      <div className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
                       <div className="flex items-center justify-between">
                         <SaudiRiyalPrice amount={product.price} className="text-lg sm:text-xl font-bold text-primary-600" />
                         <Button size="sm" variant="ghost">
@@ -552,7 +552,7 @@ export const HomePage: React.FC = () => {
                         <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
                           {post.title}
                         </h3>
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{post.excerpt}</p>
+                        <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: post.excerpt }} />
                         <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
                           {t('home.readMore')}
                           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

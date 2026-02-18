@@ -4,6 +4,7 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
+import TranslatableRichText from '../components/TranslatableRichText';
 import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -129,7 +130,7 @@ export const EventEditPage: React.FC = () => {
           <FormSection title="Event Information" description="Title, description, and location">
             <div className="space-y-5">
               <TranslatableField label="Event Title" name="title" value={formData.title} translationValue={formData.title_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, title: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, title_translations: { ar: v } }))} required placeholder="Enter event title" placeholderAr="أدخل عنوان الحدث" />
-              <TranslatableField label="Description" name="description" value={formData.description} translationValue={formData.description_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, description: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, description_translations: { ar: v } }))} type="textarea" required rows={4} placeholder="Enter event description" placeholderAr="أدخل وصف الحدث" />
+              <TranslatableRichText label="Description" name="description" value={formData.description} translationValue={formData.description_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, description: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, description_translations: { ar: v } }))} required />
               <TranslatableField label="Location" name="location" value={formData.location} translationValue={formData.location_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, location: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, location_translations: { ar: v } }))} placeholder="Enter event location" placeholderAr="أدخل موقع الحدث" />
             </div>
           </FormSection>
