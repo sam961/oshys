@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, Users, TrendingUp, MapPin, Shield, Heart, Target, Zap, Loader2 } from 'lucide-react';
+import { Award, Users, TrendingUp, MapPin, Shield, Layers, UserCheck, FileCheck, Anchor, Loader2 } from 'lucide-react';
 import { Section, Card } from '../components/ui';
 import { CountUp } from '../components/animations';
 import { stats } from '../data/mockData';
@@ -20,19 +20,24 @@ export const AboutPage: React.FC = () => {
       description: t('about.valueSafetyDescription'),
     },
     {
-      icon: Heart,
-      title: t('about.valuePassionateTeam'),
-      description: t('about.valuePassionateDescription'),
+      icon: Layers,
+      title: t('about.valueStructuredPaths'),
+      description: t('about.valueStructuredDescription'),
     },
     {
-      icon: Target,
-      title: t('about.valueGoalOriented'),
-      description: t('about.valueGoalDescription'),
+      icon: UserCheck,
+      title: t('about.valueQualifiedInstruction'),
+      description: t('about.valueQualifiedDescription'),
     },
     {
-      icon: Zap,
-      title: t('about.valueInnovativeTraining'),
-      description: t('about.valueInnovativeDescription'),
+      icon: FileCheck,
+      title: t('about.valueHonestExpectations'),
+      description: t('about.valueHonestDescription'),
+    },
+    {
+      icon: Anchor,
+      title: t('about.valueResponsibleAccess'),
+      description: t('about.valueResponsibleDescription'),
     },
   ];
 
@@ -180,7 +185,7 @@ export const AboutPage: React.FC = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {values.map((value, index) => (
             <motion.div
               key={value.title}

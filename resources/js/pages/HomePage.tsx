@@ -336,13 +336,11 @@ export const HomePage: React.FC = () => {
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
                       <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />
                       <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm text-gray-500 mb-4">
-                        <span>{trip.duration}</span>
-                        {trip.number_of_dives && (
-                          <span>{t('pages.trips.dives', { count: trip.number_of_dives })}</span>
+                        {trip.category && (
+                          <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full">
+                            {trip.category.name}
+                          </span>
                         )}
-                        <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full">
-                          {trip.difficulty}
-                        </span>
                       </div>
                       <Button variant="outline" className="w-full" onClick={(e) => handleTripClick(e, trip)}>
                         {t('trips.bookNow')}
