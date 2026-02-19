@@ -29,6 +29,8 @@ class BlogPost extends Model
         'published_at' => 'datetime',
     ];
 
+    protected $appends = ['image_url'];
+
     /**
      * Fields that should be translatable
      */
@@ -47,16 +49,6 @@ class BlogPost extends Model
             return asset('storage/' . $this->image);
         }
         return null;
-    }
-
-    /**
-     * Override toArray to include image_url
-     */
-    public function toArray()
-    {
-        $array = parent::toArray();
-        $array['image_url'] = $this->image_url;
-        return $array;
     }
 
     // Relationships

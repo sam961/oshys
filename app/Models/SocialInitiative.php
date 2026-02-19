@@ -28,6 +28,8 @@ class SocialInitiative extends Model
         'published_at' => 'datetime',
     ];
 
+    protected $appends = ['image_url'];
+
     public array $translatable = [
         'title',
         'excerpt',
@@ -40,13 +42,6 @@ class SocialInitiative extends Model
             return asset('storage/' . $this->image);
         }
         return null;
-    }
-
-    public function toArray()
-    {
-        $array = parent::toArray();
-        $array['image_url'] = $this->image_url;
-        return $array;
     }
 
     public function category()

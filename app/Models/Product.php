@@ -32,6 +32,8 @@ class Product extends Model
         'is_featured' => 'boolean',
     ];
 
+    protected $appends = ['image_url'];
+
     /**
      * Fields that should be translatable
      */
@@ -61,11 +63,4 @@ class Product extends Model
         return null;
     }
 
-    // Override toArray to include image_url
-    public function toArray()
-    {
-        $array = parent::toArray();
-        $array['image_url'] = $this->image_url;
-        return $array;
-    }
 }

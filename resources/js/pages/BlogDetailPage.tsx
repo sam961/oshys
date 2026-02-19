@@ -36,7 +36,7 @@ export const BlogDetailPage: React.FC = () => {
       {/* Hero Image */}
       <div className="relative h-[500px] overflow-hidden">
         <img
-          src={post.image || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=800&fit=crop'}
+          src={post.image_url || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=800&fit=crop'}
           alt={post.title}
           className="w-full h-full object-cover"
         />

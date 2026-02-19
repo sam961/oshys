@@ -322,7 +322,7 @@ export const HomePage: React.FC = () => {
                     <Card key={trip.id} className="group cursor-pointer overflow-hidden shrink-0 w-[80vw] snap-center sm:w-auto">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
-                          src={trip.image || '/placeholder.svg'}
+                          src={trip.image_url || '/placeholder.svg'}
                           alt={trip.name}
                           className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                         />
@@ -393,7 +393,7 @@ export const HomePage: React.FC = () => {
                     <Card key={course.id} className="h-full shrink-0 w-[80vw] snap-center sm:w-auto group cursor-pointer">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
-                          src={course.image || '/placeholder.svg'}
+                          src={course.image_url || '/placeholder.svg'}
                           alt={course.name}
                           className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -458,7 +458,7 @@ export const HomePage: React.FC = () => {
                     <Card className="group cursor-pointer h-full">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
-                          src={product.image || '/placeholder.svg'}
+                          src={product.image_url || '/placeholder.svg'}
                           alt={product.name}
                           className="w-full h-36 sm:h-40 object-cover group-hover:scale-110 transition-transform duration-300"
                         />
@@ -531,7 +531,7 @@ export const HomePage: React.FC = () => {
                       <Card className="group cursor-pointer h-full overflow-hidden">
                         <div className="relative overflow-hidden rounded-xl mb-4">
                           <img
-                            src={post.image || '/placeholder.svg'}
+                            src={post.image_url || '/placeholder.svg'}
                             alt={post.title}
                             className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                           />

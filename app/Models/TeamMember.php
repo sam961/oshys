@@ -30,6 +30,8 @@ class TeamMember extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = ['image_url'];
+
     /**
      * Fields that should be translatable
      */
@@ -49,16 +51,6 @@ class TeamMember extends Model
             return asset('storage/' . $this->image);
         }
         return null;
-    }
-
-    /**
-     * Override toArray to include image_url
-     */
-    public function toArray()
-    {
-        $array = parent::toArray();
-        $array['image_url'] = $this->image_url;
-        return $array;
     }
 
     // Relationships
