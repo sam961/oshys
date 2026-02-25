@@ -20,7 +20,7 @@ class ContactController extends Controller
 
         // Send email notification
         try {
-            Mail::to('oshysoceans@gmail.com')->send(new ContactNotification($validated));
+            Mail::to(config('mail.from.address'))->send(new ContactNotification($validated));
         } catch (\Exception $e) {
             \Log::error('Failed to send contact notification email: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to send message. Please try again later.'], 500);

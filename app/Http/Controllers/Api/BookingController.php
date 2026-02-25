@@ -72,7 +72,7 @@ class BookingController extends Controller
 
         // Send email notification
         try {
-            Mail::to('oshysoceans@gmail.com')->send(new BookingNotification($booking));
+            Mail::to(config('mail.from.address'))->send(new BookingNotification($booking));
         } catch (\Exception $e) {
             \Log::error('Failed to send booking notification email: ' . $e->getMessage());
         }
