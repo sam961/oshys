@@ -7,7 +7,7 @@
     "blog": "Blog",
     "events": "Events",
     "team": "Team",
-    "categories": "Categories",
+
     "banners": "Banners",
     "settings": "Settings"
   },
@@ -64,7 +64,7 @@
     "description": "Description",
     "price": "Price",
     "stock": "Stock",
-    "category": "Category",
+
     "brand": "Brand",
     "sku": "SKU"
   },
@@ -134,16 +134,6 @@
     "hero": "Hero",
     "secondary": "Secondary",
     "promo": "Promotional"
-  },
-  "categories": {
-    "title": "Categories Management",
-    "addCategory": "Add Category",
-    "editCategory": "Edit Category",
-    "viewCategory": "View Category",
-    "deleteCategory": "Delete Category",
-    "categoryName": "Category Name",
-    "description": "Description",
-    "type": "Type"
   },
   "settings": {
     "title": "Settings",

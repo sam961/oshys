@@ -6,14 +6,13 @@ import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
-import { useGetSocialInitiativeQuery, useGetCategoriesQuery, useCreateSocialInitiativeMutation, useUpdateSocialInitiativeMutation } from '../../services/api';
+import { useGetSocialInitiativeQuery, useCreateSocialInitiativeMutation, useUpdateSocialInitiativeMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
   title: string;
   excerpt: string;
   content: string;
-  category_id: number | null;
   is_published: boolean;
   is_featured: boolean;
   published_at: string;
@@ -26,7 +25,6 @@ const initialFormData: FormData = {
   title: '',
   excerpt: '',
   content: '',
-  category_id: null,
   is_published: false,
   is_featured: false,
   published_at: '',
@@ -41,7 +39,6 @@ export const InitiativeEditPage: React.FC = () => {
   const isEditMode = Boolean(id);
 
   const { data: initiative, isLoading: isLoadingInitiative, error: initiativeError } = useGetSocialInitiativeQuery(Number(id), { skip: !isEditMode });
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true });
   const [createInitiative, { isLoading: isCreating }] = useCreateSocialInitiativeMutation();
   const [updateInitiative, { isLoading: isUpdating }] = useUpdateSocialInitiativeMutation();
 
@@ -57,7 +54,6 @@ export const InitiativeEditPage: React.FC = () => {
         title: initiative.title,
         excerpt: initiative.excerpt,
         content: initiative.content,
-        category_id: initiative.category_id || null,
         is_published: initiative.is_published,
         is_featured: initiative.is_featured,
         published_at: initiative.published_at ? initiative.published_at.split('T')[0] : '',
@@ -95,7 +91,6 @@ export const InitiativeEditPage: React.FC = () => {
       submitData.append('content', formData.content);
       submitData.append('is_published', formData.is_published ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
-      if (formData.category_id) submitData.append('category_id', formData.category_id.toString());
       if (formData.published_at) submitData.append('published_at', formData.published_at);
       if (imageFile) submitData.append('image', imageFile);
       submitData.append('title_translations', JSON.stringify(formData.title_translations));
@@ -149,9 +144,8 @@ export const InitiativeEditPage: React.FC = () => {
           </FormSection>
 
           <div className="space-y-6">
-            <FormSection title="Settings" description="Category and publish date">
+            <FormSection title="Settings" description="Publish date">
               <div className="space-y-5">
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Category</label><select value={formData.category_id || ''} onChange={(e) => setFormData(p => ({ ...p, category_id: e.target.value === '' ? null : Number(e.target.value) }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"><option value="">No Category</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Published Date</label><input type="date" value={formData.published_at} onChange={(e) => setFormData(p => ({ ...p, published_at: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
               </div>
             </FormSection>

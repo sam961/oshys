@@ -28,9 +28,6 @@ export const InitiativesManagement: React.FC = () => {
           />
           <div className="max-w-xs">
             <div className="font-medium truncate">{value}</div>
-            {row.category && (
-              <div className="text-xs text-gray-500">{row.category.name}</div>
-            )}
           </div>
         </div>
       ),

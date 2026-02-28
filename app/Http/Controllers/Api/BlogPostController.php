@@ -17,7 +17,7 @@ class BlogPostController extends Controller
      */
     public function index(Request $request)
     {
-        $query = BlogPost::with(['category', 'author', 'images', 'translations']);
+        $query = BlogPost::with(['author', 'images', 'translations']);
 
         // Filter by published status
         if ($request->has('published')) {
@@ -29,11 +29,6 @@ class BlogPostController extends Controller
         if ($request->has('featured')) {
             $isFeatured = filter_var($request->featured, FILTER_VALIDATE_BOOLEAN);
             $query->where('is_featured', $isFeatured);
-        }
-
-        // Filter by category
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
         }
 
         // Filter by author
@@ -69,7 +64,7 @@ class BlogPostController extends Controller
             'excerpt' => 'required|string',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'category_id' => 'nullable|exists:categories,id',
+
             'author_id' => 'required|exists:users,id',
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
@@ -110,7 +105,7 @@ class BlogPostController extends Controller
      */
     public function show($id)
     {
-        $blogPost = BlogPost::with(['category', 'author', 'images', 'translations'])->findOrFail($id);
+        $blogPost = BlogPost::with(['author', 'images', 'translations'])->findOrFail($id);
         return response()->json($blogPost->toArrayWithTranslations());
     }
 
@@ -126,7 +121,7 @@ class BlogPostController extends Controller
             'excerpt' => 'sometimes|required|string',
             'content' => 'sometimes|required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'category_id' => 'nullable|exists:categories,id',
+
             'author_id' => 'sometimes|required|exists:users,id',
             'is_published' => 'nullable',
             'is_featured' => 'nullable',

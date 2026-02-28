@@ -1,20 +1,7 @@
-// Category Types
-export interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  type: 'product' | 'course' | 'trip' | 'blog';
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 // Course Types
 export interface Course {
   id: number;
   name: string;
-  subtitle?: string;
   slug: string;
   description: string;
   image?: string;
@@ -23,8 +10,6 @@ export interface Course {
   price: number;
   duration?: string;
   level?: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
-  category_id?: number;
-  category?: Category;
   is_active: boolean;
   is_featured: boolean;
   max_students?: number;
@@ -44,8 +29,6 @@ export interface Trip {
   image_url?: string;
   images?: Image[];
   price: number;
-  category_id?: number;
-  category?: Category;
   is_active: boolean;
   is_featured: boolean;
   included_items?: string[];
@@ -60,11 +43,8 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
-  details?: string;
   image?: string;
   price: number;
-  category_id?: number;
-  category?: Category;
   in_stock: boolean;
   is_active: boolean;
   is_featured: boolean;
@@ -84,8 +64,6 @@ export interface BlogPost {
   content: string;
   image?: string;
   image_url?: string;
-  category_id?: number;
-  category?: Category;
   author_id?: number;
   author?: {
     id: number;
@@ -109,8 +87,6 @@ export interface SocialInitiative {
   content: string;
   image?: string;
   image_url?: string;
-  category_id?: number;
-  category?: Category;
   is_published: boolean;
   is_featured: boolean;
   published_at?: string;
@@ -226,14 +202,13 @@ export interface Image {
 }
 
 // Form Data Types for Creating/Updating
-export type CourseFormData = Omit<Course, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category'>;
-export type TripFormData = Omit<Trip, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category'>;
-export type ProductFormData = Omit<Product, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category'>;
-export type BlogPostFormData = Omit<BlogPost, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category' | 'author'>;
-export type SocialInitiativeFormData = Omit<SocialInitiative, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'category'>;
+export type CourseFormData = Omit<Course, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at'>;
+export type TripFormData = Omit<Trip, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at'>;
+export type ProductFormData = Omit<Product, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at'>;
+export type BlogPostFormData = Omit<BlogPost, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at' | 'author'>;
+export type SocialInitiativeFormData = Omit<SocialInitiative, 'id' | 'slug' | 'created_at' | 'updated_at' | 'deleted_at'>;
 export type EventFormData = Omit<Event, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
 export type TeamMemberFormData = Omit<TeamMember, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
-export type CategoryFormData = Omit<Category, 'id' | 'slug' | 'created_at' | 'updated_at'>;
 export type SettingFormData = Omit<Setting, 'id' | 'created_at' | 'updated_at'>;
 
 // Booking Types

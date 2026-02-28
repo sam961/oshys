@@ -7,7 +7,7 @@
     "blog": "المدونة",
     "events": "الفعاليات",
     "team": "الفريق",
-    "categories": "التصنيفات",
+
     "banners": "البانرات",
     "settings": "الإعدادات"
   },
@@ -64,7 +64,7 @@
     "description": "الوصف",
     "price": "السعر",
     "stock": "المخزون",
-    "category": "التصنيف",
+
     "brand": "العلامة التجارية",
     "sku": "رمز المنتج"
   },
@@ -134,16 +134,6 @@
     "hero": "رئيسي",
     "secondary": "ثانوي",
     "promo": "ترويجي"
-  },
-  "categories": {
-    "title": "إدارة التصنيفات",
-    "addCategory": "إضافة تصنيف",
-    "editCategory": "تعديل التصنيف",
-    "viewCategory": "عرض التصنيف",
-    "deleteCategory": "حذف التصنيف",
-    "categoryName": "اسم التصنيف",
-    "description": "الوصف",
-    "type": "النوع"
   },
   "settings": {
     "title": "الإعدادات",

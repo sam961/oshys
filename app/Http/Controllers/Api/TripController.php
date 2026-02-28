@@ -17,16 +17,13 @@ class TripController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Trip::with(['category', 'images', 'translations']);
+        $query = Trip::with(['images', 'translations']);
 
         if ($request->has('active')) {
             $query->where('is_active', filter_var($request->active, FILTER_VALIDATE_BOOLEAN));
         }
         if ($request->has('featured')) {
             $query->where('is_featured', filter_var($request->featured, FILTER_VALIDATE_BOOLEAN));
-        }
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
         }
         if ($request->has('search')) {
             $search = $request->search;
@@ -52,7 +49,6 @@ class TripController extends Controller
             'description' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'required|numeric|min:0',
-            'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
             'included_items' => 'nullable',
@@ -102,7 +98,7 @@ class TripController extends Controller
      */
     public function show($id)
     {
-        $trip = Trip::with(['category', 'images', 'translations'])->findOrFail($id);
+        $trip = Trip::with(['images', 'translations'])->findOrFail($id);
         return response()->json($trip->toArrayWithTranslations());
     }
 
@@ -118,7 +114,6 @@ class TripController extends Controller
             'description' => 'sometimes|required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'sometimes|required|numeric|min:0',
-            'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
             'included_items' => 'nullable',

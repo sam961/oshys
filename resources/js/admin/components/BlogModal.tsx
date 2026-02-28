@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCreateBlogPostMutation, useUpdateBlogPostMutation, useGetCategoriesQuery } from '../../services/api';
+import { useCreateBlogPostMutation, useUpdateBlogPostMutation } from '../../services/api';
 import type { BlogPost } from '../../types';
 import toast from 'react-hot-toast';
 import TranslatableField from './TranslatableField';
@@ -17,14 +17,12 @@ interface BlogModalProps {
 export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost, mode }) => {
   const [createBlogPost, { isLoading: isCreating }] = useCreateBlogPostMutation();
   const [updateBlogPost, { isLoading: isUpdating }] = useUpdateBlogPostMutation();
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'blog' });
 
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
     content: '',
     image: '',
-    category_id: null as number | null,
     is_published: false,
     is_featured: false,
     published_at: '',
@@ -44,7 +42,6 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         excerpt: blogPost.excerpt,
         content: blogPost.content,
         image: blogPost.image || '',
-        category_id: blogPost.category_id || null,
         is_published: blogPost.is_published,
         is_featured: blogPost.is_featured,
         published_at: blogPost.published_at ? blogPost.published_at.split('T')[0] : '',
@@ -64,7 +61,6 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         excerpt: '',
         content: '',
         image: '',
-        category_id: null,
         is_published: false,
         is_featured: false,
         published_at: '',
@@ -97,9 +93,6 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
       submitData.append('author_id', '1'); // TODO: Get from auth user
 
-      if (formData.category_id) {
-        submitData.append('category_id', formData.category_id.toString());
-      }
       if (formData.published_at) {
         submitData.append('published_at', formData.published_at);
       }
@@ -144,8 +137,6 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
 
     if (type === 'checkbox') {
       setFormData(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
-    } else if (name === 'category_id') {
-      setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -239,38 +230,19 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
                   disabled={isViewMode}
                 />
 
-                {/* Category and Published Date */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category
-                    </label>
-                    <select
-                      name="category_id"
-                      value={formData.category_id || ''}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    >
-                      <option value="">No Category</option>
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Published Date
-                    </label>
-                    <input
-                      type="date"
-                      name="published_at"
-                      value={formData.published_at}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    />
-                  </div>
+                {/* Published Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Published Date
+                  </label>
+                  <input
+                    type="date"
+                    name="published_at"
+                    value={formData.published_at}
+                    onChange={handleChange}
+                    disabled={isViewMode}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
+                  />
                 </div>
 
                 {/* Image Upload with Crop */}

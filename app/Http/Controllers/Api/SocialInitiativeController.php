@@ -14,7 +14,7 @@ class SocialInitiativeController extends Controller
 
     public function index(Request $request)
     {
-        $query = SocialInitiative::with(['category', 'translations']);
+        $query = SocialInitiative::with(['translations']);
 
         if ($request->has('published')) {
             $isPublished = filter_var($request->published, FILTER_VALIDATE_BOOLEAN);
@@ -24,10 +24,6 @@ class SocialInitiativeController extends Controller
         if ($request->has('featured')) {
             $isFeatured = filter_var($request->featured, FILTER_VALIDATE_BOOLEAN);
             $query->where('is_featured', $isFeatured);
-        }
-
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
         }
 
         if ($request->has('search')) {
@@ -54,7 +50,7 @@ class SocialInitiativeController extends Controller
             'excerpt' => 'required|string',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'category_id' => 'nullable|exists:categories,id',
+
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
             'published_at' => 'nullable|date',
@@ -89,7 +85,7 @@ class SocialInitiativeController extends Controller
 
     public function show($id)
     {
-        $initiative = SocialInitiative::with(['category', 'translations'])->findOrFail($id);
+        $initiative = SocialInitiative::with(['translations'])->findOrFail($id);
         return response()->json($initiative->toArrayWithTranslations());
     }
 
@@ -102,7 +98,7 @@ class SocialInitiativeController extends Controller
             'excerpt' => 'sometimes|required|string',
             'content' => 'sometimes|required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'category_id' => 'nullable|exists:categories,id',
+
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
             'published_at' => 'nullable|date',

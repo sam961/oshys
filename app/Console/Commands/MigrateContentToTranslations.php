@@ -6,7 +6,6 @@ use App\Models\Product;
 use App\Models\Course;
 use App\Models\Trip;
 use App\Models\BlogPost;
-use App\Models\Category;
 use Illuminate\Console\Command;
 
 class MigrateContentToTranslations extends Command
@@ -17,7 +16,7 @@ class MigrateContentToTranslations extends Command
      * @var string
      */
     protected $signature = 'translations:migrate
-                           {--model= : Specific model to migrate (Product, Course, Trip, BlogPost, Category)}
+                           {--model= : Specific model to migrate (Product, Course, Trip, BlogPost)}
                            {--dry-run : Run without making changes}';
 
     /**
@@ -43,7 +42,7 @@ class MigrateContentToTranslations extends Command
 
         $models = $specificModel
             ? [$specificModel]
-            : ['Product', 'Course', 'Trip', 'BlogPost', 'Category'];
+            : ['Product', 'Course', 'Trip', 'BlogPost'];
 
         foreach ($models as $modelName) {
             $this->migrateModel($modelName, $isDryRun);

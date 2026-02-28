@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { Globe } from 'lucide-react';
+import { api } from '../../services/api';
 
 interface Language {
   code: string;
@@ -16,12 +18,15 @@ const languages: Language[] = [
 
 export const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   const changeLanguage = (langCode: string) => {
     i18n.changeLanguage(langCode);
+    // Reset RTK Query cache so API data is refetched with the new locale header
+    dispatch(api.util.resetApiState());
     setIsOpen(false);
   };
 

@@ -16,7 +16,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'images', 'translations']);
+        $query = Product::with(['images', 'translations']);
 
         // Filter by active status
         if ($request->has('active')) {
@@ -31,11 +31,6 @@ class ProductController extends Controller
         // Filter by in stock
         if ($request->has('in_stock')) {
             $query->where('in_stock', filter_var($request->in_stock, FILTER_VALIDATE_BOOLEAN));
-        }
-
-        // Filter by category
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
         }
 
         // Search
@@ -64,10 +59,8 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'details' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'required|numeric|min:0',
-            'category_id' => 'nullable|exists:categories,id',
             'in_stock' => 'nullable',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
@@ -76,7 +69,6 @@ class ProductController extends Controller
             // Translation fields can be JSON strings from FormData
             'name_translations' => 'nullable',
             'description_translations' => 'nullable',
-            'details_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans
@@ -95,7 +87,7 @@ class ProductController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         // Remove translation fields from validated data (they'll be handled separately)
-        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations']);
+        unset($validated['name_translations'], $validated['description_translations']);
 
         $product = Product::create($validated);
 
@@ -110,7 +102,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with(['category', 'images', 'translations'])->findOrFail($id);
+        $product = Product::with(['images', 'translations'])->findOrFail($id);
         return response()->json($product->toArrayWithTranslations());
     }
 
@@ -124,10 +116,8 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
-            'details' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'sometimes|required|numeric|min:0',
-            'category_id' => 'nullable|exists:categories,id',
             'in_stock' => 'nullable',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
@@ -136,7 +126,6 @@ class ProductController extends Controller
             // Translation fields can be JSON strings from FormData
             'name_translations' => 'nullable',
             'description_translations' => 'nullable',
-            'details_translations' => 'nullable',
         ]);
 
         // Convert boolean strings to actual booleans if present
@@ -168,7 +157,7 @@ class ProductController extends Controller
         }
 
         // Remove translation fields from validated data (they'll be handled separately)
-        unset($validated['name_translations'], $validated['description_translations'], $validated['details_translations']);
+        unset($validated['name_translations'], $validated['description_translations']);
 
         $product->update($validated);
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCreateProductMutation, useUpdateProductMutation, useGetCategoriesQuery } from '../../services/api';
+import { useCreateProductMutation, useUpdateProductMutation } from '../../services/api';
 import type { Product } from '../../types';
 import toast from 'react-hot-toast';
 import TranslatableField from './TranslatableField';
@@ -17,16 +17,12 @@ interface ProductModalProps {
 export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, product, mode }) => {
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'product' });
-
 
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    details: '',
     image: '',
     price: 0,
-    category_id: null as number | null,
     in_stock: true,
     is_active: true,
     is_featured: false,
@@ -35,7 +31,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
     // Add translation fields
     name_translations: { ar: '' },
     description_translations: { ar: '' },
-    details_translations: { ar: '' },
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -46,10 +41,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
       setFormData({
         name: product.name,
         description: product.description,
-        details: product.details || '',
         image: product.image || '',
         price: Number(product.price),
-        category_id: product.category_id || null,
         in_stock: product.in_stock,
         is_active: product.is_active,
         is_featured: product.is_featured,
@@ -58,7 +51,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
         // Load translations if available
         name_translations: (product as any).name_translations || { ar: '' },
         description_translations: (product as any).description_translations || { ar: '' },
-        details_translations: (product as any).details_translations || { ar: '' },
       });
       // Set image preview from existing product
       if ((product as any).image_url) {
@@ -69,10 +61,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
       setFormData({
         name: '',
         description: '',
-        details: '',
         image: '',
         price: 0,
-        category_id: null,
         in_stock: true,
         is_active: true,
         is_featured: false,
@@ -80,7 +70,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
         sku: '',
         name_translations: { ar: '' },
         description_translations: { ar: '' },
-        details_translations: { ar: '' },
       });
       setImageFile(null);
       setImagePreview('');
@@ -102,16 +91,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
       // Add all form fields to FormData
       submitData.append('name', formData.name);
       submitData.append('description', formData.description);
-      submitData.append('details', formData.details);
       submitData.append('price', formData.price.toString());
       submitData.append('in_stock', formData.in_stock ? '1' : '0');
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
       submitData.append('stock_quantity', formData.stock_quantity.toString());
 
-      if (formData.category_id) {
-        submitData.append('category_id', formData.category_id.toString());
-      }
       if (formData.sku) {
         submitData.append('sku', formData.sku);
       }
@@ -124,7 +109,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
       // Add translations
       submitData.append('name_translations', JSON.stringify(formData.name_translations));
       submitData.append('description_translations', JSON.stringify(formData.description_translations));
-      submitData.append('details_translations', JSON.stringify(formData.details_translations));
 
       if (mode === 'create') {
         await createProduct(submitData).unwrap();
@@ -158,8 +142,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
       setFormData(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
     } else if (type === 'number') {
       setFormData(prev => ({ ...prev, [name]: Number(value) }));
-    } else if (name === 'category_id') {
-      setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -239,20 +221,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
                   disabled={isViewMode}
                 />
 
-                <TranslatableField
-                  label="Details"
-                  name="details"
-                  value={formData.details}
-                  translationValue={formData.details_translations.ar}
-                  onChangeEnglish={(value) => setFormData(prev => ({ ...prev, details: value }))}
-                  onChangeArabic={(value) => setFormData(prev => ({ ...prev, details_translations: { ...prev.details_translations, ar: value } }))}
-                  type="textarea"
-                  rows={3}
-                  placeholder="Enter additional details"
-                  placeholderAr="أدخل تفاصيل إضافية"
-                  disabled={isViewMode}
-                />
-
                 {/* Price and Stock */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -288,38 +256,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
                   </div>
                 </div>
 
-                {/* SKU and Category */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      SKU
-                    </label>
-                    <input
-                      type="text"
-                      name="sku"
-                      value={formData.sku}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category
-                    </label>
-                    <select
-                      name="category_id"
-                      value={formData.category_id || ''}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    >
-                      <option value="">No Category</option>
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                  </div>
+                {/* SKU */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    SKU
+                  </label>
+                  <input
+                    type="text"
+                    name="sku"
+                    value={formData.sku}
+                    onChange={handleChange}
+                    disabled={isViewMode}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
+                  />
                 </div>
 
                 {/* Image Upload with Crop */}

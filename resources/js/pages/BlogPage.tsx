@@ -65,31 +65,15 @@ export const BlogPage: React.FC = () => {
                   <Card className="group cursor-pointer h-full overflow-hidden hover:shadow-2xl transition-shadow">
                   <div className="relative overflow-hidden rounded-xl mb-4">
                     {(post as any).image_url ? (
-                      <>
-                        <img
-                          src={(post as any).image_url}
-                          alt={post.title}
-                          className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        {post.category && (
-                          <div className="absolute top-4 left-4">
-                            <span className="bg-primary-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-                              {post.category.name}
-                            </span>
-                          </div>
-                        )}
-                      </>
+                      <img
+                        src={(post as any).image_url}
+                        alt={post.title}
+                        className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
                     ) : (
                       <div className="w-full h-56 bg-gray-100 flex flex-col items-center justify-center">
                         <BookOpen className="w-16 h-16 text-gray-300 mb-2" />
                         <p className="text-sm text-gray-400">{t('blog.noImage')}</p>
-                        {post.category && (
-                          <div className="absolute top-4 left-4">
-                            <span className="bg-primary-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-                              {post.category.name}
-                            </span>
-                          </div>
-                        )}
                       </div>
                     )}
                   </div>

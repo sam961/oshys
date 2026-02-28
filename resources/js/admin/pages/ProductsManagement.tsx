@@ -31,9 +31,6 @@ export const ProductsManagement: React.FC = () => {
           />
           <div>
             <div className="font-medium">{value}</div>
-            {row.category && (
-              <div className="text-xs text-gray-500">{row.category.name}</div>
-            )}
           </div>
         </div>
       ),

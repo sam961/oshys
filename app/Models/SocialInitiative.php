@@ -16,7 +16,7 @@ class SocialInitiative extends Model
         'excerpt',
         'content',
         'image',
-        'category_id',
+
         'is_published',
         'is_featured',
         'published_at',
@@ -44,8 +44,4 @@ class SocialInitiative extends Model
         return null;
     }
 
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
 }

@@ -7,14 +7,13 @@ import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { MultiImageGallery } from '../components/MultiImageGallery';
-import { useGetTripQuery, useGetCategoriesQuery, useCreateTripMutation, useUpdateTripMutation, useUploadTripImagesMutation, useDeleteTripImageMutation, useSetTripMainImageMutation, useReorderTripImagesMutation } from '../../services/api';
+import { useGetTripQuery, useCreateTripMutation, useUpdateTripMutation, useUploadTripImagesMutation, useDeleteTripImageMutation, useSetTripMainImageMutation, useReorderTripImagesMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
   name: string;
   description: string;
   price: number;
-  category_id: number | null;
   is_active: boolean;
   is_featured: boolean;
   name_translations: { ar: string };
@@ -25,7 +24,6 @@ const initialFormData: FormData = {
   name: '',
   description: '',
   price: 0,
-  category_id: null,
   is_active: true,
   is_featured: false,
   name_translations: { ar: '' },
@@ -38,7 +36,6 @@ export const TripEditPage: React.FC = () => {
   const isEditMode = Boolean(id);
 
   const { data: trip, isLoading: isLoadingTrip, error: tripError } = useGetTripQuery(Number(id), { skip: !isEditMode });
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'trip' });
   const [createTrip, { isLoading: isCreating }] = useCreateTripMutation();
   const [updateTrip, { isLoading: isUpdating }] = useUpdateTripMutation();
   const [uploadTripImages] = useUploadTripImagesMutation();
@@ -56,7 +53,6 @@ export const TripEditPage: React.FC = () => {
         name: trip.name,
         description: trip.description || '',
         price: Number(trip.price),
-        category_id: trip.category_id || null,
         is_active: trip.is_active,
         is_featured: trip.is_featured,
         name_translations: (trip as any).name_translations || { ar: '' },
@@ -91,7 +87,6 @@ export const TripEditPage: React.FC = () => {
       submitData.append('price', formData.price.toString());
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
-      if (formData.category_id) submitData.append('category_id', formData.category_id.toString());
       submitData.append('name_translations', JSON.stringify(formData.name_translations));
       submitData.append('description_translations', JSON.stringify(formData.description_translations));
 
@@ -136,11 +131,10 @@ export const TripEditPage: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <FormSection title="Basic Information" description="Trip name, description, and category">
+          <FormSection title="Basic Information" description="Trip name and description">
             <div className="space-y-5">
               <TranslatableField label="Trip Name" name="name" value={formData.name} translationValue={formData.name_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, name: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, name_translations: { ar: v } }))} required placeholder="Enter trip name" placeholderAr="أدخل اسم الرحلة" />
               <TranslatableRichText label="Details" name="description" value={formData.description} translationValue={formData.description_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, description: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, description_translations: { ar: v } }))} required />
-              <div><label className="block text-sm font-medium text-gray-700 mb-2">Category</label><select value={formData.category_id || ''} onChange={(e) => setFormData(p => ({ ...p, category_id: e.target.value === '' ? null : Number(e.target.value) }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"><option value="">No Category</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
             </div>
           </FormSection>
 

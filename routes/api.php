@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\BlogPostController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\TeamMemberController;
-use App\Http\Controllers\Api\CategoryController;
+
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\SocialInitiativeController;
@@ -33,7 +33,7 @@ Route::apiResource('blog-posts', BlogPostController::class);
 Route::apiResource('events', EventController::class);
 Route::apiResource('team-members', TeamMemberController::class);
 Route::get('team-members-featured', [TeamMemberController::class, 'featured']);
-Route::apiResource('categories', CategoryController::class);
+
 Route::apiResource('settings', SettingController::class);
 Route::apiResource('banners', BannerController::class);
 Route::apiResource('social-initiatives', SocialInitiativeController::class);

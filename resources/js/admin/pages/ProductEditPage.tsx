@@ -6,16 +6,14 @@ import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
-import { useGetProductQuery, useGetCategoriesQuery, useCreateProductMutation, useUpdateProductMutation } from '../../services/api';
+import { useGetProductQuery, useCreateProductMutation, useUpdateProductMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 interface FormData {
   name: string;
   description: string;
-  details: string;
   price: number;
-  category_id: number | null;
   in_stock: boolean;
   is_active: boolean;
   is_featured: boolean;
@@ -23,15 +21,12 @@ interface FormData {
   sku: string;
   name_translations: { ar: string };
   description_translations: { ar: string };
-  details_translations: { ar: string };
 }
 
 const initialFormData: FormData = {
   name: '',
   description: '',
-  details: '',
   price: 0,
-  category_id: null,
   in_stock: true,
   is_active: true,
   is_featured: false,
@@ -39,7 +34,6 @@ const initialFormData: FormData = {
   sku: '',
   name_translations: { ar: '' },
   description_translations: { ar: '' },
-  details_translations: { ar: '' },
 };
 
 export const ProductEditPage: React.FC = () => {
@@ -51,7 +45,6 @@ export const ProductEditPage: React.FC = () => {
   const { data: product, isLoading: isLoadingProduct, error: productError } = useGetProductQuery(Number(id), {
     skip: !isEditMode,
   });
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'product' });
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
 
@@ -67,9 +60,7 @@ export const ProductEditPage: React.FC = () => {
       const loadedData: FormData = {
         name: product.name,
         description: product.description,
-        details: product.details || '',
         price: Number(product.price),
-        category_id: product.category_id || null,
         in_stock: product.in_stock,
         is_active: product.is_active,
         is_featured: product.is_featured,
@@ -77,7 +68,6 @@ export const ProductEditPage: React.FC = () => {
         sku: product.sku || '',
         name_translations: (product as any).name_translations || { ar: '' },
         description_translations: (product as any).description_translations || { ar: '' },
-        details_translations: (product as any).details_translations || { ar: '' },
       };
       setFormData(loadedData);
       setInitialData(loadedData);
@@ -124,16 +114,12 @@ export const ProductEditPage: React.FC = () => {
 
       submitData.append('name', formData.name);
       submitData.append('description', formData.description);
-      submitData.append('details', formData.details);
       submitData.append('price', formData.price.toString());
       submitData.append('in_stock', formData.in_stock ? '1' : '0');
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
       submitData.append('stock_quantity', formData.stock_quantity.toString());
 
-      if (formData.category_id) {
-        submitData.append('category_id', formData.category_id.toString());
-      }
       if (formData.sku) {
         submitData.append('sku', formData.sku);
       }
@@ -144,7 +130,6 @@ export const ProductEditPage: React.FC = () => {
 
       submitData.append('name_translations', JSON.stringify(formData.name_translations));
       submitData.append('description_translations', JSON.stringify(formData.description_translations));
-      submitData.append('details_translations', JSON.stringify(formData.details_translations));
 
       if (isEditMode) {
         submitData.append('_method', 'PUT');
@@ -260,7 +245,7 @@ export const ProductEditPage: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Basic Information */}
-          <FormSection title="Basic Information" description="Product name, description, and category">
+          <FormSection title="Basic Information" description="Product name and description">
             <div className="space-y-5">
               <TranslatableField
                 label="Product Name"
@@ -283,31 +268,6 @@ export const ProductEditPage: React.FC = () => {
                 onChangeArabic={(value) => setFormData(prev => ({ ...prev, description_translations: { ar: value } }))}
                 required
               />
-
-              <TranslatableRichText
-                label="Details"
-                name="details"
-                value={formData.details}
-                translationValue={formData.details_translations.ar}
-                onChangeEnglish={(value) => setFormData(prev => ({ ...prev, details: value }))}
-                onChangeArabic={(value) => setFormData(prev => ({ ...prev, details_translations: { ar: value } }))}
-              />
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category
-                </label>
-                <select
-                  value={formData.category_id || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value === '' ? null : Number(e.target.value) }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base"
-                >
-                  <option value="">No Category</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
             </div>
           </FormSection>
 

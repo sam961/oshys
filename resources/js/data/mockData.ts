@@ -6,7 +6,7 @@ export const services = [
     title: 'Diving Essentials',
     description: 'Premium quality diving equipment and gear for all your underwater adventures.',
     icon: 'Package',
-    image: null,
+    image: '/static/diving/essentials/diving-essentials.jpg',
     link: 'https://coralsandshells.sa',
   },
   {
@@ -14,7 +14,7 @@ export const services = [
     title: 'Diving Trips',
     description: 'Explore breathtaking dive sites with our expertly organized diving expeditions.',
     icon: 'Compass',
-    image: null,
+    image: '/static/diving/trips/diving-trips.jpg',
     link: '/shop/trips',
   },
   {
@@ -22,7 +22,7 @@ export const services = [
     title: 'Diving Courses',
     description: 'Professional training programs from beginner to advanced certification levels.',
     icon: 'GraduationCap',
-    image: null,
+    image: '/static/diving/courses/diving-courses.jpg',
     link: '/shop/courses',
   },
 ];
@@ -148,7 +148,7 @@ export const products = [
     description: 'Gift the ones you love an adventure of a lifetime!',
     image: null,
     price: 500,
-    category: 'Gift',
+
     inStock: true,
   },
   {
@@ -157,7 +157,7 @@ export const products = [
     description: 'The Cressi Solid is a popular model, especially for dive centers and new divers, known for its durability and simplicity.',
     image: null,
     price: 450,
-    category: 'BCDs',
+
     inStock: true,
   },
   {
@@ -166,7 +166,7 @@ export const products = [
     description: 'Known for its quality, durability, and comfort and recommended for new divers and snorkelers.',
     image: null,
     price: 120,
-    category: 'Masks & Snorkels',
+
     inStock: true,
   },
   {
@@ -175,7 +175,6 @@ export const products = [
     description: 'Keep a child warm, dry, and protected from wind and cold while they are out of the water.',
     image: null,
     price: 65,
-    category: 'Kids Gear',
     inStock: true,
   },
   {
@@ -184,7 +183,6 @@ export const products = [
     description: 'Track your depth, time, and safety stops with this advanced dive computer.',
     image: null,
     price: 350,
-    category: 'Electronics',
     inStock: true,
   },
   {
@@ -193,7 +191,6 @@ export const products = [
     description: 'High-performance fins for efficient underwater movement.',
     image: null,
     price: 180,
-    category: 'Fins',
     inStock: true,
   },
   {
@@ -202,7 +199,6 @@ export const products = [
     description: 'Capture your underwater adventures in stunning 4K quality.',
     image: null,
     price: 600,
-    category: 'Electronics',
     inStock: false,
   },
   {
@@ -211,7 +207,6 @@ export const products = [
     description: 'Stay warm and comfortable during extended dives.',
     image: null,
     price: 280,
-    category: 'Wetsuits',
     inStock: true,
   },
 ];
@@ -289,7 +284,6 @@ export const blogPosts = [
     excerpt: 'Embarking on your first dive? Here are the top tips every beginner should know before taking the plunge.',
     image: null,
     date: '2025-01-15',
-    category: 'Beginner Tips',
     author: 'Sarah Al-Ahmed',
   },
   {
@@ -298,7 +292,6 @@ export const blogPosts = [
     excerpt: 'Discover why the Red Sea remains one of the world\'s premier diving destinations with its vibrant coral reefs.',
     image: null,
     date: '2025-01-20',
-    category: 'Destinations',
     author: 'Mohammed Al-Qahtani',
   },
   {
@@ -307,7 +300,6 @@ export const blogPosts = [
     excerpt: 'A comprehensive guide to selecting diving gear that matches your skill level and diving style.',
     image: null,
     date: '2025-02-01',
-    category: 'Equipment',
     author: 'Abdulrhman Bubshait',
   },
   {
@@ -316,7 +308,6 @@ export const blogPosts = [
     excerpt: 'Learn how freediving can improve your mental well-being through breathwork and mindfulness.',
     image: null,
     date: '2025-02-10',
-    category: 'Wellness',
     author: 'Fatima Al-Dosari',
   },
   {
@@ -325,7 +316,6 @@ export const blogPosts = [
     excerpt: 'Practical ways divers can contribute to protecting our oceans and marine ecosystems.',
     image: null,
     date: '2025-02-15',
-    category: 'Conservation',
     author: 'Sarah Al-Ahmed',
   },
   {
@@ -334,7 +324,6 @@ export const blogPosts = [
     excerpt: 'Experience the magic of night diving and discover the nocturnal marine life that comes alive.',
     image: null,
     date: '2025-02-20',
-    category: 'Advanced Diving',
     author: 'Mohammed Al-Qahtani',
   },
 ];

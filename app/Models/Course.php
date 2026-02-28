@@ -12,14 +12,13 @@ class Course extends Model
 
     protected $fillable = [
         'name',
-        'subtitle',
         'slug',
         'description',
         'image',
         'price',
         'duration',
         'level',
-        'category_id',
+
         'is_active',
         'is_featured',
         'max_students',
@@ -40,17 +39,11 @@ class Course extends Model
      */
     public array $translatable = [
         'name',
-        'subtitle',
         'description',
         'requirements',
     ];
 
     // Relationships
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable')->orderBy('order');
@@ -67,6 +60,15 @@ class Course extends Model
         if ($this->image) {
             return asset('storage/' . $this->image);
         }
+
+        $mainImage = $this->mainImage;
+        if ($mainImage) {
+            if (str_starts_with($mainImage->url, 'http')) {
+                return $mainImage->url;
+            }
+            return asset($mainImage->url);
+        }
+
         return null;
     }
 

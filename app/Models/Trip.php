@@ -16,7 +16,7 @@ class Trip extends Model
         'description',
         'image',
         'price',
-        'category_id',
+
         'is_active',
         'is_featured',
         'included_items',
@@ -41,11 +41,6 @@ class Trip extends Model
     ];
 
     // Relationships
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable')->orderBy('order');

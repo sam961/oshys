@@ -1,27 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Filter, Loader2, Grid3x3, List, TrendingUp } from 'lucide-react';
+import { ShoppingBag, Loader2, Grid3x3, List, TrendingUp } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, ScrollReveal, WaveBackground } from '../components/animations';
-import { useGetProductsQuery, useGetCategoriesQuery } from '../services/api';
-import type { Product, Category } from '../types';
+import { useGetProductsQuery } from '../services/api';
+import type { Product } from '../types';
 import { useTranslation } from 'react-i18next';
 
 export const ProductsPage: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high' | 'name'>('default');
 
-  // Fetch products and categories from API
+  // Fetch products from API
   const { data: products = [], isLoading: productsLoading, error: productsError } = useGetProductsQuery({ active: true });
-  const { data: categories = [], isLoading: categoriesLoading } = useGetCategoriesQuery({ active: true, type: 'product' });
 
-  const filteredProducts = selectedCategory
-    ? products.filter((p) => p.category_id === selectedCategory)
-    : products;
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  const sortedProducts = [...products].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
         return parseFloat(a.price) - parseFloat(b.price);
@@ -65,51 +59,15 @@ export const ProductsPage: React.FC = () => {
                 <div className="text-3xl font-bold text-primary-600">{products.length}+</div>
                 <div className="text-sm text-gray-600">{t('products.totalProducts')}</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent-600">{categories.length}</div>
-                <div className="text-sm text-gray-600">{t('products.categories')}</div>
-              </div>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Enhanced Filter & Toolbar */}
+      {/* Toolbar */}
       <div className="bg-white border-b border-gray-200 sticky top-20 z-40 shadow-sm">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* Category Filters */}
-            <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide">
-              <Filter className="w-5 h-5 text-gray-600 flex-shrink-0" />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedCategory(null)}
-                className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
-                  selectedCategory === null
-                    ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {t('products.all')}
-              </motion.button>
-              {!categoriesLoading && categories.map((cat) => (
-                <motion.button
-                  key={cat.id}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
-                    selectedCategory === cat.id
-                      ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {cat.name}
-                </motion.button>
-              ))}
-            </div>
-
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end gap-4">
             {/* View Controls */}
             <div className="flex items-center gap-4">
               {/* Sort Dropdown */}
@@ -209,13 +167,6 @@ export const ProductsPage: React.FC = () => {
                         </span>
                       </div>
                     )}
-                    {product.category && (
-                      <div className="absolute bottom-3 left-3">
-                        <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
-                          {product.category.name}
-                        </span>
-                      </div>
-                    )}
                   </div>
 
                   <div className="space-y-3">
@@ -257,13 +208,6 @@ export const ProductsPage: React.FC = () => {
                           <div className="text-center">
                             <ShoppingBag className="w-12 h-12 mx-auto text-gray-300" />
                           </div>
-                        </div>
-                      )}
-                      {product.category && (
-                        <div className="absolute bottom-3 left-3">
-                          <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
-                            {product.category.name}
-                          </span>
                         </div>
                       )}
                     </div>

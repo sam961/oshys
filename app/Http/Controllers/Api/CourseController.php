@@ -17,7 +17,7 @@ class CourseController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Course::with(['category', 'translations', 'images']);
+        $query = Course::with(['translations', 'images']);
 
         // Filter by active status
         if ($request->has('active')) {
@@ -58,20 +58,17 @@ class CourseController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'subtitle' => 'nullable|string',
             'description' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'required|numeric|min:0',
             'duration' => 'nullable|string',
             'level' => 'nullable|in:Beginner,Intermediate,Advanced,All Levels',
-            'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
             'max_students' => 'nullable|integer|min:1',
             'requirements' => 'nullable',
             // Translation fields
             'name_translations' => 'nullable',
-            'subtitle_translations' => 'nullable',
             'description_translations' => 'nullable',
         ]);
 
@@ -103,7 +100,7 @@ class CourseController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         // Remove translation fields from validated data
-        unset($validated['name_translations'], $validated['subtitle_translations'], $validated['description_translations']);
+        unset($validated['name_translations'], $validated['description_translations']);
 
         $course = Course::create($validated);
 
@@ -118,7 +115,7 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::with(['category', 'translations', 'images'])->findOrFail($id);
+        $course = Course::with(['translations', 'images'])->findOrFail($id);
         return response()->json($course->toArrayWithTranslations());
     }
 
@@ -131,20 +128,17 @@ class CourseController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'subtitle' => 'nullable|string',
             'description' => 'sometimes|required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'price' => 'sometimes|required|numeric|min:0',
             'duration' => 'nullable|string',
             'level' => 'nullable|in:Beginner,Intermediate,Advanced,All Levels',
-            'category_id' => 'nullable|exists:categories,id',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
             'max_students' => 'nullable|integer|min:1',
             'requirements' => 'nullable',
             // Translation fields
             'name_translations' => 'nullable',
-            'subtitle_translations' => 'nullable',
             'description_translations' => 'nullable',
         ]);
 
@@ -190,7 +184,7 @@ class CourseController extends Controller
         }
 
         // Remove translation fields from validated data
-        unset($validated['name_translations'], $validated['subtitle_translations'], $validated['description_translations']);
+        unset($validated['name_translations'], $validated['description_translations']);
 
         $course->update($validated);
 

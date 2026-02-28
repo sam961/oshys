@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCreateTripMutation, useUpdateTripMutation, useGetCategoriesQuery } from '../../services/api';
+import { useCreateTripMutation, useUpdateTripMutation } from '../../services/api';
 import type { Trip } from '../../types';
 import toast from 'react-hot-toast';
 import TranslatableField from './TranslatableField';
@@ -17,14 +17,12 @@ interface TripModalProps {
 export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mode }) => {
   const [createTrip, { isLoading: isCreating }] = useCreateTripMutation();
   const [updateTrip, { isLoading: isUpdating }] = useUpdateTripMutation();
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'trip' });
 
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     image: '',
     price: 0,
-    category_id: null as number | null,
     is_active: true,
     is_featured: false,
     included_items: [] as string[],
@@ -42,7 +40,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
         description: trip.description,
         image: trip.image || '',
         price: Number(trip.price),
-        category_id: trip.category_id || null,
         is_active: trip.is_active,
         is_featured: trip.is_featured,
         included_items: trip.included_items || [],
@@ -60,7 +57,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
         description: '',
         image: '',
         price: 0,
-        category_id: null,
         is_active: true,
         is_featured: false,
         included_items: [],
@@ -91,9 +87,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
 
-      if (formData.category_id) {
-        submitData.append('category_id', formData.category_id.toString());
-      }
       if (formData.included_items.length > 0) {
         submitData.append('included_items', JSON.stringify(formData.included_items));
       }
@@ -138,8 +131,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
     if (type === 'checkbox') {
       setFormData(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
     } else if (type === 'number') {
-      setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
-    } else if (name === 'category_id') {
       setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -235,25 +226,6 @@ export const TripModal: React.FC<TripModalProps> = ({ isOpen, onClose, trip, mod
                     min="0"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                   />
-                </div>
-
-                {/* Category */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
-                  </label>
-                  <select
-                    name="category_id"
-                    value={formData.category_id || ''}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                  >
-                    <option value="">No Category</option>
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
                 </div>
 
                 {/* Image Upload with Crop */}

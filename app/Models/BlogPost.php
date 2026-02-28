@@ -16,7 +16,7 @@ class BlogPost extends Model
         'excerpt',
         'content',
         'image',
-        'category_id',
+
         'author_id',
         'is_published',
         'is_featured',
@@ -52,11 +52,6 @@ class BlogPost extends Model
     }
 
     // Relationships
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');

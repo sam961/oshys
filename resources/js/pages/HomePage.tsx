@@ -262,9 +262,11 @@ export const HomePage: React.FC = () => {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="w-full h-96 bg-gray-200 rounded-2xl shadow-2xl flex items-center justify-center">
-              <p className="text-gray-400 text-lg">About Image Placeholder</p>
-            </div>
+            <img
+              src="/static/about/about-corals-shells.jpg"
+              alt={t('home.aboutTitle')}
+              className="w-full h-96 object-cover rounded-2xl shadow-2xl"
+            />
             <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-xl shadow-xl">
               <p className="text-4xl font-bold text-primary-600">10+</p>
               <p className="text-gray-600">{t('home.yearsExperience')}</p>
@@ -335,16 +337,16 @@ export const HomePage: React.FC = () => {
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
                       <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />
-                      <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm text-gray-500 mb-4">
-                        {trip.category && (
-                          <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full">
-                            {trip.category.name}
-                          </span>
-                        )}
+                      <div className="flex gap-2">
+                        <Link to={`/shop/trips/${trip.id}`} className="flex-1">
+                          <Button variant="outline" className="w-full" size="sm">
+                            {t('pages.trips.viewDetails')}
+                          </Button>
+                        </Link>
+                        <Button variant="primary" className="flex-1" size="sm" onClick={(e) => handleTripClick(e, trip)}>
+                          {t('trips.bookNow')}
+                        </Button>
                       </div>
-                      <Button variant="outline" className="w-full" onClick={(e) => handleTripClick(e, trip)}>
-                        {t('trips.bookNow')}
-                      </Button>
                     </Card>
                 ))}
               </HorizontalScroll>
@@ -407,9 +409,16 @@ export const HomePage: React.FC = () => {
                         <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
                         <SaudiRiyalPrice amount={course.price} className="text-base sm:text-lg font-bold text-primary-600" />
                       </div>
-                      <Button variant="primary" className="w-full" onClick={(e) => handleCourseClick(e, course)}>
-                        {t('home.enrollNow')}
-                      </Button>
+                      <div className="flex gap-2">
+                        <Link to={`/shop/courses/${course.id}`} className="flex-1">
+                          <Button variant="outline" className="w-full" size="sm">
+                            {t('pages.courses.viewDetails')}
+                          </Button>
+                        </Link>
+                        <Button variant="primary" className="flex-1" size="sm" onClick={(e) => handleCourseClick(e, course)}>
+                          {t('home.enrollNow')}
+                        </Button>
+                      </div>
                     </Card>
                 ))}
               </HorizontalScroll>
@@ -535,13 +544,6 @@ export const HomePage: React.FC = () => {
                             alt={post.title}
                             className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                           />
-                          {post.category && (
-                            <div className="absolute top-4 left-4">
-                              <span className="bg-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold text-primary-600">
-                                {post.category.name}
-                              </span>
-                            </div>
-                          )}
                         </div>
                         <p className="text-xs sm:text-sm text-gray-500 mb-2">
                           {post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}

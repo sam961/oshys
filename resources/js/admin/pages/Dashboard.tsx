@@ -75,17 +75,6 @@ export const Dashboard: React.FC = () => {
       trend: { value: 'Total units', isPositive: true },
       color: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
     },
-    {
-      title: 'Categories',
-      value: new Set([
-        ...products.filter(p => p.category_id).map(p => p.category_id),
-        ...courses.filter(c => c.category_id).map(c => c.category_id),
-        ...trips.filter(t => t.category_id).map(t => t.category_id),
-      ]).size.toString(),
-      icon: BookOpen,
-      trend: { value: 'Active categories', isPositive: true },
-      color: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
-    },
   ];
 
   if (isLoading) {

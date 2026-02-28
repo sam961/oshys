@@ -23,7 +23,6 @@ import {
   Home,
   Link as LinkIcon,
   ClipboardList,
-  Tag,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -89,7 +88,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       title: 'settings',
       icon: Cog,
       items: [
-        { icon: Tag, label: 'Categories', path: '/admin/categories' },
         { icon: LinkIcon, label: 'Footer Links', path: '/admin/footer-links' },
         { icon: Settings, label: t('sidebar.settings'), path: '/admin/settings' },
       ],

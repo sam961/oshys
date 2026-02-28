@@ -14,10 +14,9 @@ class Product extends Model
         'name',
         'slug',
         'description',
-        'details',
         'image',
         'price',
-        'category_id',
+
         'in_stock',
         'is_active',
         'is_featured',
@@ -40,15 +39,9 @@ class Product extends Model
     public array $translatable = [
         'name',
         'description',
-        'details',
     ];
 
     // Relationships
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable');

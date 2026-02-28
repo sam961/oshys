@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, User, Tag, Share2, Loader2 } from 'lucide-react';
+import { Calendar, User, Share2, Loader2 } from 'lucide-react';
 import { Section } from '../components/ui';
 import { useGetBlogPostQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
@@ -46,20 +46,6 @@ export const BlogDetailPage: React.FC = () => {
       {/* Article Content */}
       <Section background="white">
         <div className="max-w-4xl mx-auto">
-          {/* Category Badge */}
-          {post.category && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6"
-            >
-              <span className="inline-flex items-center gap-2 bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-semibold">
-                <Tag className="w-4 h-4" />
-                {post.category.name}
-              </span>
-            </motion.div>
-          )}
-
           {/* Title */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

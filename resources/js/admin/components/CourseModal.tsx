@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCreateCourseMutation, useUpdateCourseMutation, useGetCategoriesQuery } from '../../services/api';
+import { useCreateCourseMutation, useUpdateCourseMutation } from '../../services/api';
 import type { Course } from '../../types';
 import toast from 'react-hot-toast';
 import TranslatableField from './TranslatableField';
@@ -17,7 +17,6 @@ interface CourseModalProps {
 export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, course, mode }) => {
   const [createCourse, { isLoading: isCreating }] = useCreateCourseMutation();
   const [updateCourse, { isLoading: isUpdating }] = useUpdateCourseMutation();
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'course' });
 
   const [formData, setFormData] = useState({
     name: '',
@@ -26,7 +25,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
     price: 0,
     duration: '',
     level: '' as string,
-    category_id: null as number | null,
     is_active: true,
     is_featured: false,
     max_students: null as number | null,
@@ -47,7 +45,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
         price: Number(course.price),
         duration: course.duration || '',
         level: course.level || '',
-        category_id: course.category_id || null,
         is_active: course.is_active,
         is_featured: course.is_featured,
         max_students: course.max_students || null,
@@ -68,7 +65,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
         price: 0,
         duration: '',
         level: '',
-        category_id: null,
         is_active: true,
         is_featured: false,
         max_students: null,
@@ -102,9 +98,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
 
-      if (formData.category_id) {
-        submitData.append('category_id', formData.category_id.toString());
-      }
       if (formData.max_students) {
         submitData.append('max_students', formData.max_students.toString());
       }
@@ -152,8 +145,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
     if (type === 'checkbox') {
       setFormData(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
     } else if (type === 'number') {
-      setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
-    } else if (name === 'category_id') {
       setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -301,25 +292,6 @@ export const CourseModal: React.FC<CourseModalProps> = ({ isOpen, onClose, cours
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
                     />
                   </div>
-                </div>
-
-                {/* Category */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
-                  </label>
-                  <select
-                    name="category_id"
-                    value={formData.category_id || ''}
-                    onChange={handleChange}
-                    disabled={isViewMode}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                  >
-                    <option value="">No Category</option>
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
                 </div>
 
                 {/* Image Upload with Crop */}

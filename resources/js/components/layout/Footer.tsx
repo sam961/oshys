@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Twitter, Ghost, MessageCircle, Mail, Phone, MapPin, Waves } from 'lucide-react';
+import { Instagram, Twitter, Ghost, MessageCircle, Mail, Phone, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useGetFooterLinksQuery } from '../../services/api';
@@ -67,18 +67,17 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center gap-3 mb-6 group">
+            <Link to="/" className="flex items-center mb-6 group">
               <motion.div
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
-                className="bg-gradient-to-br from-primary-600 to-accent-600 p-2.5 rounded-xl shadow-lg"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
               >
-                <Waves className="w-7 h-7 text-white" />
+                <img
+                  src="/images/logo.jpg"
+                  alt={t('brand.name')}
+                  className="h-16 w-auto brightness-0 invert"
+                />
               </motion.div>
-              <div>
-                <span className="text-2xl font-bold text-white block">{t('brand.name')}</span>
-                <span className="text-sm text-gray-400">{t('brand.subtitle')}</span>
-              </div>
             </Link>
             <p className="text-gray-400 mb-6 leading-relaxed">
               {t('footer.tagline')}

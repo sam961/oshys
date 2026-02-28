@@ -7,7 +7,7 @@ import type {
   SocialInitiative,
   Event,
   TeamMember,
-  Category,
+
   Setting,
   Banner,
   FooterLink,
@@ -34,7 +34,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Course', 'CourseImage', 'Trip', 'TripImage', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Category', 'Setting', 'Banner', 'FooterLink', 'Booking'],
+  tagTypes: ['Course', 'CourseImage', 'Trip', 'TripImage', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Setting', 'Banner', 'FooterLink', 'Booking'],
   endpoints: (builder) => ({
     // Courses
     getCourses: builder.query<Course[], { active?: boolean; featured?: boolean; level?: string; search?: string }>({
@@ -356,42 +356,6 @@ export const api = createApi({
       invalidatesTags: ['TeamMember'],
     }),
 
-    // Categories
-    getCategories: builder.query<Category[], { active?: boolean; type?: string; search?: string }>({
-      query: (params) => ({
-        url: '/categories',
-        params,
-      }),
-      providesTags: ['Category'],
-    }),
-    getCategory: builder.query<Category, number>({
-      query: (id) => `/categories/${id}`,
-      providesTags: ['Category'],
-    }),
-    createCategory: builder.mutation<Category, Partial<Category>>({
-      query: (body) => ({
-        url: '/categories',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['Category'],
-    }),
-    updateCategory: builder.mutation<Category, { id: number; data: Partial<Category> }>({
-      query: ({ id, data }) => ({
-        url: `/categories/${id}`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['Category'],
-    }),
-    deleteCategory: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/categories/${id}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: ['Category'],
-    }),
-
     // Settings
     getSettings: builder.query<Setting[], { type?: string; group?: string; search?: string }>({
       query: (params) => ({
@@ -610,12 +574,6 @@ export const {
   useCreateTeamMemberMutation,
   useUpdateTeamMemberMutation,
   useDeleteTeamMemberMutation,
-
-  useGetCategoriesQuery,
-  useGetCategoryQuery,
-  useCreateCategoryMutation,
-  useUpdateCategoryMutation,
-  useDeleteCategoryMutation,
 
   useGetSettingsQuery,
   useGetSettingQuery,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCreateSocialInitiativeMutation, useUpdateSocialInitiativeMutation, useGetCategoriesQuery } from '../../services/api';
+import { useCreateSocialInitiativeMutation, useUpdateSocialInitiativeMutation } from '../../services/api';
 import type { SocialInitiative } from '../../types';
 import toast from 'react-hot-toast';
 import TranslatableField from './TranslatableField';
@@ -17,14 +17,12 @@ interface InitiativeModalProps {
 export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClose, initiative, mode }) => {
   const [createInitiative, { isLoading: isCreating }] = useCreateSocialInitiativeMutation();
   const [updateInitiative, { isLoading: isUpdating }] = useUpdateSocialInitiativeMutation();
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true });
 
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
     content: '',
     image: '',
-    category_id: null as number | null,
     is_published: false,
     is_featured: false,
     published_at: '',
@@ -43,7 +41,6 @@ export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClos
         excerpt: initiative.excerpt,
         content: initiative.content,
         image: initiative.image || '',
-        category_id: initiative.category_id || null,
         is_published: initiative.is_published,
         is_featured: initiative.is_featured,
         published_at: initiative.published_at ? initiative.published_at.split('T')[0] : '',
@@ -61,7 +58,6 @@ export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClos
         excerpt: '',
         content: '',
         image: '',
-        category_id: null,
         is_published: false,
         is_featured: false,
         published_at: '',
@@ -91,9 +87,6 @@ export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClos
       submitData.append('is_published', formData.is_published ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
 
-      if (formData.category_id) {
-        submitData.append('category_id', formData.category_id.toString());
-      }
       if (formData.published_at) {
         submitData.append('published_at', formData.published_at);
       }
@@ -134,8 +127,6 @@ export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClos
 
     if (type === 'checkbox') {
       setFormData(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
-    } else if (name === 'category_id') {
-      setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -225,37 +216,18 @@ export const InitiativeModal: React.FC<InitiativeModalProps> = ({ isOpen, onClos
                   disabled={isViewMode}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category
-                    </label>
-                    <select
-                      name="category_id"
-                      value={formData.category_id || ''}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    >
-                      <option value="">No Category</option>
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Published Date
-                    </label>
-                    <input
-                      type="date"
-                      name="published_at"
-                      value={formData.published_at}
-                      onChange={handleChange}
-                      disabled={isViewMode}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Published Date
+                  </label>
+                  <input
+                    type="date"
+                    name="published_at"
+                    value={formData.published_at}
+                    onChange={handleChange}
+                    disabled={isViewMode}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base placeholder:text-gray-400 disabled:bg-gray-100"
+                  />
                 </div>
 
                 {/* Image Upload with Crop */}

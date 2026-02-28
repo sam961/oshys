@@ -7,38 +7,32 @@ import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { MultiImageGallery } from '../components/MultiImageGallery';
-import { useGetCourseQuery, useGetCategoriesQuery, useCreateCourseMutation, useUpdateCourseMutation, useUploadCourseImagesMutation, useDeleteCourseImageMutation, useSetCourseMainImageMutation, useReorderCourseImagesMutation } from '../../services/api';
+import { useGetCourseQuery, useCreateCourseMutation, useUpdateCourseMutation, useUploadCourseImagesMutation, useDeleteCourseImageMutation, useSetCourseMainImageMutation, useReorderCourseImagesMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
   name: string;
-  subtitle: string;
   description: string;
   price: number;
   duration: string;
   level: string;
-  category_id: number | null;
   is_active: boolean;
   is_featured: boolean;
   max_students: number | null;
   name_translations: { ar: string };
-  subtitle_translations: { ar: string };
   description_translations: { ar: string };
 }
 
 const initialFormData: FormData = {
   name: '',
-  subtitle: '',
   description: '',
   price: 0,
   duration: '',
   level: '',
-  category_id: null,
   is_active: true,
   is_featured: false,
   max_students: null,
   name_translations: { ar: '' },
-  subtitle_translations: { ar: '' },
   description_translations: { ar: '' },
 };
 
@@ -50,7 +44,6 @@ export const CourseEditPage: React.FC = () => {
   const { data: course, isLoading: isLoadingCourse, error: courseError } = useGetCourseQuery(Number(id), {
     skip: !isEditMode,
   });
-  const { data: categories = [] } = useGetCategoriesQuery({ active: true, type: 'course' });
   const [createCourse, { isLoading: isCreating }] = useCreateCourseMutation();
   const [updateCourse, { isLoading: isUpdating }] = useUpdateCourseMutation();
   const [uploadCourseImages] = useUploadCourseImagesMutation();
@@ -66,17 +59,14 @@ export const CourseEditPage: React.FC = () => {
     if (course && isEditMode) {
       const loadedData: FormData = {
         name: course.name,
-        subtitle: course.subtitle || '',
         description: course.description || '',
         price: Number(course.price),
         duration: course.duration || '',
         level: course.level || '',
-        category_id: course.category_id || null,
         is_active: course.is_active,
         is_featured: course.is_featured,
         max_students: course.max_students || null,
         name_translations: (course as any).name_translations || { ar: '' },
-        subtitle_translations: (course as any).subtitle_translations || { ar: '' },
         description_translations: (course as any).description_translations || { ar: '' },
       };
       setFormData(loadedData);
@@ -116,7 +106,6 @@ export const CourseEditPage: React.FC = () => {
     try {
       const submitData = new FormData();
       submitData.append('name', formData.name);
-      submitData.append('subtitle', formData.subtitle);
       submitData.append('description', formData.description);
       submitData.append('price', formData.price.toString());
       if (formData.duration) {
@@ -128,15 +117,11 @@ export const CourseEditPage: React.FC = () => {
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
 
-      if (formData.category_id) {
-        submitData.append('category_id', formData.category_id.toString());
-      }
       if (formData.max_students) {
         submitData.append('max_students', formData.max_students.toString());
       }
 
       submitData.append('name_translations', JSON.stringify(formData.name_translations));
-      submitData.append('subtitle_translations', JSON.stringify(formData.subtitle_translations));
       submitData.append('description_translations', JSON.stringify(formData.description_translations));
 
       if (isEditMode) {
@@ -209,28 +194,16 @@ export const CourseEditPage: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <FormSection title="Basic Information" description="Course name, description, and details">
+          <FormSection title="Basic Information" description="Course name and description">
             <div className="space-y-5">
               <TranslatableField label="Course Name" name="name" value={formData.name} translationValue={formData.name_translations.ar}
                 onChangeEnglish={(value) => setFormData(prev => ({ ...prev, name: value }))}
                 onChangeArabic={(value) => setFormData(prev => ({ ...prev, name_translations: { ar: value } }))}
                 required placeholder="Enter course name" placeholderAr="أدخل اسم الدورة" />
-              <TranslatableField label="Subtitle" name="subtitle" value={formData.subtitle} translationValue={formData.subtitle_translations.ar}
-                onChangeEnglish={(value) => setFormData(prev => ({ ...prev, subtitle: value }))}
-                onChangeArabic={(value) => setFormData(prev => ({ ...prev, subtitle_translations: { ar: value } }))}
-                placeholder="Enter course subtitle" placeholderAr="أدخل العنوان الفرعي" />
-              <TranslatableRichText label="Details" name="description" value={formData.description} translationValue={formData.description_translations.ar}
+              <TranslatableRichText label="Description" name="description" value={formData.description} translationValue={formData.description_translations.ar}
                 onChangeEnglish={(value) => setFormData(prev => ({ ...prev, description: value }))}
                 onChangeArabic={(value) => setFormData(prev => ({ ...prev, description_translations: { ar: value } }))}
                 required />
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                <select value={formData.category_id || ''} onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value === '' ? null : Number(e.target.value) }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                  <option value="">No Category</option>
-                  {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-                </select>
-              </div>
             </div>
           </FormSection>
 

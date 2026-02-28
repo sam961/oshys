@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, MapPin, Award, Loader2, Grid3x3, List, Calendar, Anchor, TrendingUp } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
@@ -194,9 +195,16 @@ export const TripsPage: React.FC = () => {
                           <span className="text-gray-600">{t('pages.trips.bookNow')}</span>
                         </div>
                       </div>
-                      <Button variant="primary" className="w-full" size="sm" onClick={(e) => handleBookClick(e, trip)}>
-                        {t('pages.trips.bookThisTrip')}
-                      </Button>
+                      <div className="flex gap-2">
+                        <Link to={`/shop/trips/${trip.id}`} className="flex-1">
+                          <Button variant="outline" className="w-full" size="sm">
+                            {t('pages.trips.viewDetails')}
+                          </Button>
+                        </Link>
+                        <Button variant="primary" className="flex-1" size="sm" onClick={(e) => handleBookClick(e, trip)}>
+                          {t('pages.trips.bookThisTrip')}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </Card>
@@ -246,9 +254,16 @@ export const TripsPage: React.FC = () => {
                             className="text-3xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent"
                           />
                         </div>
-                        <Button variant="primary" size="lg" onClick={(e) => handleBookClick(e, trip)}>
-                          {t('pages.trips.bookThisTrip')}
-                        </Button>
+                        <div className="flex gap-3">
+                          <Link to={`/shop/trips/${trip.id}`}>
+                            <Button variant="outline" size="lg">
+                              {t('pages.trips.viewDetails')}
+                            </Button>
+                          </Link>
+                          <Button variant="primary" size="lg" onClick={(e) => handleBookClick(e, trip)}>
+                            {t('pages.trips.bookThisTrip')}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>

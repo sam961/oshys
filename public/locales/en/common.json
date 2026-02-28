@@ -243,7 +243,7 @@
     "heroSubtitle": "Quality Gear for Every Level",
     "heroDescription": "Quality diving equipment and essentials for all levels and programs",
     "all": "All",
-    "noProducts": "No products found in this category.",
+    "noProducts": "No products found.",
     "addToCart": "Add to Cart",
     "outOfStock": "Out of Stock",
     "inStock": "In Stock",
@@ -293,7 +293,16 @@
       "certificate": "Certificate",
       "certificateIncluded": "Certificate Included",
       "lifetimeAccess": "Lifetime Access",
-      "addToFavorites": "Add to Favorites"
+      "addToFavorites": "Add to Favorites",
+      "viewDetails": "View Details",
+      "requirements": "Requirements",
+      "maxStudents": "Max Students",
+      "aboutCourse": "About This Program",
+      "programDetails": "Program Details",
+      "backToCourses": "Back to Programs",
+      "gallery": "Gallery",
+      "notFound": "Program not found",
+      "notFoundMessage": "The program you're looking for doesn't exist or has been removed."
     },
     "trips": {
       "heroTitle": "Diving Trips",
@@ -333,7 +342,15 @@
       "spotsAvailable": "Spots Available",
       "addToFavorites": "Add to Favorites",
       "rating": "{{rating}}",
-      "reviews": "({{count}} reviews)"
+      "reviews": "({{count}} reviews)",
+      "viewDetails": "View Details",
+      "aboutTrip": "About This Trip",
+      "includedItems": "What's Included",
+      "backToTrips": "Back to Trips",
+      "gallery": "Gallery",
+      "notFound": "Trip not found",
+      "notFoundMessage": "The trip you're looking for doesn't exist or has been removed.",
+      "tripDetails": "Trip Details"
     },
     "blog": {
       "heroTitle": "Our Blog",

@@ -17,6 +17,8 @@ import { InitiativesPage } from './pages/InitiativesPage';
 import { InitiativeDetailPage } from './pages/InitiativeDetailPage';
 import { FooterLinkPage } from './pages/FooterLinkPage';
 import { FAQPage } from './pages/FAQPage';
+import { CourseDetailPage } from './pages/CourseDetailPage';
+import { TripDetailPage } from './pages/TripDetailPage';
 
 // Admin imports
 import { AdminLayout } from './admin/layouts/AdminLayout';
@@ -41,8 +43,6 @@ import { BannerEditPage } from './admin/pages/BannerEditPage';
 import { InitiativeEditPage } from './admin/pages/InitiativeEditPage';
 import { FooterLinkEditPage } from './admin/pages/FooterLinkEditPage';
 import { TeamMemberEditPage } from './admin/pages/TeamMemberEditPage';
-import { CategoriesManagement } from './admin/pages/CategoriesManagement';
-import { CategoryEditPage } from './admin/pages/CategoryEditPage';
 
 // Simple scroll to top on navigation (except back/forward)
 const ScrollToTop: React.FC = () => {
@@ -99,9 +99,6 @@ const AppRoutes: React.FC = () => {
             <Route path="initiatives" element={<InitiativesManagement />} />
             <Route path="initiatives/new" element={<InitiativeEditPage />} />
             <Route path="initiatives/:id/edit" element={<InitiativeEditPage />} />
-            <Route path="categories" element={<CategoriesManagement />} />
-            <Route path="categories/new" element={<CategoryEditPage />} />
-            <Route path="categories/:id/edit" element={<CategoryEditPage />} />
             <Route path="footer-links" element={<FooterLinksManagement />} />
             <Route path="footer-links/new" element={<FooterLinkEditPage />} />
             <Route path="footer-links/:id/edit" element={<FooterLinkEditPage />} />
@@ -116,7 +113,9 @@ const AppRoutes: React.FC = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/shop/courses" element={<CoursesPage />} />
+              <Route path="/shop/courses/:id" element={<CourseDetailPage />} />
               <Route path="/shop/trips" element={<TripsPage />} />
+              <Route path="/shop/trips/:id" element={<TripDetailPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:id" element={<BlogDetailPage />} />
               <Route path="/contact" element={<ContactPage />} />

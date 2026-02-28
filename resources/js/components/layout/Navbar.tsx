@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Waves, CalendarDays, ExternalLink } from 'lucide-react';
+import { Menu, X, CalendarDays, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { LanguageSwitcher } from '../shared/LanguageSwitcher';
@@ -83,20 +83,17 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo - Left aligned */}
           <div className="shrink-0">
-            <Link to="/" className="flex items-center gap-3 group">
+            <Link to="/" className="flex items-center group">
               <motion.div
-                whileHover={{ scale: 1.05, rotate: 5 }}
+                whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
-                className="bg-gradient-to-br from-primary-600 to-accent-600 p-2.5 rounded-xl shadow-lg"
               >
-                <Waves className="w-7 h-7 text-white" />
+                <img
+                  src="/images/logo.jpg"
+                  alt={t('brand.name')}
+                  className="h-16 w-auto"
+                />
               </motion.div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                  {t('brand.name')}
-                </span>
-                <span className="text-xs text-gray-600">{t('brand.subtitle')}</span>
-              </div>
             </Link>
           </div>
 

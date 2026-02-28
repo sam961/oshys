@@ -46,7 +46,7 @@ export const AboutPage: React.FC = () => {
       {/* Hero */}
       <div className="relative h-96 overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=600&fit=crop"
+          src="/static/about/about-hero.jpg"
           alt="About Us"
           className="w-full h-full object-cover"
         />
@@ -90,9 +90,11 @@ export const AboutPage: React.FC = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="w-full h-96 bg-gray-200 rounded-2xl shadow-2xl flex items-center justify-center">
-              <p className="text-gray-400 text-lg">Team Image Placeholder</p>
-            </div>
+            <img
+              src="/static/about/about-team.jpg"
+              alt={t('about.ourStory')}
+              className="w-full h-96 object-cover rounded-2xl shadow-2xl"
+            />
           </motion.div>
         </div>
       </Section>

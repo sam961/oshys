@@ -293,7 +293,16 @@
       "certificate": "شهادة",
       "certificateIncluded": "شهادة مضمنة",
       "lifetimeAccess": "وصول مدى الحياة",
-      "addToFavorites": "أضف للمفضلة"
+      "addToFavorites": "أضف للمفضلة",
+      "viewDetails": "عرض التفاصيل",
+      "requirements": "المتطلبات",
+      "maxStudents": "الحد الأقصى للطلاب",
+      "aboutCourse": "عن هذا البرنامج",
+      "programDetails": "تفاصيل البرنامج",
+      "backToCourses": "العودة للبرامج",
+      "gallery": "معرض الصور",
+      "notFound": "البرنامج غير موجود",
+      "notFoundMessage": "البرنامج الذي تبحث عنه غير موجود أو تمت إزالته."
     },
     "trips": {
       "heroTitle": "رحلات الغوص",
@@ -333,7 +342,15 @@
       "spotsAvailable": "أماكن متاحة",
       "addToFavorites": "أضف للمفضلة",
       "rating": "{{rating}}",
-      "reviews": "({{count}} تقييمات)"
+      "reviews": "({{count}} تقييمات)",
+      "viewDetails": "عرض التفاصيل",
+      "aboutTrip": "عن هذه الرحلة",
+      "includedItems": "ما يشمله",
+      "backToTrips": "العودة للرحلات",
+      "gallery": "معرض الصور",
+      "notFound": "الرحلة غير موجودة",
+      "notFoundMessage": "الرحلة التي تبحث عنها غير موجودة أو تمت إزالتها.",
+      "tripDetails": "تفاصيل الرحلة"
     },
     "blog": {
       "heroTitle": "مدونتنا",

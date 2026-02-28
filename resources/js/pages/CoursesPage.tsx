@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, Clock, Loader2, Filter, Grid3x3, List, BookOpen } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
@@ -233,10 +234,6 @@ export const CoursesPage: React.FC = () => {
                     <h3 className="text-xl font-bold line-clamp-2 group-hover:text-accent-600 transition-colors">
                       {course.name}
                     </h3>
-                    {course.subtitle && (
-                      <p className="text-sm text-gray-500 font-medium">{course.subtitle}</p>
-                    )}
-
                     <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
 
                     {course.duration && (
@@ -254,9 +251,16 @@ export const CoursesPage: React.FC = () => {
                           className="text-2xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent"
                         />
                       </div>
-                      <Button variant="primary" className="w-full" size="sm" onClick={(e) => handleEnrollClick(e, course)}>
-                        {t('pages.courses.enrollNow')}
-                      </Button>
+                      <div className="flex gap-2">
+                        <Link to={`/shop/courses/${course.id}`} className="flex-1">
+                          <Button variant="outline" className="w-full" size="sm">
+                            {t('pages.courses.viewDetails')}
+                          </Button>
+                        </Link>
+                        <Button variant="primary" className="flex-1" size="sm" onClick={(e) => handleEnrollClick(e, course)}>
+                          {t('pages.courses.enrollNow')}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </Card>
@@ -293,9 +297,6 @@ export const CoursesPage: React.FC = () => {
                           <h3 className="text-2xl font-bold group-hover:text-accent-600 transition-colors">
                             {course.name}
                           </h3>
-                          {course.subtitle && (
-                            <p className="text-sm text-gray-500 font-medium mt-1">{course.subtitle}</p>
-                          )}
                         </div>
                         <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
 
@@ -317,9 +318,16 @@ export const CoursesPage: React.FC = () => {
                             className="text-3xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent"
                           />
                         </div>
-                        <Button variant="primary" size="lg" onClick={(e) => handleEnrollClick(e, course)}>
-                          {t('pages.courses.enrollNow')}
-                        </Button>
+                        <div className="flex gap-3">
+                          <Link to={`/shop/courses/${course.id}`}>
+                            <Button variant="outline" size="lg">
+                              {t('pages.courses.viewDetails')}
+                            </Button>
+                          </Link>
+                          <Button variant="primary" size="lg" onClick={(e) => handleEnrollClick(e, course)}>
+                            {t('pages.courses.enrollNow')}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
