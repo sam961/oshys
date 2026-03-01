@@ -61,7 +61,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
       {/* Scroll container */}
       <div
         ref={scrollRef}
-        className={`flex overflow-x-auto pb-4 gap-6 snap-x snap-mandatory scrollbar-hide sm:grid sm:gap-8 sm:overflow-visible sm:pb-0 ${className}`}
+        className={`flex overflow-x-auto pb-4 gap-6 snap-x snap-mandatory scrollbar-hide sm:grid sm:gap-8 sm:overflow-visible sm:pb-0 items-stretch ${className}`}
       >
         {children}
       </div>

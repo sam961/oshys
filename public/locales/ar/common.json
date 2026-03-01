@@ -126,7 +126,7 @@
   "courses": {
     "title": "دورات الغوص",
     "subtitle": "تعلم من مدربين معتمدين",
-    "allCourses": "جميع الدورات",
+    "allCourses": "الدورات",
     "duration": "المدة",
     "level": "المستوى",
     "price": "السعر",
@@ -136,7 +136,7 @@
   "trips": {
     "title": "رحلات الغوص",
     "subtitle": "استكشف مواقع الغوص الرائعة",
-    "allTrips": "جميع الرحلات",
+    "allTrips": "الرحلات",
     "destination": "الوجهة",
     "difficulty": "الصعوبة",
     "price": "السعر",

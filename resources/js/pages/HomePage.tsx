@@ -321,7 +321,7 @@ export const HomePage: React.FC = () => {
             <>
               <HorizontalScroll itemCount={Math.min(trips.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
                 {trips.slice(0, 3).map((trip) => (
-                    <Card key={trip.id} className="group cursor-pointer overflow-hidden shrink-0 w-[80vw] snap-center sm:w-auto">
+                    <Card key={trip.id} className="h-full flex flex-col group cursor-pointer overflow-hidden shrink-0 w-[80vw] snap-center sm:w-auto">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
                           src={trip.image_url || '/placeholder.svg'}
@@ -337,7 +337,7 @@ export const HomePage: React.FC = () => {
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
                       <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mt-auto">
                         <Link to={`/shop/trips/${trip.id}`} className="flex-1">
                           <Button variant="outline" className="w-full" size="sm">
                             {t('pages.trips.viewDetails')}
@@ -392,7 +392,7 @@ export const HomePage: React.FC = () => {
             <>
               <HorizontalScroll itemCount={Math.min(courses.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
                 {courses.slice(0, 3).map((course) => (
-                    <Card key={course.id} className="h-full shrink-0 w-[80vw] snap-center sm:w-auto group cursor-pointer">
+                    <Card key={course.id} className="h-full flex flex-col shrink-0 w-[80vw] snap-center sm:w-auto group cursor-pointer">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
                           src={course.image_url || '/placeholder.svg'}
@@ -405,7 +405,7 @@ export const HomePage: React.FC = () => {
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{course.name}</h3>
                       <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center justify-between mb-4 mt-auto">
                         <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
                         <SaudiRiyalPrice amount={course.price} className="text-base sm:text-lg font-bold text-primary-600" />
                       </div>

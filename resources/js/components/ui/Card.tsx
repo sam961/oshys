@@ -24,7 +24,7 @@ export const Card: React.FC<CardProps> = ({ children, className, hover = true })
         transition: { duration: 0.3, ease: 'easeOut' }
       } : undefined}
       className={clsx(
-        'bg-white rounded-2xl shadow-xl p-6 border border-gray-100 overflow-hidden relative',
+        'bg-white rounded-2xl shadow-xl p-6 border border-gray-100 overflow-hidden relative flex flex-col',
         hover && 'hover:shadow-2xl transition-shadow duration-300',
         className
       )}
@@ -36,7 +36,7 @@ export const Card: React.FC<CardProps> = ({ children, className, hover = true })
           transition={{ duration: 0.3 }}
         />
       )}
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-col flex-1">
         {children}
       </div>
     </motion.div>

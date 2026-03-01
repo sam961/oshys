@@ -126,7 +126,7 @@
   "courses": {
     "title": "Diving Courses",
     "subtitle": "Learn from certified instructors",
-    "allCourses": "All Courses",
+    "allCourses": "Courses",
     "duration": "Duration",
     "level": "Level",
     "price": "Price",
@@ -136,7 +136,7 @@
   "trips": {
     "title": "Diving Trips",
     "subtitle": "Explore amazing dive sites",
-    "allTrips": "All Trips",
+    "allTrips": "Trips",
     "destination": "Destination",
     "difficulty": "Difficulty",
     "price": "Price",
@@ -170,7 +170,7 @@
     "successMessage": "Your message has been sent successfully!"
   },
   "home": {
-    "heroTitle": "Structured paths to the sea, built on safety and commitment.",
+    "heroTitle": "Structured paths to the sea, built on safety and commitment",
     "heroSubtitle": "Corals & Shells is a water sports and diving center offering structured swimming and diving programs designed for progression, safety, and long-term skill development.",
     "heroDescription": "Our programs are delivered within clear frameworks and are suitable for individuals and families ready to commit to learning and responsible participation.",
     "bookCourse": "View Programs",
