@@ -21,6 +21,8 @@ import { CourseDetailPage } from './pages/CourseDetailPage';
 import { TripDetailPage } from './pages/TripDetailPage';
 
 // Admin imports
+import { LoginPage } from './admin/pages/LoginPage';
+import { ProtectedRoute } from './admin/components/ProtectedRoute';
 import { AdminLayout } from './admin/layouts/AdminLayout';
 import { Dashboard } from './admin/pages/Dashboard';
 import { ProductsManagement } from './admin/pages/ProductsManagement';
@@ -72,7 +74,8 @@ const AppRoutes: React.FC = () => {
       <ScrollToTop />
       {isAdminRoute ? (
         <Routes>
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin/login" element={<LoginPage />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route index element={<Dashboard />} />
             <Route path="bookings" element={<BookingsManagement />} />
             <Route path="products" element={<ProductsManagement />} />

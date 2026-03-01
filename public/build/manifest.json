@@ -1,6 +1,6 @@
 {
-  "_browser-ponyfill-rDTYSXMS.js": {
-    "file": "assets/browser-ponyfill-rDTYSXMS.js",
+  "_browser-ponyfill-CkSKCB1I.js": {
+    "file": "assets/browser-ponyfill-CkSKCB1I.js",
     "name": "browser-ponyfill",
     "isDynamicEntry": true,
     "imports": [
@@ -12,7 +12,7 @@
     "src": "node_modules/@abdulrysr/saudi-riyal-new-symbol-font/saudiriyalsymbol.ttf"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BHDzrI7T.css",
+    "file": "assets/app-BQuFzfJ-.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -20,16 +20,16 @@
     ]
   },
   "resources/js/main.tsx": {
-    "file": "assets/main-DX-f5R_y.js",
+    "file": "assets/main-YLWOYqV5.js",
     "name": "main",
     "src": "resources/js/main.tsx",
     "isEntry": true,
     "dynamicImports": [
-      "_browser-ponyfill-rDTYSXMS.js"
+      "_browser-ponyfill-CkSKCB1I.js"
     ],
     "css": [
       "assets/main-CMG5WzTX.css",
-      "assets/app-BHDzrI7T.css"
+      "assets/app-BQuFzfJ-.css"
     ],
     "assets": [
       "assets/saudiriyalsymbol-EbZ3gI_7.ttf"

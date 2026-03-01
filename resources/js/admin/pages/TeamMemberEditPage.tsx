@@ -5,6 +5,7 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { useGetTeamMemberQuery, useCreateTeamMemberMutation, useUpdateTeamMemberMutation } from '../../services/api';
+import RichTextEditor from '../components/RichTextEditor';
 import toast from 'react-hot-toast';
 
 interface FormData {
@@ -139,7 +140,7 @@ export const TeamMemberEditPage: React.FC = () => {
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label><input type="text" value={formData.name} onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))} required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Role *</label><input type="text" value={formData.role} onChange={(e) => setFormData(p => ({ ...p, role: e.target.value }))} required placeholder="e.g. Lead Instructor" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
               </div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-2">Bio</label><textarea value={formData.bio} onChange={(e) => setFormData(p => ({ ...p, bio: e.target.value }))} rows={4} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 mb-2">Bio</label><RichTextEditor content={formData.bio} onChange={(html) => setFormData(p => ({ ...p, bio: html }))} minHeight="150px" /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Email</label><input type="email" value={formData.email} onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Phone</label><input type="tel" value={formData.phone} onChange={(e) => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>

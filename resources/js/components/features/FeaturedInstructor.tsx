@@ -110,9 +110,10 @@ export const FeaturedInstructor: React.FC = () => {
 
           {/* Bio */}
           {instructor.bio && (
-            <p className="text-gray-600 text-lg leading-relaxed mb-6 max-w-xl mx-auto lg:mx-0">
-              {instructor.bio}
-            </p>
+            <div
+              className="text-gray-600 text-lg leading-relaxed mb-6 max-w-xl mx-auto lg:mx-0 prose prose-lg"
+              dangerouslySetInnerHTML={{ __html: instructor.bio }}
+            />
           )}
 
           {/* Certifications list */}

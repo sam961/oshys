@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Banner;
 use App\Models\Course;
 use App\Models\Image;
+use App\Models\TeamMember;
 use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -25,6 +27,8 @@ class ProductionSeeder extends Seeder
 
         $this->seedTrips();
         $this->seedCourses();
+        $this->seedBanners();
+        $this->seedTeamMembers();
     }
 
     private function seedTrips(): void
@@ -1005,5 +1009,78 @@ class ProductionSeeder extends Seeder
                 $course->saveTranslations($translations);
             }
         }
+    }
+
+    private function seedBanners(): void
+    {
+        $banners = [
+            [
+                'title' => 'Adventure',
+                'image' => 'banners/adventure.jpg',
+                'position' => 'hero',
+                'display_order' => 1,
+                'is_active' => true,
+            ],
+            [
+                'title' => 'Fun',
+                'image' => 'banners/fun.jpg',
+                'position' => 'hero',
+                'display_order' => 2,
+                'is_active' => true,
+            ],
+            [
+                'title' => 'Discovery',
+                'image' => 'banners/discovery.jpg',
+                'position' => 'hero',
+                'display_order' => 3,
+                'is_active' => true,
+            ],
+        ];
+
+        foreach ($banners as $data) {
+            Banner::firstOrCreate(
+                ['title' => $data['title']],
+                $data
+            );
+        }
+    }
+
+    private function seedTeamMembers(): void
+    {
+        $member = TeamMember::firstOrCreate(
+            ['name' => 'Aisha Alhajjaj'],
+            [
+                'name' => 'Aisha Alhajjaj',
+                'role' => 'Founder & Managing Director',
+                'bio' => '<p>Aisha Alhajjaj is the founder and managing director of Corals & Shells Diving Center (CAS). She is an SSI Instructor Trainer for recreational scuba diving, a technical diving instructor, a classified instructor trainer, and an advanced freediver, with extensive experience in diver education, instructor development, and complex diving environments. Her professional diving background is further strengthened by her role as a certified dive physician and a member of the Undersea & Hyperbaric Medical Society (UHMS), allowing her to integrate physiology, risk management, and medical oversight into everyday dive operations.</p>
+<p>Aisha holds an MA in Sport Industry and Lifestyle Management and is a board-certified neurosurgeon and neurointerventionist, bringing a deep understanding of neurological safety, human performance, and decision-making under pressure.</p>
+<p>But CAS is more than one person; it\'s a collective of "visionaries." Together, this team of instructors and professionals has built a culture centered on smaller groups, adaptive inclusion, and quieter underwater experiences. Whether it\'s through our marine awareness framework, Passport Blue™, or our Elite CAS community, we aren\'t just teaching people to dive; we\'re building a new standard for diving in Saudi Arabia and the GCC—one grounded in care, competence, and a deep respect for the sea.</p>',
+                'image' => 'team/aisha-alhajjaj.jpg',
+                'experience' => 'SSI Instructor Trainer | Technical Diving Instructor | Advanced Freediver | Board-certified Neurosurgeon',
+                'certifications' => [
+                    'SSI Instructor Trainer for recreational scuba diving',
+                    'Technical diving instructor',
+                    'Classified instructor trainer',
+                    'Advanced freediver',
+                    'Board-certified neurosurgeon and neurointerventionist',
+                    'MA in Sport Industry and Lifestyle Management',
+                    'Member of the Undersea & Hyperbaric Medical Society (UHMS)',
+                ],
+                'is_active' => true,
+                'display_order' => 1,
+            ]
+        );
+
+        // Save Arabic translations
+        $member->saveTranslations([
+            'ar' => [
+                'name' => 'عائشة الحجاج',
+                'role' => 'المؤسس والمدير التنفيذي',
+                'bio' => '<p>عائشة الحجاج هي المؤسس والمدير التنفيذي لمركز "كورالز آند شيلز" للغوص وهي مدربة مدربي غوص ترفيهي ومدربة غوص تقني، ومدربة مدربي غوص لذوي الاحتياجات الخاصة وغواصة "فري دايف" متقدمة، وتتمتع بخبرة واسعة في تعليم الغواصين، وتطوير المدربين، والتعامل مع بيئات الغوص المعقدة. كما يتعزز مسارها المهني في الغوص بكونها طبيبة غوص معتمدة وعضواً في الجمعية الطبية لبيئات تحت البحر والضغط العالي (UHMS)، مما يتيح لها دمج علم وظائف الأعضاء، وإدارة المخاطر، والإشراف الطبي في عمليات الغوص اليومية.</p>
+<p>تحمل عائشة درجة الماجستير في إدارة الصناعة الرياضية ونمط الحياة، وهي استشارية جراحة أعصاب وقسطرة دماغية معتمدة، مما يمنحها فهماً عميقاً للسلامة العصبية، والأداء البشري، واتخاذ القرار تحت الضغط.</p>
+<p>مركز "كورالز آند شيلز" ليس مجرد مجهود فردي؛ بل هو تجمّع من "المستشرفين". لقد نجح هذا الفريق من المدربين والمحترفين في بناء ثقافة ترتكز على المجموعات الصغيرة، والشمولية التكيفية، وتجارب الغوص الهادئة. ومن خلال إطارنا للتوعية البحرية Passport Blue™ أو مجتمع "إيليت" Elite CAS، نحن لا نكتفي بتعليم الناس الغوص فحسب، بل نرسخ معياراً جديداً للغوص في المملكة العربية السعودية ودول مجلس التعاون الخليجي؛ معياراً قائماً على الرعاية، والكفاءة، والاحترام العميق للبحر.</p>',
+                'experience' => 'مدربة مدربي غوص SSI | مدربة غوص تقني | غواصة فري دايف متقدمة | استشارية جراحة أعصاب',
+            ],
+        ]);
     }
 }
