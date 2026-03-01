@@ -108,14 +108,8 @@ export const TeamMemberEditPage: React.FC = () => {
       }
       navigate('/admin/team');
     } catch (error: any) {
-      if (error?.status === 401) {
-        toast.error('Session expired. Please log in again.');
-        navigate('/admin/login');
-      } else if (error?.data?.errors) {
-        Object.values(error.data.errors).flat().forEach((err: any) => toast.error(err));
-      } else {
-        toast.error(`Failed to ${isEditMode ? 'update' : 'create'} team member`);
-      }
+      if (error?.data?.errors) Object.values(error.data.errors).flat().forEach((err: any) => toast.error(err));
+      else toast.error(`Failed to ${isEditMode ? 'update' : 'create'} team member`);
     }
   };
 

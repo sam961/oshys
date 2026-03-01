@@ -1,4 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import toast from 'react-hot-toast';
 import type {
   Course,
   Trip,
@@ -15,25 +17,34 @@ import type {
   Image,
 } from '../types';
 
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl: '/api',
+  prepareHeaders: (headers) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      headers.set('authorization', `Bearer ${token}`);
+    }
+    const locale = localStorage.getItem('i18nextLng') || 'en';
+    headers.set('Accept-Language', locale);
+    return headers;
+  },
+});
+
+const baseQueryWithAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
+  const result = await rawBaseQuery(args, api, extraOptions);
+  if (result.error?.status === 401) {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth-storage');
+    toast.error('Session expired. Please log in again.');
+    window.location.href = '/admin/login';
+  }
+  return result;
+};
+
 // Define base query
 export const api = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/api',
-    prepareHeaders: (headers) => {
-      // Add auth token if available
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-
-      // Add locale header for translations
-      const locale = localStorage.getItem('i18nextLng') || 'en';
-      headers.set('Accept-Language', locale);
-
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithAuth,
   tagTypes: ['Course', 'CourseImage', 'Trip', 'TripImage', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Setting', 'Banner', 'FooterLink', 'Booking'],
   endpoints: (builder) => ({
     // Courses
