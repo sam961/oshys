@@ -25,7 +25,7 @@ export const HeroSlider: React.FC = () => {
     const timer = setInterval(() => {
       setDirection(1);
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 8000); // 8 seconds per slide
+    }, 4000); // 4 seconds per slide
     return () => clearInterval(timer);
   }, [slides.length, isPaused]);
 
