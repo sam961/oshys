@@ -91,7 +91,7 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="w-4 h-4 text-primary-400" />
-                <span>oshysoceans@gmail.com</span>
+                <span>diver.cas1@gmail.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="w-4 h-4 text-primary-400" />

@@ -91,7 +91,7 @@ export const ContactPage: React.FC = () => {
                 <Mail className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{t('contactPage.emailUs')}</h3>
-              <p className="text-gray-600">oshysoceans@gmail.com</p>
+              <p className="text-gray-600">diver.cas1@gmail.com</p>
             </Card>
           </motion.div>
 
