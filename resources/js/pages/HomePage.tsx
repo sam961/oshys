@@ -399,9 +399,6 @@ export const HomePage: React.FC = () => {
                           alt={course.name}
                           className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
-                        <div className="absolute top-4 right-4 bg-accent-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
-                          {course.level}
-                        </div>
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{course.name}</h3>
                       <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />

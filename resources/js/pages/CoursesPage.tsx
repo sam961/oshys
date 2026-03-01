@@ -221,13 +221,6 @@ export const CoursesPage: React.FC = () => {
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    {course.level && (
-                      <div className="absolute bottom-3 left-3">
-                        <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
-                          {course.level}
-                        </span>
-                      </div>
-                    )}
                   </div>
 
                   <div className="space-y-4">
@@ -282,13 +275,6 @@ export const CoursesPage: React.FC = () => {
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      {course.level && (
-                        <div className="absolute bottom-3 left-3">
-                          <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
-                            {course.level}
-                          </span>
-                        </div>
-                      )}
                     </div>
 
                     <div className="flex-1 flex flex-col justify-between py-2">

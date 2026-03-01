@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   GraduationCap,
   Clock,
-  Award,
   Users,
   ArrowLeft,
   CheckCircle,
@@ -145,16 +144,6 @@ export const CourseDetailPage: React.FC = () => {
         <div className="absolute inset-0 flex items-end">
           <div className="container mx-auto px-6 pb-8">
             <div className="flex flex-wrap items-center gap-2 mb-4">
-              {course.level && (
-                <motion.span
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-accent-500 text-white uppercase tracking-wide"
-                >
-                  <Award className="w-3.5 h-3.5" />
-                  {course.level}
-                </motion.span>
-              )}
             </div>
 
             <motion.h1
@@ -314,17 +303,6 @@ export const CourseDetailPage: React.FC = () => {
                   </div>
                 )}
 
-                {course.level && (
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
-                    <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Award className="w-5 h-5 text-primary-600" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs text-gray-400 uppercase tracking-wide">{t('pages.courses.level')}</p>
-                      <p className="font-semibold text-gray-900 text-sm">{course.level}</p>
-                    </div>
-                  </div>
-                )}
 
                 {course.max_students && (
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
