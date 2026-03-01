@@ -13,6 +13,7 @@ interface ImageSizeGuideline {
 
 interface ImageUploadWithCropProps {
   onImageCropped: (file: File, previewUrl: string) => void;
+  onRemoveImage?: () => void;
   currentPreview?: string;
   guideline: ImageSizeGuideline;
   disabled?: boolean;
@@ -43,6 +44,7 @@ function centerAspectCrop(
 
 export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   onImageCropped,
+  onRemoveImage,
   currentPreview,
   guideline,
   disabled = false,
@@ -171,6 +173,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    onRemoveImage?.();
   };
 
   const handleResetCrop = () => {

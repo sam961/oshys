@@ -195,6 +195,14 @@ class TeamMemberController extends Controller
             }
         }
 
+        // Handle image removal
+        if ($request->input('remove_image')) {
+            if ($teamMember->image && Storage::disk('public')->exists($teamMember->image)) {
+                Storage::disk('public')->delete($teamMember->image);
+            }
+            $validated['image'] = null;
+        }
+
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists

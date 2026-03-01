@@ -44,6 +44,7 @@ export const TeamMemberEditPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [removeImage, setRemoveImage] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
 
@@ -67,8 +68,8 @@ export const TeamMemberEditPage: React.FC = () => {
   }, [teamMember, isEditMode]);
 
   useEffect(() => {
-    setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialData) || imageFile !== null);
-  }, [formData, initialData, imageFile]);
+    setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialData) || imageFile !== null || removeImage);
+  }, [formData, initialData, imageFile, removeImage]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => { if (isDirty) { e.preventDefault(); e.returnValue = ''; } };
@@ -95,6 +96,7 @@ export const TeamMemberEditPage: React.FC = () => {
       if (formData.experience) submitData.append('experience', formData.experience);
       submitData.append('social_links', JSON.stringify(formData.social_links));
       if (imageFile) submitData.append('image', imageFile);
+      if (removeImage) submitData.append('remove_image', '1');
 
       if (isEditMode) {
         submitData.append('_method', 'PUT');
@@ -106,8 +108,14 @@ export const TeamMemberEditPage: React.FC = () => {
       }
       navigate('/admin/team');
     } catch (error: any) {
-      if (error?.data?.errors) Object.values(error.data.errors).flat().forEach((err: any) => toast.error(err));
-      else toast.error(`Failed to ${isEditMode ? 'update' : 'create'} team member`);
+      if (error?.status === 401) {
+        toast.error('Session expired. Please log in again.');
+        navigate('/admin/login');
+      } else if (error?.data?.errors) {
+        Object.values(error.data.errors).flat().forEach((err: any) => toast.error(err));
+      } else {
+        toast.error(`Failed to ${isEditMode ? 'update' : 'create'} team member`);
+      }
     }
   };
 
@@ -154,7 +162,7 @@ export const TeamMemberEditPage: React.FC = () => {
 
           <div className="space-y-6">
             <FormSection title="Profile Image" description="Upload member photo">
-              <ImageUploadWithCrop onImageCropped={(f, u) => { setImageFile(f); setImagePreview(u); }} currentPreview={imagePreview} guideline={IMAGE_GUIDELINES.teamMember} aspectRatio={1} />
+              <ImageUploadWithCrop onImageCropped={(f, u) => { setImageFile(f); setImagePreview(u); setRemoveImage(false); }} onRemoveImage={() => { setImageFile(null); setImagePreview(''); setRemoveImage(true); }} currentPreview={imagePreview} guideline={IMAGE_GUIDELINES.teamMember} aspectRatio={1} />
             </FormSection>
 
             <FormSection title="Social Links" description="Social media profiles">
