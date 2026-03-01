@@ -75,7 +75,7 @@ export const Footer: React.FC = () => {
                 <img
                   src="/images/logo.png"
                   alt={t('brand.name')}
-                  className="h-16 w-auto"
+                  className="h-40 w-auto brightness-125 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
                 />
               </motion.div>
             </Link>

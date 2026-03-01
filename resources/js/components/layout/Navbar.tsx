@@ -91,7 +91,7 @@ export const Navbar: React.FC = () => {
                 <img
                   src="/images/logo.png"
                   alt={t('brand.name')}
-                  className="h-16 w-auto"
+                  className="h-24 w-auto"
                 />
               </motion.div>
             </Link>
