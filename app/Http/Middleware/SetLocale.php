@@ -27,6 +27,9 @@ class SetLocale
             ?? $request->query('lang')
             ?? $defaultLocale;
 
+        // Extract base language code (e.g. "ar-SA" → "ar")
+        $locale = strtolower(substr($locale, 0, 2));
+
         // Validate locale
         if (!in_array($locale, $supportedLocales)) {
             $locale = $defaultLocale;
