@@ -73,9 +73,9 @@ export const Footer: React.FC = () => {
                 transition={{ duration: 0.3 }}
               >
                 <img
-                  src="/images/logo.jpg"
+                  src="/images/logo.png"
                   alt={t('brand.name')}
-                  className="h-16 w-auto brightness-0 invert"
+                  className="h-16 w-auto"
                 />
               </motion.div>
             </Link>
