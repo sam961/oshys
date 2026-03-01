@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Award, Users, TrendingUp, MapPin, Shield, Layers, UserCheck, FileCheck, Anchor, Loader2 } from 'lucide-react';
+import { Award, Users, TrendingUp, MapPin, Shield, Layers, UserCheck, FileCheck, Anchor, Loader2, Clock, Instagram, Facebook, Linkedin, Twitter } from 'lucide-react';
 import { Section, Card } from '../components/ui';
 import { CountUp } from '../components/animations';
 import { stats } from '../data/mockData';
@@ -9,9 +10,19 @@ import { useTranslation } from 'react-i18next';
 
 export const AboutPage: React.FC = () => {
   const { t } = useTranslation();
+  const { hash } = useLocation();
 
   // Fetch team members from API
   const { data: team = [], isLoading: teamLoading, error: teamError } = useGetTeamMembersQuery({ active: true });
+
+  useEffect(() => {
+    if (hash) {
+      const el = document.getElementById(hash.replace('#', ''));
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    }
+  }, [hash, teamLoading]);
 
   const values = [
     {
@@ -223,66 +234,103 @@ export const AboutPage: React.FC = () => {
 
       {/* Team Section - only shown when team members exist */}
       {!teamLoading && !teamError && team.length > 0 && (
-        <Section background="white" className="!py-10 sm:!py-12 lg:!py-16">
+        <Section background="white" className="!py-10 sm:!py-12 lg:!py-16" id="team">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-50 border border-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+              {t('about.teamTitle')}
+            </span>
             <h2 className="text-4xl font-bold mb-4">{t('about.teamTitle')}</h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {t('about.teamSubtitle')}
             </p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <motion.div
-                key={member.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="text-center group hover:shadow-2xl transition-shadow">
-                  <div className="relative mb-6">
-                    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden ring-4 ring-primary-100 group-hover:ring-primary-300 transition-all">
-                      {(member as any).image_url ? (
+          <div className={`grid gap-8 ${team.length <= 2 ? 'sm:grid-cols-2 max-w-3xl mx-auto' : team.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4'}`}>
+            {team.map((member, index) => {
+              const socialIcons: Record<string, React.FC<{ className?: string }>> = {
+                instagram: Instagram,
+                facebook: Facebook,
+                linkedin: Linkedin,
+                twitter: Twitter,
+              };
+
+              const imageUrl = (member as any).image_url;
+
+              return (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  className="group"
+                >
+                  <div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100">
+                    {/* Image */}
+                    <div className="relative aspect-[3/4] overflow-hidden">
+                      {imageUrl ? (
                         <img
-                          src={(member as any).image_url}
+                          src={imageUrl}
                           alt={member.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                          <Users className="w-12 h-12 text-gray-300" />
+                        <div className="w-full h-full bg-gradient-to-br from-primary-100 to-accent-100 flex items-center justify-center">
+                          <Users className="w-16 h-16 text-primary-300" />
                         </div>
                       )}
+
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent" />
+
+                      {/* Social links — appear on hover */}
+                      {member.social_links && Object.values(member.social_links).some(v => v) && (
+                        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                          {Object.entries(member.social_links).map(([platform, url]) => {
+                            if (!url) return null;
+                            const Icon = socialIcons[platform];
+                            if (!Icon) return null;
+                            return (
+                              <a
+                                key={platform}
+                                href={url as string}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 hover:text-primary-600 rounded-lg shadow-sm transition-all hover:scale-110"
+                              >
+                                <Icon className="w-4 h-4" />
+                              </a>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Name & role on image */}
+                      <div className="absolute bottom-0 left-0 right-0 p-5">
+                        <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
+                        <p className="text-sm text-white/80 font-medium">{member.role}</p>
+                      </div>
                     </div>
+
+                    {/* Experience badge */}
                     {member.experience && (
-                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-primary-600 text-white px-4 py-1 rounded-full text-sm font-semibold whitespace-nowrap">
-                        {member.experience}
+                      <div className="px-5 py-3 border-t border-gray-100 flex items-center gap-2.5 bg-gray-50/50">
+                        <div className="p-1 bg-primary-100 rounded-md">
+                          <Clock className="w-3.5 h-3.5 text-primary-600" />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-700">{member.experience}</span>
                       </div>
                     )}
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{member.name}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{member.role}</p>
-                  {member.certifications && member.certifications.length > 0 && (
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {member.certifications.map((cert, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-xs font-medium"
-                        >
-                          {cert}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </Card>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         </Section>
       )}
