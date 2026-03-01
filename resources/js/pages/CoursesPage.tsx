@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 export const CoursesPage: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high' | 'duration'>('default');
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -26,15 +26,15 @@ export const CoursesPage: React.FC = () => {
   // Fetch courses from API
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useGetCoursesQuery({ active: true });
 
-  const levels = [
-    { key: 'Beginner', label: t('pages.courses.beginner') },
-    { key: 'Intermediate', label: t('pages.courses.intermediate') },
-    { key: 'Advanced', label: t('pages.courses.advanced') },
-    { key: 'Professional', label: t('pages.courses.professional') },
+  const categories = [
+    { key: 'Swimming', label: t('pages.courses.categorySwimming') },
+    { key: 'Diving', label: t('pages.courses.categoryDiving') },
+    { key: 'Long-Term', label: t('pages.courses.categoryLongTerm') },
+    { key: 'Family', label: t('pages.courses.categoryFamily') },
   ];
 
-  const filteredCourses = selectedLevel
-    ? courses.filter((c) => c.level === selectedLevel)
+  const filteredCourses = selectedCategory
+    ? courses.filter((c: any) => c.category === selectedCategory)
     : courses;
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
@@ -104,28 +104,28 @@ export const CoursesPage: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedLevel(null)}
+                onClick={() => setSelectedCategory(null)}
                 className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
-                  selectedLevel === null
+                  selectedCategory === null
                     ? 'bg-gradient-to-r from-accent-600 to-accent-500 text-white shadow-lg shadow-accent-500/30'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {t('pages.courses.allLevels')}
+                {t('pages.courses.allPrograms')}
               </motion.button>
-              {levels.map((level) => (
+              {categories.map((cat) => (
                 <motion.button
-                  key={level.key}
+                  key={cat.key}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedLevel(level.key)}
+                  onClick={() => setSelectedCategory(cat.key)}
                   className={`px-5 py-2 rounded-full whitespace-nowrap transition-all font-medium ${
-                    selectedLevel === level.key
+                    selectedCategory === cat.key
                       ? 'bg-gradient-to-r from-accent-600 to-accent-500 text-white shadow-lg shadow-accent-500/30'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {level.label}
+                  {cat.label}
                 </motion.button>
               ))}
             </div>

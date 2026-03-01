@@ -16,6 +16,7 @@ interface FormData {
   price: number;
   duration: string;
   level: string;
+  category: string;
   is_active: boolean;
   is_featured: boolean;
   max_students: number | null;
@@ -29,6 +30,7 @@ const initialFormData: FormData = {
   price: 0,
   duration: '',
   level: '',
+  category: '',
   is_active: true,
   is_featured: false,
   max_students: null,
@@ -63,6 +65,7 @@ export const CourseEditPage: React.FC = () => {
         price: Number(course.price),
         duration: course.duration || '',
         level: course.level || '',
+        category: (course as any).category || '',
         is_active: course.is_active,
         is_featured: course.is_featured,
         max_students: course.max_students || null,
@@ -113,6 +116,9 @@ export const CourseEditPage: React.FC = () => {
       }
       if (formData.level) {
         submitData.append('level', formData.level);
+      }
+      if (formData.category) {
+        submitData.append('category', formData.category);
       }
       submitData.append('is_active', formData.is_active ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
@@ -228,6 +234,17 @@ export const CourseEditPage: React.FC = () => {
                   <option value="Intermediate">Intermediate</option>
                   <option value="Advanced">Advanced</option>
                   <option value="All Levels">All Levels</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <select value={formData.category} onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                  <option value="">No Category</option>
+                  <option value="Swimming">Swimming Programs</option>
+                  <option value="Diving">Diving Programs</option>
+                  <option value="Long-Term">Long-Term Paths</option>
+                  <option value="Family">Family & Specialized Programs</option>
                 </select>
               </div>
               <div>

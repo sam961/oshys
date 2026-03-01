@@ -18,6 +18,7 @@ class Course extends Model
         'price',
         'duration',
         'level',
+        'category',
 
         'is_active',
         'is_featured',

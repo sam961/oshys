@@ -34,6 +34,11 @@ class CourseController extends Controller
             $query->where('level', $request->level);
         }
 
+        // Filter by category
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+
         // Search
         if ($request->has('search')) {
             $search = $request->search;
@@ -63,6 +68,7 @@ class CourseController extends Controller
             'price' => 'required|numeric|min:0',
             'duration' => 'nullable|string',
             'level' => 'nullable|in:Beginner,Intermediate,Advanced,All Levels',
+            'category' => 'nullable|string|max:255',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
             'max_students' => 'nullable|integer|min:1',
@@ -133,6 +139,7 @@ class CourseController extends Controller
             'price' => 'sometimes|required|numeric|min:0',
             'duration' => 'nullable|string',
             'level' => 'nullable|in:Beginner,Intermediate,Advanced,All Levels',
+            'category' => 'nullable|string|max:255',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
             'max_students' => 'nullable|integer|min:1',
