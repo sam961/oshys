@@ -18,7 +18,6 @@ return new class extends Migration
             $table->text('excerpt');
             $table->longText('content');
             $table->string('image')->nullable();
-            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->boolean('is_published')->default(false);
             $table->boolean('is_featured')->default(false);
             $table->timestamp('published_at')->nullable();

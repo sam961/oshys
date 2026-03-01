@@ -16,10 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->text('details')->nullable();
             $table->string('image')->nullable();
             $table->decimal('price', 10, 2);
-            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->boolean('in_stock')->default(true);
             $table->boolean('is_active')->default(true);
             $table->boolean('is_featured')->default(false);

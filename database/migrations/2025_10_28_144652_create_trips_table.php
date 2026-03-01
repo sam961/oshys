@@ -16,17 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->text('details')->nullable();
             $table->string('image')->nullable();
             $table->decimal('price', 10, 2);
-            $table->string('location');
-            $table->string('duration');
-            $table->enum('difficulty', ['Beginner', 'Intermediate', 'Advanced', 'All Levels'])->default('Beginner');
-            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_featured')->default(false);
-            $table->boolean('certification_required')->default(false);
-            $table->integer('max_participants')->nullable();
             $table->json('included_items')->nullable();
             $table->timestamps();
             $table->softDeletes();

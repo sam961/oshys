@@ -51,6 +51,10 @@
     --color-secondary-900: #1e3a8a;
 }
 
+html {
+    font-size: 17px;
+}
+
 @keyframes fade-in-up {
     from {
         opacity: 0;

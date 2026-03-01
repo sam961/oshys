@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('footer_links', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('slug')->unique();
             $table->string('url');
+            $table->longText('content')->nullable();
             $table->integer('display_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->boolean('open_in_new_tab')->default(false);
