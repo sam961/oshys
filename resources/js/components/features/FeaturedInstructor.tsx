@@ -75,20 +75,20 @@ export const FeaturedInstructor: React.FC = () => {
               </div>
             </div>
 
-            {/* Experience badge */}
+            {/* Experience badge — below image */}
             {instructor.experience && (
               <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="absolute -bottom-4 -right-4 lg:-right-6"
+                transition={{ delay: 0.4, duration: 0.4 }}
+                className="mt-3"
               >
-                <div className="bg-white border border-gray-100 text-gray-800 px-5 py-3 rounded-xl shadow-lg flex items-center gap-2.5">
+                <div className="inline-flex items-center gap-2.5 bg-white border border-gray-100 text-gray-800 px-5 py-3 rounded-xl shadow-md">
                   <div className="p-1.5 bg-primary-100 rounded-lg">
                     <Clock className="w-4 h-4 text-primary-600" />
                   </div>
-                  <span className="font-semibold text-sm whitespace-nowrap">{instructor.experience}</span>
+                  <span className="font-semibold text-sm">{instructor.experience}</span>
                 </div>
               </motion.div>
             )}

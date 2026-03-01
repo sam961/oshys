@@ -4,8 +4,9 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
+import TranslatableField from '../components/TranslatableField';
+import TranslatableRichText from '../components/TranslatableRichText';
 import { useGetTeamMemberQuery, useCreateTeamMemberMutation, useUpdateTeamMemberMutation } from '../../services/api';
-import RichTextEditor from '../components/RichTextEditor';
 import toast from 'react-hot-toast';
 
 interface FormData {
@@ -18,6 +19,10 @@ interface FormData {
   is_active: boolean;
   display_order: number;
   social_links: { facebook: string; instagram: string; twitter: string; linkedin: string };
+  name_translations: { ar: string };
+  role_translations: { ar: string };
+  bio_translations: { ar: string };
+  experience_translations: { ar: string };
 }
 
 const initialFormData: FormData = {
@@ -30,6 +35,10 @@ const initialFormData: FormData = {
   is_active: true,
   display_order: 0,
   social_links: { facebook: '', instagram: '', twitter: '', linkedin: '' },
+  name_translations: { ar: '' },
+  role_translations: { ar: '' },
+  bio_translations: { ar: '' },
+  experience_translations: { ar: '' },
 };
 
 export const TeamMemberEditPage: React.FC = () => {
@@ -50,20 +59,25 @@ export const TeamMemberEditPage: React.FC = () => {
 
   useEffect(() => {
     if (teamMember && isEditMode) {
+      const member = teamMember as any;
       const loadedData: FormData = {
-        name: teamMember.name,
-        role: teamMember.role,
-        bio: teamMember.bio || '',
-        email: teamMember.email || '',
-        phone: teamMember.phone || '',
-        experience: teamMember.experience || '',
-        is_active: teamMember.is_active,
-        display_order: teamMember.display_order,
-        social_links: teamMember.social_links || { facebook: '', instagram: '', twitter: '', linkedin: '' },
+        name: member.name,
+        role: member.role,
+        bio: member.bio || '',
+        email: member.email || '',
+        phone: member.phone || '',
+        experience: member.experience || '',
+        is_active: member.is_active,
+        display_order: member.display_order,
+        social_links: member.social_links || { facebook: '', instagram: '', twitter: '', linkedin: '' },
+        name_translations: member.name_translations || { ar: '' },
+        role_translations: member.role_translations || { ar: '' },
+        bio_translations: member.bio_translations || { ar: '' },
+        experience_translations: member.experience_translations || { ar: '' },
       };
       setFormData(loadedData);
       setInitialData(loadedData);
-      if ((teamMember as any).image_url) setImagePreview((teamMember as any).image_url);
+      if (member.image_url) setImagePreview(member.image_url);
     }
   }, [teamMember, isEditMode]);
 
@@ -97,6 +111,12 @@ export const TeamMemberEditPage: React.FC = () => {
       submitData.append('social_links', JSON.stringify(formData.social_links));
       if (imageFile) submitData.append('image', imageFile);
       if (removeImage) submitData.append('remove_image', '1');
+
+      // Append translations
+      submitData.append('name_translations', JSON.stringify(formData.name_translations));
+      submitData.append('role_translations', JSON.stringify(formData.role_translations));
+      submitData.append('bio_translations', JSON.stringify(formData.bio_translations));
+      submitData.append('experience_translations', JSON.stringify(formData.experience_translations));
 
       if (isEditMode) {
         submitData.append('_method', 'PUT');
@@ -139,16 +159,51 @@ export const TeamMemberEditPage: React.FC = () => {
           <FormSection title="Basic Information" description="Name, role, and bio">
             <div className="space-y-5">
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label><input type="text" value={formData.name} onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))} required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Role *</label><input type="text" value={formData.role} onChange={(e) => setFormData(p => ({ ...p, role: e.target.value }))} required placeholder="e.g. Lead Instructor" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+                <TranslatableField
+                  label="Full Name"
+                  name="name"
+                  value={formData.name}
+                  translationValue={formData.name_translations.ar}
+                  onChangeEnglish={(v) => setFormData(p => ({ ...p, name: v }))}
+                  onChangeArabic={(v) => setFormData(p => ({ ...p, name_translations: { ar: v } }))}
+                  required
+                />
+                <TranslatableField
+                  label="Role"
+                  name="role"
+                  value={formData.role}
+                  translationValue={formData.role_translations.ar}
+                  onChangeEnglish={(v) => setFormData(p => ({ ...p, role: v }))}
+                  onChangeArabic={(v) => setFormData(p => ({ ...p, role_translations: { ar: v } }))}
+                  required
+                  placeholder="e.g. Lead Instructor"
+                  placeholderAr="مثال: مدرب رئيسي"
+                />
               </div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-2">Bio</label><RichTextEditor content={formData.bio} onChange={(html) => setFormData(p => ({ ...p, bio: html }))} minHeight="150px" /></div>
+              <TranslatableRichText
+                label="Bio"
+                name="bio"
+                value={formData.bio}
+                translationValue={formData.bio_translations.ar}
+                onChangeEnglish={(html) => setFormData(p => ({ ...p, bio: html }))}
+                onChangeArabic={(html) => setFormData(p => ({ ...p, bio_translations: { ar: html } }))}
+                minHeight="150px"
+              />
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Email</label><input type="email" value={formData.email} onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Phone</label><input type="tel" value={formData.phone} onChange={(e) => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Experience</label><input type="text" value={formData.experience} onChange={(e) => setFormData(p => ({ ...p, experience: e.target.value }))} placeholder="e.g. 10+ years" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+                <TranslatableField
+                  label="Experience"
+                  name="experience"
+                  value={formData.experience}
+                  translationValue={formData.experience_translations.ar}
+                  onChangeEnglish={(v) => setFormData(p => ({ ...p, experience: v }))}
+                  onChangeArabic={(v) => setFormData(p => ({ ...p, experience_translations: { ar: v } }))}
+                  placeholder="e.g. 10+ years"
+                  placeholderAr="مثال: +10 سنوات"
+                />
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Display Order</label><input type="number" value={formData.display_order} onChange={(e) => setFormData(p => ({ ...p, display_order: Number(e.target.value) }))} min="0" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
               </div>
             </div>

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class TeamMemberController extends Controller
 {
+    use TranslatableController;
     /**
      * Get the featured instructor based on CMS settings.
      */
@@ -20,12 +21,12 @@ class TeamMemberController extends Controller
 
         if (!$featuredId) {
             // Fallback to first active team member if no featured instructor is set
-            $teamMember = TeamMember::with('images')
+            $teamMember = TeamMember::with(['images', 'translations'])
                 ->where('is_active', true)
                 ->orderBy('display_order', 'asc')
                 ->first();
         } else {
-            $teamMember = TeamMember::with('images')
+            $teamMember = TeamMember::with(['images', 'translations'])
                 ->where('id', $featuredId)
                 ->where('is_active', true)
                 ->first();
@@ -43,7 +44,7 @@ class TeamMemberController extends Controller
      */
     public function index(Request $request)
     {
-        $query = TeamMember::with('images');
+        $query = TeamMember::with(['images', 'translations']);
 
         // Filter by active status
         if ($request->has('active')) {
@@ -90,7 +91,15 @@ class TeamMemberController extends Controller
             'social_links' => 'nullable',
             'is_active' => 'nullable',
             'display_order' => 'nullable|integer|min:0',
+            // Translation fields
+            'name_translations' => 'nullable',
+            'role_translations' => 'nullable',
+            'bio_translations' => 'nullable',
+            'experience_translations' => 'nullable',
         ]);
+
+        // Remove translation fields from validated data
+        unset($validated['name_translations'], $validated['role_translations'], $validated['bio_translations'], $validated['experience_translations']);
 
         // Convert boolean strings to actual booleans
         $validated['is_active'] = filter_var($request->input('is_active', true), FILTER_VALIDATE_BOOLEAN);
@@ -131,7 +140,10 @@ class TeamMemberController extends Controller
 
         $teamMember = TeamMember::create($validated);
 
-        return response()->json($teamMember, 201);
+        // Save translations
+        $this->saveTranslationsFromRequest($teamMember, $request);
+
+        return response()->json($teamMember->load('translations'), 201);
     }
 
     /**
@@ -139,8 +151,8 @@ class TeamMemberController extends Controller
      */
     public function show($id)
     {
-        $teamMember = TeamMember::with('images')->findOrFail($id);
-        return response()->json($teamMember);
+        $teamMember = TeamMember::with(['images', 'translations'])->findOrFail($id);
+        return response()->json($teamMember->toArrayWithTranslations());
     }
 
     /**
@@ -162,7 +174,15 @@ class TeamMemberController extends Controller
             'social_links' => 'nullable',
             'is_active' => 'nullable',
             'display_order' => 'nullable|integer|min:0',
+            // Translation fields
+            'name_translations' => 'nullable',
+            'role_translations' => 'nullable',
+            'bio_translations' => 'nullable',
+            'experience_translations' => 'nullable',
         ]);
+
+        // Remove translation fields from validated data
+        unset($validated['name_translations'], $validated['role_translations'], $validated['bio_translations'], $validated['experience_translations']);
 
         // Convert boolean strings to actual booleans if present
         if ($request->has('is_active')) {
@@ -218,7 +238,10 @@ class TeamMemberController extends Controller
 
         $teamMember->update($validated);
 
-        return response()->json($teamMember);
+        // Save translations
+        $this->saveTranslationsFromRequest($teamMember, $request);
+
+        return response()->json($teamMember->load('translations'));
     }
 
     /**

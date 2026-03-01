@@ -115,7 +115,9 @@
     "subscribeNewsletter": "اشترك في نشرتنا الإخبارية لتلقي تحديثات حول البرامج والفعاليات والجدولة.",
     "contactUs": "اتصل بنا",
     "certifications": "الشهادات",
-    "more": "+{{count}} المزيد"
+    "more": "+{{count}} المزيد",
+    "readMore": "اقرأ المزيد",
+    "readLess": "اقرأ أقل"
   },
   "ui": {
     "swipeToSeeMore": "اسحب لرؤية المزيد"

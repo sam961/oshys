@@ -115,7 +115,9 @@
     "subscribeNewsletter": "Subscribe to our newsletter to receive updates on programs, events, and scheduling.",
     "contactUs": "Contact Us",
     "certifications": "Certifications",
-    "more": "+{{count}} more"
+    "more": "+{{count}} more",
+    "readMore": "Read More",
+    "readLess": "Read Less"
   },
   "ui": {
     "swipeToSeeMore": "Swipe to see more"
