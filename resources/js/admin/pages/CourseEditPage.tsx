@@ -241,10 +241,12 @@ export const CourseEditPage: React.FC = () => {
                 <select value={formData.category} onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
                   <option value="">No Category</option>
-                  <option value="Swimming">Swimming Programs</option>
-                  <option value="Diving">Diving Programs</option>
-                  <option value="Long-Term">Long-Term Paths</option>
-                  <option value="Family">Family & Specialized Programs</option>
+                  <option value="Swim Programs">Swim Programs</option>
+                  <option value="Start Diving">Start Diving</option>
+                  <option value="Develop Your Diving">Develop Your Diving</option>
+                  <option value="Leadership">Leadership</option>
+                  <option value="Family and Youth">Family & Youth</option>
+                  <option value="Blue Access">Blue Access</option>
                 </select>
               </div>
               <div>

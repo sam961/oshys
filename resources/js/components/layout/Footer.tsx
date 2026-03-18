@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
       { name: t('nav.blog'), href: '/blog' },
     ],
     services: [
-      { name: t('footer.divingCourses'), href: '/shop/courses' },
+      { name: t('footer.programs'), href: '/shop/courses' },
       { name: t('footer.divingTrips'), href: '/shop/trips' },
       { name: t('footer.equipment'), href: 'https://coralsandshells.sa' },
     ],
@@ -91,7 +91,9 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="w-4 h-4 text-primary-400" />
-                <span>diver.cas1@gmail.com</span>
+                <a href="mailto:diver.cas1@gmail.com" className="hover:text-primary-400 transition-colors">
+                  diver.cas1@gmail.com
+                </a>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="w-4 h-4 text-primary-400" />

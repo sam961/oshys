@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useGetBannersQuery } from '../../services/api';
 import { UnderwaterOverlay } from '../animations/UnderwaterOverlay';
 
 export const HeroSlider: React.FC = () => {
+  const { t } = useTranslation();
   const { data: banners = [], isLoading, refetch } = useGetBannersQuery({ active: true, position: 'hero' });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -113,12 +115,22 @@ export const HeroSlider: React.FC = () => {
                 </p>
               )}
               {slides[currentSlide].button_text && slides[currentSlide].button_link && (
-                <Link
-                  to={slides[currentSlide].button_link || '#'}
-                  className="inline-block px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
-                >
-                  {slides[currentSlide].button_text}
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <Link
+                    to={slides[currentSlide].button_link || '#'}
+                    className="inline-block px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                  >
+                    {slides[currentSlide].button_text}
+                  </Link>
+                  {currentSlide === 0 && (
+                    <Link
+                      to="/blog"
+                      className="inline-block px-8 py-4 border-2 border-white/80 text-white font-semibold rounded-lg hover:bg-white/10 transition-all"
+                    >
+                      {t('home.learnHowWeWork')}
+                    </Link>
+                  )}
+                </div>
               )}
             </div>
           </div>

@@ -53,7 +53,7 @@ export const Navbar: React.FC = () => {
 
   const shopNav: NavItem[] = [
     { name: t('nav.shop'), href: 'https://coralsandshells.sa', external: true },
-    { name: t('courses.allCourses'), href: '/shop/courses' },
+    { name: t('nav.programs'), href: '/shop/courses' },
     { name: t('trips.allTrips'), href: '/shop/trips' },
   ];
 

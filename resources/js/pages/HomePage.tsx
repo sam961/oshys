@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, Compass, GraduationCap, ArrowRight, Gift, ShoppingBag, Instagram, Twitter, Ghost, MessageCircle, Loader2 } from 'lucide-react';
+import { Compass, GraduationCap, ArrowRight, ShoppingBag, Loader2, Anchor, Users, Award, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Lottie from 'lottie-react';
 import { HeroSlider } from '../components/features/HeroSlider';
 import { EventsCalendar } from '../components/features/EventsCalendar';
 import { BookingModal } from '../components/features/BookingModal';
-import { FeaturedInstructor } from '../components/features/FeaturedInstructor';
 import { Section, Card, Button, GridSkeleton, HorizontalScroll, SaudiRiyalPrice } from '../components/ui';
 import { LiquidBackground, WaveBackground, UnderwaterOverlay, SeaLifeDecorations, DivingDecorations, OceanDecorations } from '../components/animations';
-import { services } from '../data/mockData';
 import { useGetCoursesQuery, useGetTripsQuery, useGetProductsQuery, useGetBlogPostsQuery } from '../services/api';
 import type { Course, Trip, Product, BlogPost } from '../types';
 
@@ -62,17 +60,41 @@ export const HomePage: React.FC = () => {
   const { data: products = [], isLoading: productsLoading, error: productsError } = useGetProductsQuery({ active: true, featured: true });
   const { data: blogPosts = [], isLoading: blogPostsLoading, error: blogPostsError } = useGetBlogPostsQuery({ published: true, featured: true });
 
+  // Service cards data for "What We Offer"
+  const serviceCards = [
+    {
+      id: 1,
+      title: t('home.service1Title'),
+      description: t('home.service1Description'),
+      icon: GraduationCap,
+      link: '/shop/courses?category=Start+Diving',
+      image: '/static/diving/courses/diving-courses.jpg',
+    },
+    {
+      id: 2,
+      title: t('home.service2Title'),
+      description: t('home.service2Description'),
+      icon: Award,
+      link: '/shop/courses?category=Develop+Your+Diving',
+      image: '/static/diving/essentials/diving-essentials.jpg',
+    },
+    {
+      id: 3,
+      title: t('home.service3Title'),
+      description: t('home.service3Description'),
+      icon: Compass,
+      link: '/shop/trips',
+      image: '/static/diving/trips/diving-trips.jpg',
+    },
+  ];
+
   return (
     <div className="overflow-hidden">
-      {/* Hero Slider */}
+      {/* 1. Hero Slider */}
       <HeroSlider />
 
-      {/* Featured Instructor Section */}
-      <FeaturedInstructor />
-
-      {/* Tagline Section */}
+      {/* 2. Start Diving — Your Journey Underwater */}
       <Section background="gradient" className="text-center relative overflow-hidden">
-        {/* Animated liquid background */}
         <LiquidBackground />
         <WaveBackground variant="primary" opacity={0.05} />
         <UnderwaterOverlay bubbleCount={20} showLightRays={false} showWave={false} />
@@ -106,71 +128,35 @@ export const HomePage: React.FC = () => {
           viewport={{ once: true }}
           className="relative z-10"
         >
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
             <span className="bg-gradient-to-r from-primary-600 via-accent-600 to-secondary-600 bg-clip-text text-transparent">
-              {t('home.heroTitle')}
+              {t('home.startDivingTitle')}
             </span>
-          </h1>
+          </h2>
           <p className="text-xl sm:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto">
-            {t('home.heroSubtitle')}
+            {t('home.startDivingSubtitle')}
           </p>
           <p className="text-base text-gray-600 max-w-2xl mx-auto mb-8">
-            {t('home.heroDescription')}
+            {t('home.startDivingDescription')}
           </p>
-
-          {/* Social Media Icons */}
-          <div className="flex gap-6 justify-center mb-8">
-            <a
-              href="https://www.instagram.com/OSHYS_OCEANS"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              <Instagram className="w-6 h-6" />
-            </a>
-            <a
-              href="https://twitter.com/OSHYS_OCEANS"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              <Twitter className="w-6 h-6" />
-            </a>
-            <a
-              href="https://www.snapchat.com/add/OSHYS_OCEANS"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              <Ghost className="w-6 h-6" />
-            </a>
-            <a
-              href="https://wa.me/966541000233"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              <MessageCircle className="w-6 h-6" />
-            </a>
-          </div>
 
           <div className="flex gap-4 justify-center">
             <Link to="/shop/courses">
               <Button size="lg">
-                {t('home.bookCourse')}
+                {t('home.viewPrograms')}
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <Link to="/shop/trips">
               <Button variant="outline" size="lg">
-                {t('home.exploreTrips')}
+                {t('home.exploreSea')}
               </Button>
             </Link>
           </div>
         </motion.div>
       </Section>
 
-      {/* Services Section */}
+      {/* 3. Programs — What We Offer */}
       <Section background="white" className="relative overflow-hidden">
         <SeaLifeDecorations />
         <motion.div
@@ -187,113 +173,112 @@ export const HomePage: React.FC = () => {
           </p>
         </motion.div>
 
-        <HorizontalScroll itemCount={services.length} className="md:grid-cols-3 relative z-10">
-          {services.map((service, index) => {
-            const icons = {
-              Package: Package,
-              Compass: Compass,
-              GraduationCap: GraduationCap,
-            };
-            const Icon = icons[service.icon as keyof typeof icons];
-
-            const isExternal = service.link.startsWith('http');
-            const Wrapper = isExternal
-              ? (props: { children: React.ReactNode }) => (
-                  <a href={service.link} target="_blank" rel="noopener noreferrer" className="shrink-0 w-[80vw] snap-center sm:w-auto">{props.children}</a>
-                )
-              : (props: { children: React.ReactNode }) => (
-                  <Link to={service.link} className="shrink-0 w-[80vw] snap-center sm:w-auto">{props.children}</Link>
-                );
-
+        <HorizontalScroll itemCount={serviceCards.length} className="md:grid-cols-3 relative z-10">
+          {serviceCards.map((service) => {
+            const Icon = service.icon;
             return (
-              <Wrapper key={service.id}>
+              <Link key={service.id} to={service.link} className="shrink-0 w-[80vw] snap-center sm:w-auto">
                 <Card className="group cursor-pointer h-full">
-                    <div className="relative overflow-hidden rounded-xl mb-6">
-                      <img
-                        src={service.image || '/placeholder.svg'}
-                        alt={t(`home.service${service.id}Title`)}
-                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary-900/80 to-transparent" />
-                      <div className="absolute bottom-4 left-4">
-                        <div className="bg-white p-3 rounded-xl shadow-lg">
-                          <Icon className="w-6 h-6 text-primary-600" />
-                        </div>
+                  <div className="relative overflow-hidden rounded-xl mb-6">
+                    <img
+                      src={service.image || '/placeholder.svg'}
+                      alt={service.title}
+                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary-900/80 to-transparent" />
+                    <div className="absolute bottom-4 left-4">
+                      <div className="bg-white p-3 rounded-xl shadow-lg">
+                        <Icon className="w-6 h-6 text-primary-600" />
                       </div>
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold mb-3 group-hover:text-primary-600 transition-colors">
-                      {t(`home.service${service.id}Title`)}
-                    </h3>
-                    <p className="text-gray-600 mb-4 text-sm sm:text-base">{t(`home.service${service.id}Description`)}</p>
-                    <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
-                      {t('home.learnMore')}
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </div>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-3 group-hover:text-primary-600 transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 text-sm sm:text-base">{service.description}</p>
+                  <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
+                    {t('home.learnMore')}
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </Card>
-              </Wrapper>
+              </Link>
             );
           })}
         </HorizontalScroll>
       </Section>
 
-      {/* More About Us Section */}
-      <Section background="gray" className="relative overflow-hidden">
-        <DivingDecorations />
-        <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl font-bold mb-6">{t('home.aboutTitle')}</h2>
-            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              {t('home.aboutDescription')}
-            </p>
-            <Link to="/about">
-              <Button>
-                {t('home.learnMore')}
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <img
-              src="/static/about/about-corals-shells.jpg"
-              alt={t('home.aboutTitle')}
-              className="w-full h-96 object-cover rounded-2xl shadow-2xl"
-            />
-            <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-xl shadow-xl">
-              <p className="text-4xl font-bold text-primary-600">10+</p>
-              <p className="text-gray-600">{t('home.yearsExperience')}</p>
-            </div>
-          </motion.div>
-        </div>
-      </Section>
-
-      {/* Calendar Section */}
-      <Section background="white" id="calendar" className="relative overflow-hidden">
-        <OceanDecorations variant="jellyfish" />
+      {/* 4. Blog Posts — How We Train */}
+      <Section background="white" className="relative overflow-hidden">
+        <OceanDecorations variant="deep-sea" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12 relative z-10"
+          className="text-center mb-16 relative z-10"
         >
-          <h2 className="text-4xl font-bold mb-4">{t('home.calendarTitle')}</h2>
-          <p className="text-xl text-gray-600">{t('home.calendarSubtitle')}</p>
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+            {t('home.blogTitle')}
+          </h2>
+          <p className="text-xl text-gray-600">
+            {t('home.blogSubtitle')}
+          </p>
         </motion.div>
 
         <div className="relative z-10">
-          <EventsCalendar />
+          {blogPostsLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
+            </div>
+          ) : blogPostsError ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">{t('home.loadingError')}</p>
+            </div>
+          ) : (
+            <>
+              <HorizontalScroll itemCount={Math.min(blogPosts.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
+                {blogPosts.slice(0, 3).map((post) => (
+                  <div key={post.id} className="shrink-0 w-[80vw] snap-center sm:w-auto">
+                    <Link to="/blog">
+                      <Card className="group cursor-pointer h-full overflow-hidden">
+                        <div className="relative overflow-hidden rounded-xl mb-4">
+                          <img
+                            src={post.image_url || '/placeholder.svg'}
+                            alt={post.title}
+                            className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                        <p className="text-xs sm:text-sm text-gray-500 mb-2">
+                          {post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}
+                          {post.author && ` • ${post.author.name}`}
+                        </p>
+                        <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: post.excerpt }} />
+                        <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
+                          {t('home.readMore')}
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </Card>
+                    </Link>
+                  </div>
+                ))}
+              </HorizontalScroll>
+
+              <div className="text-center mt-12">
+                <Link to="/blog">
+                  <Button size="lg" variant="outline">
+                    {t('home.viewAllPosts')}
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </Section>
 
-      {/* Featured Trips */}
+      {/* 5. Featured Trips */}
       <Section background="gradient" className="relative overflow-hidden">
         <OceanDecorations variant="waves" />
         <motion.div
@@ -364,75 +349,60 @@ export const HomePage: React.FC = () => {
         </div>
       </Section>
 
-      {/* Featured Courses */}
-      <Section background="white" className="relative overflow-hidden">
-        <OceanDecorations variant="reef" />
+      {/* 6. Community / Initiatives */}
+      <Section background="gray" className="relative overflow-hidden">
+        <DivingDecorations />
+        <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl font-bold mb-6">{t('home.communityTitle')}</h2>
+            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              {t('home.communityDescription')}
+            </p>
+            <Link to="/initiatives">
+              <Button>
+                {t('home.viewInitiatives')}
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <img
+              src="/static/about/about-corals-shells.jpg"
+              alt={t('home.communityTitle')}
+              className="w-full h-96 object-cover rounded-2xl shadow-2xl"
+            />
+          </motion.div>
+        </div>
+      </Section>
+
+      {/* 7. Calendar Section */}
+      <Section background="white" id="calendar" className="relative overflow-hidden">
+        <OceanDecorations variant="jellyfish" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16 relative z-10"
+          className="text-center mb-12 relative z-10"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-            {t('home.coursesTitle')}
-          </h2>
-          <p className="text-xl text-gray-600">
-            {t('home.coursesSubtitle')}
-          </p>
+          <h2 className="text-4xl font-bold mb-4">{t('home.calendarTitle')}</h2>
+          <p className="text-xl text-gray-600">{t('home.calendarSubtitle')}</p>
         </motion.div>
 
         <div className="relative z-10">
-          {coursesLoading ? (
-            <GridSkeleton count={3} />
-          ) : coursesError ? (
-            <div className="text-center py-12">
-              <p className="text-red-600">{t('home.loadingError')}</p>
-            </div>
-          ) : (
-            <>
-              <HorizontalScroll itemCount={Math.min(courses.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
-                {courses.slice(0, 3).map((course) => (
-                    <Card key={course.id} className="h-full flex flex-col shrink-0 w-[80vw] snap-center sm:w-auto group cursor-pointer">
-                      <div className="relative overflow-hidden rounded-xl mb-4">
-                        <img
-                          src={course.image_url || '/placeholder.svg'}
-                          alt={course.name}
-                          className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-bold mb-2">{course.name}</h3>
-                      <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
-                      <div className="flex items-center justify-between mb-4 mt-auto">
-                        <span className="text-xs sm:text-sm text-gray-500">{course.duration}</span>
-                        <SaudiRiyalPrice amount={course.price} className="text-base sm:text-lg font-bold text-primary-600" />
-                      </div>
-                      <div className="flex gap-2">
-                        <Link to={`/shop/courses/${course.id}`} className="flex-1">
-                          <Button variant="outline" className="w-full" size="sm">
-                            {t('pages.courses.viewDetails')}
-                          </Button>
-                        </Link>
-                        <Button variant="primary" className="flex-1" size="sm" onClick={(e) => handleCourseClick(e, course)}>
-                          {t('home.enrollNow')}
-                        </Button>
-                      </div>
-                    </Card>
-                ))}
-              </HorizontalScroll>
-
-              <div className="text-center mt-12">
-                <Link to="/shop/courses">
-                  <Button size="lg" variant="outline">
-                    {t('home.viewAllCourses')}
-                  </Button>
-                </Link>
-              </div>
-            </>
-          )}
+          <EventsCalendar />
         </div>
       </Section>
 
-      {/* Featured Products */}
+      {/* 8. Featured Products / Equipment */}
       <Section background="gray" className="relative overflow-hidden">
         <OceanDecorations variant="treasure" />
         <motion.div
@@ -502,81 +472,9 @@ export const HomePage: React.FC = () => {
         </div>
       </Section>
 
-      {/* Blog Posts Section - Hidden on mobile */}
-      <Section background="white" className="hidden sm:block relative overflow-hidden">
-        <OceanDecorations variant="deep-sea" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16 relative z-10"
-        >
-          <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-            {t('home.blogTitle')}
-          </h2>
-          <p className="text-xl text-gray-600">
-            {t('home.blogSubtitle')}
-          </p>
-        </motion.div>
-
-        <div className="relative z-10">
-          {blogPostsLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
-            </div>
-          ) : blogPostsError ? (
-            <div className="text-center py-12">
-              <p className="text-red-600">{t('home.loadingError')}</p>
-            </div>
-          ) : (
-            <>
-              <HorizontalScroll itemCount={Math.min(blogPosts.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
-                {blogPosts.slice(0, 3).map((post) => (
-                  <div key={post.id} className="shrink-0 w-[80vw] snap-center sm:w-auto">
-                    <Link to="/blog">
-                      <Card className="group cursor-pointer h-full overflow-hidden">
-                        <div className="relative overflow-hidden rounded-xl mb-4">
-                          <img
-                            src={post.image_url || '/placeholder.svg'}
-                            alt={post.title}
-                            className="w-full h-48 sm:h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                        </div>
-                        <p className="text-xs sm:text-sm text-gray-500 mb-2">
-                          {post.published_at ? new Date(post.published_at).toLocaleDateString() : new Date(post.created_at).toLocaleDateString()}
-                          {post.author && ` • ${post.author.name}`}
-                        </p>
-                        <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
-                          {post.title}
-                        </h3>
-                        <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: post.excerpt }} />
-                        <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
-                          {t('home.readMore')}
-                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </Card>
-                    </Link>
-                  </div>
-                ))}
-              </HorizontalScroll>
-
-              <div className="text-center mt-12">
-                <Link to="/blog">
-                  <Button size="lg" variant="outline">
-                    {t('home.viewAllPosts')}
-                    <ArrowRight className="w-5 h-5" />
-                  </Button>
-                </Link>
-              </div>
-            </>
-          )}
-        </div>
-      </Section>
-
-      {/* CTA Section */}
+      {/* 9. Closing Line */}
       <Section background="white">
         <Card className="bg-gradient-to-r from-primary-600 via-accent-600 to-secondary-600 text-white text-center relative overflow-hidden">
-          {/* Animated ocean overlay */}
           <UnderwaterOverlay bubbleCount={15} showLightRays={false} showWave={false} />
           <div className="absolute inset-0 opacity-10">
             <motion.div
@@ -596,31 +494,82 @@ export const HomePage: React.FC = () => {
             viewport={{ once: true }}
             className="relative z-10"
           >
-            <Gift className="w-16 h-16 mx-auto mb-6" />
-            <h2 className="text-4xl font-bold mb-4">{t('home.ctaTitle')}</h2>
+            <Anchor className="w-16 h-16 mx-auto mb-6" />
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">{t('home.closingLine1')}</h2>
             <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
-              {t('home.ctaDescription')}
+              {t('home.closingLine2')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/shop/courses">
                 <Button variant="secondary" size="lg" className="bg-white text-primary-600 hover:bg-gray-100">
-                  {t('home.bookCourse')}
+                  {t('home.viewPrograms')}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
-              <Link to="/shop/trips">
+              <Link to="/contact">
                 <Button
                   variant="outline"
                   size="lg"
                   className="border-white text-white hover:bg-white/10"
                 >
-                  {t('home.exploreTrips')}
+                  {t('home.contactUs')}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
             </div>
           </motion.div>
         </Card>
+      </Section>
+
+      {/* Training Team Section */}
+      <Section background="gradient" className="relative overflow-hidden">
+        <WaveBackground variant="accent" opacity={0.03} />
+        <div className="relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6">{t('home.teamTitle')}</h2>
+            <p className="text-lg text-gray-700 max-w-3xl mx-auto mb-8">
+              {t('home.teamDescription')}
+            </p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            {[
+              { icon: Users, label: t('home.teamInstructors') },
+              { icon: Shield, label: t('home.teamAssistantInstructors') },
+              { icon: Anchor, label: t('home.teamDivemasters') },
+              { icon: Award, label: t('home.teamAdaptiveDiving') },
+            ].map((category, index) => (
+              <motion.div
+                key={category.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="text-center h-full">
+                  <div className="bg-primary-100 w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <category.icon className="w-7 h-7 text-primary-600" />
+                  </div>
+                  <h3 className="font-bold text-lg">{category.label}</h3>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <Link to="/about#team">
+              <Button variant="outline" size="lg">
+                {t('home.viewTeam')}
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
       </Section>
 
       {/* Booking Modal */}

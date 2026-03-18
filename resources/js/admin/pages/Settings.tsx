@@ -4,10 +4,10 @@ import toast from 'react-hot-toast';
 
 export const Settings: React.FC = () => {
   const [settings, setSettings] = useState({
-    siteName: 'Coral & Shells Diving Center',
+    siteName: 'Corals & Shells Diving — CAS Academy',
     siteEmail: 'diver.cas1@gmail.com',
-    sitePhone: '+966 50 123 4567',
-    siteAddress: 'Dammam, Eastern Province, Saudi Arabia',
+    sitePhone: '+966 54 100 0233',
+    siteAddress: 'Al Khobar, Eastern Province, Saudi Arabia',
     currency: 'SAR',
     language: 'en',
     notifications: true,

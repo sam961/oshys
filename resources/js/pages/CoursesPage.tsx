@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, Clock, Loader2, Filter, Grid3x3, List, BookOpen } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
@@ -11,7 +11,16 @@ import { useTranslation } from 'react-i18next';
 
 export const CoursesPage: React.FC = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Read category from URL query params on mount
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high' | 'duration'>('default');
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -27,10 +36,12 @@ export const CoursesPage: React.FC = () => {
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useGetCoursesQuery({ active: true });
 
   const categories = [
-    { key: 'Swimming', label: t('pages.courses.categorySwimming') },
-    { key: 'Diving', label: t('pages.courses.categoryDiving') },
-    { key: 'Long-Term', label: t('pages.courses.categoryLongTerm') },
-    { key: 'Family', label: t('pages.courses.categoryFamily') },
+    { key: 'Swim Programs', label: t('pages.courses.categorySwimming') },
+    { key: 'Start Diving', label: t('pages.courses.categoryStartDiving') },
+    { key: 'Develop Your Diving', label: t('pages.courses.categoryDevelop') },
+    { key: 'Leadership', label: t('pages.courses.categoryLeadership') },
+    { key: 'Family and Youth', label: t('pages.courses.categoryFamily') },
+    { key: 'Blue Access', label: t('pages.courses.categoryBlueAccess') },
   ];
 
   const filteredCourses = selectedCategory

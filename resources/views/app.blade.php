@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Coral & Shells - Diving Center</title>
-    <meta name="description" content="Coral & Shells Diving Center - Your gateway to underwater adventures. Explore diving courses, exciting trips, and premium equipment in Saudi Arabia.">
+    <title>Corals & Shells Diving — CAS Academy</title>
+    <meta name="description" content="Corals & Shells Diving — CAS Academy. Structured swimming and diving programs in Al Khobar, Saudi Arabia. Built on safety, progression, and commitment.">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
