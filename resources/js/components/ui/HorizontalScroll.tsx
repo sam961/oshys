@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -18,16 +18,16 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const checkScroll = () => {
+  const checkScroll = useCallback(() => {
     if (scrollRef.current) {
       const { scrollLeft } = scrollRef.current;
       // Calculate active index based on scroll position
       const cardWidth = scrollRef.current.firstElementChild?.clientWidth || 0;
-      const gap = 24; // gap-6 = 24px
+      const gap = 16; // gap-4 = 16px on mobile
       const index = Math.round(scrollLeft / (cardWidth + gap));
       setActiveIndex(Math.min(index, itemCount - 1));
     }
-  };
+  }, [itemCount]);
 
   useEffect(() => {
     const scrollElement = scrollRef.current;
@@ -42,26 +42,29 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
         window.removeEventListener('resize', checkScroll);
       };
     }
-  }, [itemCount]);
+  }, [checkScroll]);
 
   return (
     <div className="relative">
-      {/* Scroll hint text - only on mobile */}
-      <div className="sm:hidden flex items-center justify-center gap-2 mb-3 text-sm text-gray-500">
-        <motion.div
-          animate={{ x: [0, 5, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-          className="flex items-center gap-1"
-        >
-          <span>{t('ui.swipeToSeeMore')}</span>
-          <ChevronRight className="w-4 h-4" />
-        </motion.div>
-      </div>
+      {/* Scroll hint text - only on mobile, only when multiple items */}
+      {itemCount > 1 && (
+        <div className="sm:hidden flex items-center justify-center gap-2 mb-3 text-sm text-gray-500">
+          <motion.div
+            animate={{ x: [0, 5, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="flex items-center gap-1"
+          >
+            <span>{t('ui.swipeToSeeMore')}</span>
+            <ChevronRight className="w-4 h-4" />
+          </motion.div>
+        </div>
+      )}
 
       {/* Scroll container */}
       <div
         ref={scrollRef}
-        className={`flex overflow-x-auto pb-4 gap-6 snap-x snap-mandatory scrollbar-hide sm:grid sm:gap-8 sm:overflow-visible sm:pb-0 items-stretch ${className}`}
+        className={`flex overflow-x-auto pb-4 pl-4 gap-4 snap-x snap-mandatory scroll-smooth scrollbar-hide sm:grid sm:gap-8 sm:overflow-visible sm:pb-0 sm:pl-0 items-stretch ${className}`}
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {children}
       </div>
@@ -75,7 +78,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
               onClick={() => {
                 if (scrollRef.current) {
                   const cardWidth = scrollRef.current.firstElementChild?.clientWidth || 0;
-                  const gap = 24;
+                  const gap = 16; // gap-4 = 16px on mobile
                   scrollRef.current.scrollTo({
                     left: index * (cardWidth + gap),
                     behavior: 'smooth',

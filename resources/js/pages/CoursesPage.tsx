@@ -8,6 +8,7 @@ import { BookingModal } from '../components/features/BookingModal';
 import { useGetCoursesQuery } from '../services/api';
 import type { Course } from '../types';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 
 export const CoursesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ export const CoursesPage: React.FC = () => {
   ];
 
   const filteredCourses = selectedCategory
-    ? courses.filter((c: any) => c.category === selectedCategory)
+    ? courses.filter((c) => c.category === selectedCategory)
     : courses;
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
@@ -75,7 +76,7 @@ export const CoursesPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <GraduationCap className="w-8 h-8 text-accent-600" />
-                <h1 className="text-4xl lg:text-5xl font-bold">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold">
                   <span className="bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent">
                     {t('pages.courses.heroTitle')}
                   </span>
@@ -146,7 +147,8 @@ export const CoursesPage: React.FC = () => {
               {/* Sort Dropdown */}
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'default' | 'price-low' | 'price-high' | 'duration')}
+                aria-label={t('pages.courses.sortDefault')}
                 className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 <option value="default">{t('pages.courses.sortDefault')}</option>
@@ -166,6 +168,7 @@ export const CoursesPage: React.FC = () => {
                       ? 'bg-white text-accent-600 shadow'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
+                  aria-label={t('common.gridView', 'Grid view')}
                 >
                   <Grid3x3 className="w-5 h-5" />
                 </motion.button>
@@ -178,6 +181,7 @@ export const CoursesPage: React.FC = () => {
                       ? 'bg-white text-accent-600 shadow'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
+                  aria-label={t('common.listView', 'List view')}
                 >
                   <List className="w-5 h-5" />
                 </motion.button>
@@ -217,9 +221,9 @@ export const CoursesPage: React.FC = () => {
               viewMode === 'grid' ? (
                 <Card key={course.id} className="h-full group cursor-pointer overflow-hidden relative">
                   <div className="relative overflow-hidden rounded-xl mb-4">
-                    {(course as any).image_url ? (
+                    {course.image_url ? (
                       <img
-                        src={(course as any).image_url}
+                        src={course.image_url}
                         alt={course.name}
                         className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -238,7 +242,7 @@ export const CoursesPage: React.FC = () => {
                     <h3 className="text-xl font-bold line-clamp-2 group-hover:text-accent-600 transition-colors">
                       {course.name}
                     </h3>
-                    <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
+                    <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(course.description || '') }} />
 
                     {course.duration && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -270,11 +274,11 @@ export const CoursesPage: React.FC = () => {
                 </Card>
               ) : (
                 <Card key={course.id} className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
-                  <div className="flex gap-6">
-                    <div className="relative w-64 h-48 flex-shrink-0 overflow-hidden rounded-xl">
-                      {(course as any).image_url ? (
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                    <div className="relative w-full sm:w-64 h-48 shrink-0 overflow-hidden rounded-xl">
+                      {course.image_url ? (
                         <img
-                          src={(course as any).image_url}
+                          src={course.image_url}
                           alt={course.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
@@ -291,11 +295,11 @@ export const CoursesPage: React.FC = () => {
                     <div className="flex-1 flex flex-col justify-between py-2">
                       <div>
                         <div className="mb-2">
-                          <h3 className="text-2xl font-bold group-hover:text-accent-600 transition-colors">
+                          <h3 className="text-lg sm:text-2xl font-bold group-hover:text-accent-600 transition-colors">
                             {course.name}
                           </h3>
                         </div>
-                        <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: course.description }} />
+                        <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(course.description || '') }} />
 
                         {course.duration && (
                           <div className="flex flex-wrap gap-4 mb-4">
@@ -312,7 +316,7 @@ export const CoursesPage: React.FC = () => {
                           <p className="text-sm text-gray-500">{t('pages.courses.startingFrom')}</p>
                           <SaudiRiyalPrice
                             amount={course.price}
-                            className="text-3xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent"
+                            className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-accent-600 to-primary-600 bg-clip-text text-transparent"
                           />
                         </div>
                         <div className="flex gap-3">
@@ -345,13 +349,15 @@ export const CoursesPage: React.FC = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-4">{t('pages.courses.ctaTitle')}</h2>
-            <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">{t('pages.courses.ctaTitle')}</h2>
+            <p className="text-base sm:text-xl mb-6 sm:mb-8 text-white/90 max-w-2xl mx-auto">
               {t('pages.courses.ctaDescription')}
             </p>
-            <Button variant="secondary" size="lg" className="bg-white text-primary-600">
-              {t('pages.courses.contactUs')}
-            </Button>
+            <Link to="/contact">
+              <Button variant="secondary" size="lg" className="bg-white text-primary-600">
+                {t('pages.courses.contactUs')}
+              </Button>
+            </Link>
           </motion.div>
         </Card>
       </Section>

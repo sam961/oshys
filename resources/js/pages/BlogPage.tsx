@@ -6,6 +6,7 @@ import { Section, Card, Button } from '../components/ui';
 import { useGetBlogPostsQuery } from '../services/api';
 import type { BlogPost } from '../types';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 
 export const BlogPage: React.FC = () => {
   const { t } = useTranslation();
@@ -15,10 +16,10 @@ export const BlogPage: React.FC = () => {
   return (
     <div className="pt-20">
       {/* Hero */}
-      <div className="relative h-96 overflow-hidden">
+      <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920&h=600&fit=crop"
-          alt="Blog"
+          alt={t('pages.blog.heroTitle')}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-accent-900/80" />
@@ -26,11 +27,11 @@ export const BlogPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center text-white"
+            className="text-center text-white px-6"
           >
-            <BookOpen className="w-16 h-16 mx-auto mb-6" />
-            <h1 className="text-6xl font-bold mb-4">{t('pages.blog.heroTitle')}</h1>
-            <p className="text-2xl text-white/90">
+            <BookOpen className="w-10 h-10 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6" />
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4">{t('pages.blog.heroTitle')}</h1>
+            <p className="text-base sm:text-xl lg:text-2xl text-white/90">
               {t('pages.blog.heroSubtitle')}
             </p>
           </motion.div>
@@ -64,9 +65,9 @@ export const BlogPage: React.FC = () => {
                 <Link to={`/blog/${post.id}`}>
                   <Card className="group cursor-pointer h-full overflow-hidden hover:shadow-2xl transition-shadow">
                   <div className="relative overflow-hidden rounded-xl mb-4">
-                    {(post as any).image_url ? (
+                    {post.image_url ? (
                       <img
-                        src={(post as any).image_url}
+                        src={post.image_url}
                         alt={post.title}
                         className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -83,8 +84,8 @@ export const BlogPage: React.FC = () => {
                       <Calendar className="w-4 h-4" />
                       <span>
                         {post.published_at
-                          ? new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                          : new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                          ? new Date(post.published_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                          : new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
                         }
                       </span>
                     </div>
@@ -96,11 +97,11 @@ export const BlogPage: React.FC = () => {
                     )}
                   </div>
 
-                  <h3 className="text-2xl font-bold mb-3 group-hover:text-primary-600 transition-colors">
+                  <h3 className="text-lg sm:text-2xl font-bold mb-3 group-hover:text-primary-600 transition-colors">
                     {post.title}
                   </h3>
 
-                  <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: post.excerpt }} />
+                  <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.excerpt || '') }} />
 
                   <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
                     {t('pages.blog.readMore')}

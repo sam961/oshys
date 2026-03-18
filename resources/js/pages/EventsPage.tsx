@@ -7,6 +7,7 @@ import { StaggerContainer, WaveBackground } from '../components/animations';
 import { useGetEventsQuery } from '../services/api';
 import type { Event } from '../types';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 
 export const EventsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -99,7 +100,7 @@ export const EventsPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <Calendar className="w-8 h-8 text-primary-600" />
-                <h1 className="text-4xl lg:text-5xl font-bold">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold">
                   <span className="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
                     {t('events.heroTitle')}
                   </span>
@@ -174,7 +175,8 @@ export const EventsPage: React.FC = () => {
               {/* Sort Dropdown */}
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'default' | 'date-asc' | 'date-desc' | 'price')}
+                aria-label={t('events.sortSoonestFirst')}
                 className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="default">{t('events.sortSoonestFirst')}</option>
@@ -194,6 +196,7 @@ export const EventsPage: React.FC = () => {
                       ? 'bg-white text-primary-600 shadow'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
+                  aria-label={t('common.gridView', 'Grid view')}
                 >
                   <Grid3x3 className="w-5 h-5" />
                 </motion.button>
@@ -206,6 +209,7 @@ export const EventsPage: React.FC = () => {
                       ? 'bg-white text-primary-600 shadow'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
+                  aria-label={t('common.listView', 'List view')}
                 >
                   <List className="w-5 h-5" />
                 </motion.button>
@@ -265,9 +269,17 @@ export const EventsPage: React.FC = () => {
 
                         {/* Image/Placeholder */}
                         <div className="relative h-48 bg-gradient-to-br from-primary-100 to-accent-100 rounded-xl mb-4 overflow-hidden">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Calendar className="w-16 h-16 text-primary-300" />
-                          </div>
+                          {event.image_url ? (
+                            <img
+                              src={event.image_url}
+                              alt={event.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Calendar className="w-16 h-16 text-primary-300" />
+                            </div>
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                         </div>
 
@@ -276,7 +288,7 @@ export const EventsPage: React.FC = () => {
                             {event.title}
                           </h3>
 
-                          <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description }} />
+                          <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description || '') }} />
 
                           <div className="space-y-2 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
@@ -335,15 +347,15 @@ export const EventsPage: React.FC = () => {
 
                           <div className="flex-1 flex flex-col justify-between py-1">
                             <div>
-                              <div className="flex items-start justify-between mb-2">
-                                <h3 className="text-2xl font-bold group-hover:text-primary-600 transition-colors">
+                              <div className="flex items-start justify-between mb-2 gap-2">
+                                <h3 className="text-lg sm:text-2xl font-bold group-hover:text-primary-600 transition-colors">
                                   {event.title}
                                 </h3>
                                 <span className={`px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0 ${getTypeColor(event.type)}`}>
                                   {getTypeLabel(event.type)}
                                 </span>
                               </div>
-                              <div className="text-gray-600 mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description }} />
+                              <div className="text-gray-600 mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description || '') }} />
 
                               <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">
@@ -378,7 +390,7 @@ export const EventsPage: React.FC = () => {
                               )}
                               <Button variant="primary" size="sm">
                                 {t('events.viewDetails')}
-                                <ArrowRight className="w-4 h-4 ml-2" />
+                                <ArrowRight className="w-4 h-4 ms-2" />
                               </Button>
                             </div>
                           </div>
@@ -401,8 +413,8 @@ export const EventsPage: React.FC = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-4">{t('events.dontMissOut')}</h2>
-            <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">{t('events.dontMissOut')}</h2>
+            <p className="text-base sm:text-xl mb-6 sm:mb-8 text-white/90 max-w-2xl mx-auto">
               {t('events.ctaDescription')}
             </p>
             <Link to="/contact">

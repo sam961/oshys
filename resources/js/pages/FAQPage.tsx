@@ -104,10 +104,10 @@ export const FAQPage: React.FC = () => {
   return (
     <div className="pt-20">
       {/* Hero */}
-      <div className="relative h-96 overflow-hidden">
+      <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=600&fit=crop"
-          alt="FAQ"
+          alt={t('faq.heroTitle')}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-accent-900/80" />
@@ -115,11 +115,11 @@ export const FAQPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center text-white px-4"
+            className="text-center text-white px-6"
           >
-            <HelpCircle className="w-16 h-16 mx-auto mb-6" />
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">{t('faq.heroTitle')}</h1>
-            <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto">
+            <HelpCircle className="w-10 h-10 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6" />
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4">{t('faq.heroTitle')}</h1>
+            <p className="text-base sm:text-xl lg:text-2xl text-white/90 max-w-2xl mx-auto">
               {t('faq.heroSubtitle')}
             </p>
           </motion.div>
@@ -207,8 +207,8 @@ export const FAQPage: React.FC = () => {
           viewport={{ once: true }}
           className="text-center max-w-xl mx-auto"
         >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('faq.stillHaveQuestions')}</h2>
-          <p className="text-gray-600 mb-8 text-lg">{t('faq.contactDescription')}</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">{t('faq.stillHaveQuestions')}</h2>
+          <p className="text-gray-600 mb-6 sm:mb-8 text-base sm:text-lg">{t('faq.contactDescription')}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/contact"

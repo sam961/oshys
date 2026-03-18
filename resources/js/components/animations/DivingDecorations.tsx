@@ -94,7 +94,7 @@ const WaveLineSvg: React.FC<{ className?: string }> = ({ className = '' }) => (
 export const DivingDecorations: React.FC<DivingDecorationsProps> = ({ className = '' }) => {
   return (
     <div
-      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+      className={`absolute inset-0 overflow-hidden pointer-events-none hidden sm:block ${className}`}
       aria-hidden="true"
     >
       {/* Scuba mask - top right */}
@@ -123,7 +123,7 @@ export const DivingDecorations: React.FC<DivingDecorationsProps> = ({ className 
 
       {/* Second flipper slightly offset */}
       <motion.div
-        className="absolute bottom-[12%] left-[6%] text-accent-600/45 w-30 h-12"
+        className="absolute bottom-[12%] left-[6%] text-accent-600/45 w-32 h-12"
         animate={{
           y: [0, -5, 0, 7, 0],
           rotate: [0, -4, 0, 3, 0],

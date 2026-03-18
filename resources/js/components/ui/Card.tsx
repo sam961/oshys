@@ -19,8 +19,7 @@ export const Card: React.FC<CardProps> = ({ children, className, hover = true })
         ease: [0.6, -0.05, 0.01, 0.99]
       }}
       whileHover={hover ? {
-        y: -8,
-        scale: 1.02,
+        y: -4,
         transition: { duration: 0.3, ease: 'easeOut' }
       } : undefined}
       className={clsx(
@@ -29,13 +28,6 @@ export const Card: React.FC<CardProps> = ({ children, className, hover = true })
         className
       )}
     >
-      {hover && (
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-accent-500/5 opacity-0"
-          whileHover={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        />
-      )}
       <div className="relative z-10 flex flex-col flex-1">
         {children}
       </div>

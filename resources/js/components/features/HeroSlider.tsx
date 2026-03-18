@@ -8,41 +8,31 @@ import { UnderwaterOverlay } from '../animations/UnderwaterOverlay';
 
 export const HeroSlider: React.FC = () => {
   const { t } = useTranslation();
-  const { data: banners = [], isLoading, refetch } = useGetBannersQuery({ active: true, position: 'hero' });
+  const { data: banners = [], isLoading } = useGetBannersQuery({ active: true, position: 'hero' });
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-
-  // Force refetch on mount to ensure fresh data
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
 
   // Use banners from API
   const slides = banners;
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || slides.length === 0) return;
 
     const timer = setInterval(() => {
-      setDirection(1);
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000); // 4 seconds per slide
+    }, 6000); // 6 seconds per slide
     return () => clearInterval(timer);
   }, [slides.length, isPaused]);
 
   const goToSlide = (index: number) => {
-    setDirection(index > currentSlide ? 1 : -1);
     setCurrentSlide(index);
   };
 
   const nextSlide = () => {
-    setDirection(1);
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    setDirection(-1);
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
@@ -101,31 +91,31 @@ export const HeroSlider: React.FC = () => {
           </div>
 
           {/* Content */}
-          <div className="relative h-full flex items-center justify-center text-center px-4">
-            <div className="max-w-5xl">
+          <div className="relative h-full flex items-center justify-center text-center px-6 sm:px-8">
+            <div className="max-w-5xl w-full">
               <h1
-                className="text-6xl sm:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-wider"
+                className="text-2xl sm:text-4xl lg:text-6xl font-bold text-white mb-3 sm:mb-6 tracking-wide leading-tight"
                 style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
               >
                 {slides[currentSlide].title}
               </h1>
               {slides[currentSlide].description && (
-                <p className="text-xl sm:text-2xl text-white/90 mb-8">
+                <p className="text-sm sm:text-lg lg:text-2xl text-white/90 mb-4 sm:mb-8 leading-relaxed max-w-2xl mx-auto">
                   {slides[currentSlide].description}
                 </p>
               )}
               {slides[currentSlide].button_text && slides[currentSlide].button_link && (
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
                   <Link
                     to={slides[currentSlide].button_link || '#'}
-                    className="inline-block px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                    className="inline-block px-5 py-2.5 sm:px-8 sm:py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:shadow-lg transition-all"
                   >
                     {slides[currentSlide].button_text}
                   </Link>
                   {currentSlide === 0 && (
                     <Link
                       to="/blog"
-                      className="inline-block px-8 py-4 border-2 border-white/80 text-white font-semibold rounded-lg hover:bg-white/10 transition-all"
+                      className="inline-block px-5 py-2.5 sm:px-8 sm:py-4 border-2 border-white/80 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-white/10 transition-all"
                     >
                       {t('home.learnHowWeWork')}
                     </Link>
@@ -140,18 +130,18 @@ export const HeroSlider: React.FC = () => {
       {/* Underwater Animation Overlay */}
       <UnderwaterOverlay className="z-2" />
 
-      {/* Navigation Arrows */}
+      {/* Navigation Arrows — hidden on mobile, users swipe instead */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors"
-        aria-label="Previous slide"
+        className="hidden sm:block absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors"
+        aria-label={t('heroSlider.previousSlide')}
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors"
-        aria-label="Next slide"
+        className="hidden sm:block absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors"
+        aria-label={t('heroSlider.nextSlide')}
       >
         <ChevronRight className="w-6 h-6" />
       </button>
@@ -167,13 +157,13 @@ export const HeroSlider: React.FC = () => {
                 ? 'w-12 bg-white'
                 : 'w-3 bg-white/50 hover:bg-white/75'
             } h-3 rounded-full`}
-            aria-label={`Go to slide ${index + 1}`}
+            aria-label={t('heroSlider.goToSlide', { number: index + 1 })}
           />
         ))}
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10">
+      {/* Scroll Indicator — hidden on mobile to avoid overlap */}
+      <div className="hidden sm:block absolute bottom-24 left-1/2 -translate-x-1/2 z-10">
         <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-2">
           <div className="w-1.5 h-3 bg-white/70 rounded-full animate-bounce" />
         </div>

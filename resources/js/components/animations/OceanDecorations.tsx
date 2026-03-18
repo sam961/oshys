@@ -36,7 +36,7 @@ const CoinSvg: React.FC<{ className?: string }> = ({ className = '' }) => (
   <svg viewBox="0 0 32 32" fill="currentColor" className={className}>
     <circle cx="16" cy="16" r="14" opacity="0.8" />
     <circle cx="16" cy="16" r="10" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
-    <text x="16" y="21" textAnchor="middle" fontSize="14" fill="rgba(255,255,255,0.3)" fontWeight="bold">$</text>
+    <circle cx="16" cy="16" r="4" fill="rgba(255,255,255,0.15)" />
   </svg>
 );
 
@@ -163,7 +163,7 @@ function JellyfishVariant() {
 
       {/* Jellyfish top-right, smaller */}
       <motion.div
-        className="absolute top-[12%] right-[10%] text-accent-500/50 w-18 h-24"
+        className="absolute top-[12%] right-[10%] text-accent-500/50 w-20 h-24"
         animate={{ y: [0, -10, 0, 12, 0], x: [0, -5, 0, 7, 0] }}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
       >
@@ -172,7 +172,7 @@ function JellyfishVariant() {
 
       {/* Seahorse mid-right */}
       <motion.div
-        className="absolute top-[40%] right-[5%] text-primary-400/50 w-16 h-26"
+        className="absolute top-[40%] right-[5%] text-primary-400/50 w-16 h-28"
         animate={{ y: [0, -8, 0, 6, 0], rotate: [0, 5, 0, -3, 0] }}
         transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
       >
@@ -236,7 +236,7 @@ function TreasureVariant() {
 
       {/* Octopus bottom-right */}
       <motion.div
-        className="absolute bottom-[6%] right-[5%] text-primary-500/45 w-26 h-26"
+        className="absolute bottom-[6%] right-[5%] text-primary-500/45 w-28 h-28"
         animate={{ y: [0, -6, 0, 8, 0], rotate: [0, 3, 0, -2, 0] }}
         transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
       >
@@ -287,7 +287,7 @@ function WavesVariant() {
 
       {/* Seahorse left */}
       <motion.div
-        className="absolute top-[55%] left-[5%] text-accent-500/40 w-16 h-26"
+        className="absolute top-[55%] left-[5%] text-accent-500/40 w-16 h-28"
         animate={{ y: [0, -10, 0, 8, 0], rotate: [0, 4, 0, -3, 0] }}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
       >
@@ -322,7 +322,7 @@ function ReefVariant() {
 
       {/* Stingray mid-right */}
       <motion.div
-        className="absolute top-[35%] right-[4%] text-accent-500/50 w-34 h-14"
+        className="absolute top-[35%] right-[4%] text-accent-500/50 w-36 h-14"
         animate={{
           x: [0, -100, -220, -100, 0],
           y: [0, 8, -5, 10, 0],
@@ -334,7 +334,7 @@ function ReefVariant() {
 
       {/* Seahorse bottom-left */}
       <motion.div
-        className="absolute bottom-[8%] left-[8%] text-primary-400/50 w-16 h-26"
+        className="absolute bottom-[8%] left-[8%] text-primary-400/50 w-16 h-28"
         animate={{ y: [0, -10, 0, 6, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
       >
@@ -343,7 +343,7 @@ function ReefVariant() {
 
       {/* Jellyfish bottom-right */}
       <motion.div
-        className="absolute bottom-[10%] right-[8%] text-accent-600/45 w-18 h-24"
+        className="absolute bottom-[10%] right-[8%] text-accent-600/45 w-20 h-24"
         animate={{ y: [0, -12, 0, 10, 0], x: [0, 5, 0, -4, 0] }}
         transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
       >
@@ -370,7 +370,7 @@ function DeepSeaVariant() {
     <>
       {/* Submarine crossing */}
       <motion.div
-        className="absolute top-[15%] left-[2%] text-primary-500/50 w-34 h-18"
+        className="absolute top-[15%] left-[2%] text-primary-500/50 w-36 h-20"
         animate={{
           x: [0, 200, 450, 650, 450, 200, 0],
           y: [0, -10, 5, -8, 6, -4, 0],
@@ -382,7 +382,7 @@ function DeepSeaVariant() {
 
       {/* Whale deep */}
       <motion.div
-        className="absolute bottom-[20%] right-[3%] text-accent-600/40 w-38 h-20"
+        className="absolute bottom-[20%] right-[3%] text-accent-600/40 w-40 h-20"
         animate={{
           x: [0, -180, -400, -180, 0],
           y: [0, 10, -8, 12, 0],
@@ -394,7 +394,7 @@ function DeepSeaVariant() {
 
       {/* Jellyfish floating */}
       <motion.div
-        className="absolute top-[50%] left-[6%] text-primary-400/45 w-22 h-30"
+        className="absolute top-[50%] left-[6%] text-primary-400/45 w-24 h-32"
         animate={{ y: [0, -14, 0, 10, 0], x: [0, 6, 0, -5, 0] }}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
       >
@@ -403,7 +403,7 @@ function DeepSeaVariant() {
 
       {/* Octopus corner */}
       <motion.div
-        className="absolute top-[8%] right-[6%] text-accent-500/45 w-22 h-22"
+        className="absolute top-[8%] right-[6%] text-accent-500/45 w-24 h-24"
         animate={{ y: [0, -6, 0, 8, 0], rotate: [0, 4, 0, -3, 0] }}
         transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
       >
@@ -442,7 +442,7 @@ export const OceanDecorations: React.FC<OceanDecorationsProps> = ({ variant, cla
 
   return (
     <div
-      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+      className={`absolute inset-0 overflow-hidden pointer-events-none hidden sm:block ${className}`}
       aria-hidden="true"
     >
       <Renderer />

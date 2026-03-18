@@ -9,10 +9,17 @@
     "blog": "Blog",
     "initiatives": "Initiatives",
     "contact": "Contact",
-    "language": "Language"
+    "language": "Language",
+    "closeMenu": "Close menu",
+    "openMenu": "Open menu"
   },
   "hero": {
     "scroll": "Scroll to explore"
+  },
+  "heroSlider": {
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "goToSlide": "Go to slide {{number}}"
   },
   "footer": {
     "tagline": "Structured paths to the sea, built on safety and commitment. Corals & Shells offers structured swimming and diving programs designed for progression, safety, and long-term skill development.",
@@ -125,7 +132,8 @@
     "swipeToSeeMore": "Swipe to see more"
   },
   "whatsapp": {
-    "defaultMessage": "Hello! I would like to inquire about your diving services."
+    "defaultMessage": "Hello! I would like to inquire about your diving services.",
+    "ariaLabel": "Chat on WhatsApp"
   },
   "courses": {
     "title": "Programs",
@@ -209,6 +217,7 @@
     "productsSubtitle": "Quality equipment for every level",
     "blogTitle": "How We Train",
     "blogSubtitle": "Tips, stories, and insights from the diving world",
+    "noBlogPosts": "Check back soon for tips and insights from the diving world.",
     "closingLine1": "The sea rewards calmness, discipline, and patience.",
     "closingLine2": "CAS exists to help divers develop those qualities.",
     "ctaTitle": "Corals & Shells",
@@ -257,7 +266,11 @@
     "valueHonestExpectations": "Honest Expectations",
     "valueHonestDescription": "We communicate clearly what a program involves before it begins. There are no informal exceptions, rushed progression, or unstructured participation.",
     "valueResponsibleAccess": "Responsible Access to the Sea",
-    "valueResponsibleDescription": "Our approach to access and inclusion is deliberate and capacity-based. Programs designed for different needs operate within clear frameworks to ensure sustainability and quality."
+    "valueResponsibleDescription": "Our approach to access and inclusion is deliberate and capacity-based. Programs designed for different needs operate within clear frameworks to ensure sustainability and quality.",
+    "statCertifications": "Certifications",
+    "statHappyClients": "Happy Clients",
+    "statSatisfaction": "Satisfaction Rate",
+    "statDivingTrips": "Diving Trips"
   },
   "products": {
     "heroTitle": "Diving Equipment",
@@ -413,6 +426,8 @@
     "phonePlaceholder": "+966 50 123 4567",
     "messagePlaceholder": "Tell us how we can help you...",
     "sendMessage": "Send Message",
+    "sendError": "Failed to send message. Please try again.",
+    "sending": "Sending...",
     "additionalInfo": "Additional Information",
     "openingHours": "Opening Hours",
     "sundayThursday": "Sunday - Thursday: 8:00 AM - 8:00 PM",
@@ -513,6 +528,7 @@
     "submitting": "Submitting...",
     "successTitle": "Registration Submitted!",
     "successMessage": "Thank you for your registration. Our team will review your request and contact you shortly to confirm your booking.",
+    "submitError": "Booking failed. Please try again.",
     "errors": {
       "nameRequired": "Please enter your full name",
       "emailRequired": "Please enter your email address",

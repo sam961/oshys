@@ -16,6 +16,7 @@ export const WhatsAppButton: React.FC = () => {
     <motion.button
       onClick={handleClick}
       className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-colors"
+      aria-label={t('whatsapp.ariaLabel')}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       initial={{ opacity: 0, scale: 0 }}

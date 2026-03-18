@@ -17,6 +17,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
   const { t } = useTranslation();
   const [createBooking, { isLoading }] = useCreateBookingMutation();
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -50,6 +51,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
 
     if (!validateForm()) return;
 
+    setSubmitError(null);
+
     try {
       await createBooking({
         name: formData.name,
@@ -62,12 +65,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
       setSubmitted(true);
     } catch (error) {
       console.error('Booking failed:', error);
+      setSubmitError(t('booking.submitError'));
     }
   };
 
   const handleClose = () => {
     setFormData({ name: '', email: '', phone: '' });
     setErrors({});
+    setSubmitError(null);
     setSubmitted(false);
     onClose();
   };
@@ -154,7 +159,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
                     <div className="text-center">
                       <Clock className="w-5 h-5 mx-auto mb-1 text-primary-600" />
                       <p className="text-xs text-gray-500">{t('booking.duration')}</p>
-                      <p className="font-semibold text-gray-900">{item.duration}</p>
+                      <p className="font-semibold text-gray-900">{item.duration || '\u2014'}</p>
                     </div>
                     {isCourse ? (
                       <>
@@ -204,12 +209,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
                         {t('booking.name')} *
                       </label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <User className="absolute start-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
                           type="text"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                          className={`w-full ps-10 pe-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                             errors.name ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder={t('booking.namePlaceholder')}
@@ -226,12 +231,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
                         {t('booking.email')} *
                       </label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Mail className="absolute start-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
                           type="email"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                          className={`w-full ps-10 pe-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                             errors.email ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder={t('booking.emailPlaceholder')}
@@ -248,12 +253,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
                         {t('booking.phone')} *
                       </label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Phone className="absolute start-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
                           type="tel"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
+                          className={`w-full ps-10 pe-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
                             errors.phone ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder={t('booking.phonePlaceholder')}
@@ -263,6 +268,13 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, ite
                         <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
                       )}
                     </div>
+
+                    {/* Submit error */}
+                    {submitError && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600">
+                        {submitError}
+                      </div>
+                    )}
 
                     {/* Submit button */}
                     <div className="flex gap-3 pt-4">

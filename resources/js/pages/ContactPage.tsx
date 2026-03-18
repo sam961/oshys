@@ -27,7 +27,7 @@ export const ContactPage: React.FC = () => {
       setFormData({ name: '', email: '', phone: '', message: '' });
       setTimeout(() => setIsSubmitted(false), 5000);
     } catch (err: any) {
-      setError(err?.data?.message || t('contactPage.sendError', 'Failed to send message. Please try again.'));
+      setError(err?.data?.message || t('contactPage.sendError'));
     }
   };
 
@@ -41,10 +41,10 @@ export const ContactPage: React.FC = () => {
   return (
     <div className="pt-20">
       {/* Hero */}
-      <div className="relative h-96 overflow-hidden">
+      <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1596436889106-be35e843f974?w=1920&h=600&fit=crop"
-          alt="Contact Us"
+          alt={t('contactPage.heroTitle')}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-accent-900/80" />
@@ -52,11 +52,11 @@ export const ContactPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center text-white"
+            className="text-center text-white px-6"
           >
-            <Mail className="w-16 h-16 mx-auto mb-6" />
-            <h1 className="text-6xl font-bold mb-4">{t('contactPage.heroTitle')}</h1>
-            <p className="text-2xl text-white/90">
+            <Mail className="w-10 h-10 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6" />
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4">{t('contactPage.heroTitle')}</h1>
+            <p className="text-base sm:text-xl lg:text-2xl text-white/90">
               {t('contactPage.heroDescription')}
             </p>
           </motion.div>
@@ -65,7 +65,7 @@ export const ContactPage: React.FC = () => {
 
       {/* Contact Info Cards */}
       <Section background="white">
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="grid md:grid-cols-3 gap-4 sm:gap-8 mb-8 sm:mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -122,7 +122,7 @@ export const ContactPage: React.FC = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold mb-6">{t('contactPage.formTitle')}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">{t('contactPage.formTitle')}</h2>
 
             {isSubmitted ? (
               <motion.div
@@ -209,7 +209,7 @@ export const ContactPage: React.FC = () => {
 
                 <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
                   {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                  {isLoading ? t('contactPage.sending', 'Sending...') : t('contactPage.sendMessage')}
+                  {isLoading ? t('contactPage.sending') : t('contactPage.sendMessage')}
                 </Button>
               </form>
             )}
@@ -222,7 +222,7 @@ export const ContactPage: React.FC = () => {
             viewport={{ once: true }}
           >
             <Card className="h-full">
-              <h3 className="text-2xl font-bold mb-6">{t('contactPage.additionalInfo')}</h3>
+              <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{t('contactPage.additionalInfo')}</h3>
 
               {/* Opening Hours */}
               <div className="mb-8">
@@ -307,16 +307,16 @@ export const ContactPage: React.FC = () => {
       {/* Map Section */}
       <Section background="gray">
         <Card className="overflow-hidden p-0">
-          <div className="h-96 bg-gray-200 relative">
+          <div className="h-56 sm:h-80 lg:h-96 bg-gray-200 relative">
             <img
               src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1400&h=600&fit=crop"
-              alt="Location"
+              alt={t('contactPage.visitCenterTitle')}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4 sm:p-8">
               <div className="text-white">
-                <h3 className="text-3xl font-bold mb-2">{t('contactPage.visitCenterTitle')}</h3>
-                <p className="text-xl text-white/90">{t('contactPage.visitCenterLocation')}</p>
+                <h3 className="text-xl sm:text-3xl font-bold mb-2">{t('contactPage.visitCenterTitle')}</h3>
+                <p className="text-base sm:text-xl text-white/90">{t('contactPage.visitCenterLocation')}</p>
               </div>
             </div>
           </div>

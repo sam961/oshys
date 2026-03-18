@@ -50,13 +50,27 @@ const WAVE_PATHS = [
   'M0,40 Q180,10 360,40 T720,40 T1080,40 T1440,40 L1440,80 L0,80 Z',
 ];
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+}
+
 export const UnderwaterOverlay: React.FC<UnderwaterOverlayProps> = ({
   bubbleCount = 35,
   showLightRays = true,
   showWave = true,
   className = '',
 }) => {
-  const bubbles = useMemo(() => generateBubbles(bubbleCount), [bubbleCount]);
+  const isMobile = useIsMobile();
+  const effectiveCount = isMobile ? Math.min(bubbleCount, 10) : bubbleCount;
+  const bubbles = useMemo(() => generateBubbles(effectiveCount), [effectiveCount]);
 
   return (
     <div

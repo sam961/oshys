@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Loader2, Grid3x3, List, TrendingUp } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
-import { StaggerContainer, ScrollReveal, WaveBackground } from '../components/animations';
+import { StaggerContainer, WaveBackground } from '../components/animations';
 import { useGetProductsQuery } from '../services/api';
 import type { Product } from '../types';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 
 export const ProductsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -42,7 +43,7 @@ export const ProductsPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <ShoppingBag className="w-8 h-8 text-primary-600" />
-                <h1 className="text-4xl lg:text-5xl font-bold">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold">
                   <span className="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
                     {t('products.heroTitle')}
                   </span>
@@ -73,7 +74,8 @@ export const ProductsPage: React.FC = () => {
               {/* Sort Dropdown */}
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'default' | 'price-low' | 'price-high' | 'name')}
+                aria-label={t('products.sortDefault')}
                 className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="default">{t('products.sortDefault')}</option>
@@ -146,9 +148,9 @@ export const ProductsPage: React.FC = () => {
               viewMode === 'grid' ? (
                 <Card key={product.id} className="group cursor-pointer h-full overflow-hidden relative">
                   <div className="relative overflow-hidden rounded-xl mb-4">
-                    {(product as any).image_url ? (
+                    {product.image_url ? (
                       <img
-                        src={(product as any).image_url}
+                        src={product.image_url}
                         alt={product.name}
                         className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -173,7 +175,7 @@ export const ProductsPage: React.FC = () => {
                     <h3 className="text-lg font-bold line-clamp-2 group-hover:text-primary-600 transition-colors">
                       {product.name}
                     </h3>
-                    <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
+                    <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description || '') }} />
 
                     <div className="pt-2">
                       <SaudiRiyalPrice
@@ -195,11 +197,11 @@ export const ProductsPage: React.FC = () => {
                 </Card>
               ) : (
                 <Card key={product.id} className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
-                  <div className="flex gap-6">
-                    <div className="relative w-48 h-48 flex-shrink-0 overflow-hidden rounded-xl">
-                      {(product as any).image_url ? (
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                    <div className="relative w-full sm:w-48 h-48 shrink-0 overflow-hidden rounded-xl">
+                      {product.image_url ? (
                         <img
-                          src={(product as any).image_url}
+                          src={product.image_url}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
@@ -215,11 +217,11 @@ export const ProductsPage: React.FC = () => {
                     <div className="flex-1 flex flex-col justify-between py-2">
                       <div>
                         <div className="mb-2">
-                          <h3 className="text-2xl font-bold group-hover:text-primary-600 transition-colors">
+                          <h3 className="text-lg sm:text-2xl font-bold group-hover:text-primary-600 transition-colors">
                             {product.name}
                           </h3>
                         </div>
-                        <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
+                        <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description || '') }} />
                         <div className="flex items-center gap-3 text-sm text-gray-500">
                           {product.in_stock ? (
                             <span className="text-green-600 flex items-center gap-1">
@@ -235,7 +237,7 @@ export const ProductsPage: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <SaudiRiyalPrice
                           amount={product.price}
-                          className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent"
+                          className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent"
                         />
                         <Button
                           variant="primary"

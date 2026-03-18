@@ -91,7 +91,7 @@ export const Navbar: React.FC = () => {
                 <img
                   src="/images/logo.png"
                   alt={t('brand.name')}
-                  className="h-24 w-auto"
+                  className="h-20 w-auto"
                 />
               </motion.div>
             </Link>
@@ -108,7 +108,7 @@ export const Navbar: React.FC = () => {
                   {item.name}
                   {location.pathname === item.href && (
                     <motion.div
-                      layoutId="navbar-indicator"
+                      layoutId="main-nav-indicator"
                       className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-600 to-accent-600"
                       transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                     />
@@ -140,7 +140,7 @@ export const Navbar: React.FC = () => {
                     {item.name}
                     {location.pathname === item.href && (
                       <motion.div
-                        layoutId="navbar-indicator"
+                        layoutId="shop-nav-indicator"
                         className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-600 to-accent-600"
                         transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                       />
@@ -170,14 +170,16 @@ export const Navbar: React.FC = () => {
           <div className="lg:hidden flex items-center gap-2">
             <button
               onClick={handleCalendarClick}
-              className="p-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+              className="p-3 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
               title={t('brand.viewCalendar')}
+              aria-label={t('brand.viewCalendar')}
             >
               <CalendarDays className="w-5 h-5" />
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-3 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label={isOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>

@@ -329,8 +329,8 @@ export const blogPosts = [
 ];
 
 export const stats = [
-  { value: '+1000', label: 'Certifications', icon: 'Award' },
-  { value: '+600', label: 'Happy Clients', icon: 'Users' },
-  { value: '95%', label: 'Satisfaction Rate', icon: 'TrendingUp' },
-  { value: '+200', label: 'Diving Trips', icon: 'MapPin' },
+  { value: '+1000', labelKey: 'about.statCertifications', icon: 'Award' },
+  { value: '+600', labelKey: 'about.statHappyClients', icon: 'Users' },
+  { value: '95%', labelKey: 'about.statSatisfaction', icon: 'TrendingUp' },
+  { value: '+200', labelKey: 'about.statDivingTrips', icon: 'MapPin' },
 ];

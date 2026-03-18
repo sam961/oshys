@@ -26,8 +26,8 @@ export const Button: React.FC<ButtonProps> = ({
 
   const sizes = {
     sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg',
+    md: 'px-5 py-2.5 text-sm sm:px-6 sm:py-3 sm:text-base',
+    lg: 'px-5 py-2.5 text-sm sm:px-8 sm:py-4 sm:text-lg',
   };
 
   return (
@@ -37,22 +37,12 @@ export const Button: React.FC<ButtonProps> = ({
         transition: { duration: 0.2, ease: 'easeOut' }
       }}
       whileTap={{ scale: 0.95 }}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        opacity: { duration: 0.3 },
-        y: { duration: 0.3, ease: [0.6, -0.05, 0.01, 0.99] }
-      }}
       className={clsx(baseStyles, variants[variant], sizes[size], className)}
       {...props}
     >
-      <motion.span
-        className="inline-flex items-center gap-2"
-        whileHover={{ x: 2 }}
-        transition={{ duration: 0.2 }}
-      >
+      <span className="inline-flex items-center gap-2">
         {children}
-      </motion.span>
+      </span>
     </motion.button>
   );
 };

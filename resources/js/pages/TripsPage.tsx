@@ -8,6 +8,7 @@ import { BookingModal } from '../components/features/BookingModal';
 import { useGetTripsQuery } from '../services/api';
 import type { Trip } from '../types';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 
 export const TripsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ export const TripsPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <Compass className="w-8 h-8 text-secondary-600" />
-                <h1 className="text-4xl lg:text-5xl font-bold">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold">
                   <span className="bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent">
                     {t('pages.trips.heroTitle')}
                   </span>
@@ -87,7 +88,8 @@ export const TripsPage: React.FC = () => {
               {/* Sort Dropdown */}
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'default' | 'price-low' | 'price-high')}
+                aria-label={t('pages.trips.sortDefault')}
                 className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:border-transparent"
               >
                 <option value="default">{t('pages.trips.sortDefault')}</option>
@@ -106,6 +108,7 @@ export const TripsPage: React.FC = () => {
                       ? 'bg-white text-secondary-600 shadow'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
+                  aria-label={t('common.gridView', 'Grid view')}
                 >
                   <Grid3x3 className="w-5 h-5" />
                 </motion.button>
@@ -118,6 +121,7 @@ export const TripsPage: React.FC = () => {
                       ? 'bg-white text-secondary-600 shadow'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
+                  aria-label={t('common.listView', 'List view')}
                 >
                   <List className="w-5 h-5" />
                 </motion.button>
@@ -156,10 +160,10 @@ export const TripsPage: React.FC = () => {
               viewMode === 'grid' ? (
                 <Card key={trip.id} className="h-full group cursor-pointer overflow-hidden relative">
                   <div className="relative overflow-hidden rounded-xl mb-4">
-                    {(trip as any).image_url ? (
+                    {trip.image_url ? (
                       <>
                         <img
-                          src={(trip as any).image_url}
+                          src={trip.image_url}
                           alt={trip.name}
                           className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                         />
@@ -179,7 +183,7 @@ export const TripsPage: React.FC = () => {
                       {trip.name}
                     </h3>
 
-                    <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />
+                    <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(trip.description || '') }} />
 
                     <div className="pt-3 border-t border-gray-100">
                       <div className="flex items-center justify-between mb-3">
@@ -210,12 +214,12 @@ export const TripsPage: React.FC = () => {
                 </Card>
               ) : (
                 <Card key={trip.id} className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
-                  <div className="flex gap-6">
-                    <div className="relative w-72 h-56 flex-shrink-0 overflow-hidden rounded-xl">
-                      {(trip as any).image_url ? (
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                    <div className="relative w-full sm:w-72 h-48 sm:h-56 shrink-0 overflow-hidden rounded-xl">
+                      {trip.image_url ? (
                         <>
                           <img
-                            src={(trip as any).image_url}
+                            src={trip.image_url}
                             alt={trip.name}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
@@ -232,11 +236,11 @@ export const TripsPage: React.FC = () => {
                     <div className="flex-1 flex flex-col justify-between py-2">
                       <div>
                         <div className="mb-2">
-                          <h3 className="text-2xl font-bold group-hover:text-secondary-600 transition-colors">
+                          <h3 className="text-lg sm:text-2xl font-bold group-hover:text-secondary-600 transition-colors">
                             {trip.name}
                           </h3>
                         </div>
-                        <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />
+                        <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(trip.description || '') }} />
 
                         <div className="flex items-center gap-3">
                           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
@@ -246,12 +250,12 @@ export const TripsPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-4">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
                         <div>
                           <p className="text-sm text-gray-500">{t('pages.trips.startingFrom')}</p>
                           <SaudiRiyalPrice
                             amount={trip.price}
-                            className="text-3xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent"
+                            className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent"
                           />
                         </div>
                         <div className="flex gap-3">

@@ -35,8 +35,10 @@ const baseQueryWithAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQuery
   if (result.error?.status === 401) {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth-storage');
-    toast.error('Session expired. Please log in again.');
-    window.location.href = '/admin/login';
+    if (window.location.pathname.startsWith('/admin')) {
+      toast.error('Session expired. Please log in again.');
+      window.location.href = '/admin/login';
+    }
   }
   return result;
 };

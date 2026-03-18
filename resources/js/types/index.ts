@@ -10,6 +10,7 @@ export interface Course {
   price: number;
   duration?: string;
   level?: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
+  category?: string;
   is_active: boolean;
   is_featured: boolean;
   max_students?: number;
@@ -29,6 +30,10 @@ export interface Trip {
   image_url?: string;
   images?: Image[];
   price: number;
+  duration?: string;
+  location?: string;
+  difficulty?: string;
+  max_participants?: number;
   is_active: boolean;
   is_featured: boolean;
   included_items?: string[];
@@ -44,6 +49,7 @@ export interface Product {
   slug: string;
   description: string;
   image?: string;
+  image_url?: string;
   price: number;
   in_stock: boolean;
   is_active: boolean;
@@ -104,6 +110,7 @@ export interface Event {
   start_date: string;
   end_date?: string;
   location?: string;
+  image_url?: string;
   is_active: boolean;
   max_participants?: number;
   price?: number;
@@ -119,6 +126,7 @@ export interface TeamMember {
   role: string;
   bio?: string;
   image?: string;
+  image_url?: string;
   email?: string;
   phone?: string;
   experience?: string;

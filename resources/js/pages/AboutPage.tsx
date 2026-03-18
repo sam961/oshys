@@ -8,6 +8,13 @@ import { stats } from '../data/mockData';
 import { useGetTeamMembersQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
 
+const socialIcons: Record<string, React.FC<{ className?: string }>> = {
+  instagram: Instagram,
+  facebook: Facebook,
+  linkedin: Linkedin,
+  twitter: Twitter,
+};
+
 export const AboutPage: React.FC = () => {
   const { t } = useTranslation();
   const { hash } = useLocation();
@@ -55,10 +62,10 @@ export const AboutPage: React.FC = () => {
   return (
     <div className="pt-20">
       {/* Hero */}
-      <div className="relative h-96 overflow-hidden">
+      <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
         <img
           src="/static/about/about-hero.jpg"
-          alt="About Us"
+          alt={t('about.heroTitle')}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-accent-900/80" />
@@ -66,11 +73,11 @@ export const AboutPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center text-white"
+            className="text-center text-white px-6"
           >
-            <Users className="w-16 h-16 mx-auto mb-6" />
-            <h1 className="text-6xl font-bold mb-4">{t('about.heroTitle')} <span className="bg-gradient-to-r from-primary-300 to-accent-300 bg-clip-text text-transparent">{t('about.heroName')}</span></h1>
-            <p className="text-2xl text-white/90">
+            <Users className="w-10 h-10 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6" />
+            <h1 className="text-2xl sm:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4">{t('about.heroTitle')} <span className="bg-gradient-to-r from-primary-300 to-accent-300 bg-clip-text text-transparent">{t('about.heroName')}</span></h1>
+            <p className="text-base sm:text-xl lg:text-2xl text-white/90">
               {t('about.heroSubtitle')}
             </p>
           </motion.div>
@@ -79,20 +86,20 @@ export const AboutPage: React.FC = () => {
 
       {/* Main Content */}
       <Section background="white" className="!py-10 sm:!py-12 lg:!py-16">
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-12 items-center mb-8 sm:mb-16">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-6">{t('about.ourStory')}</h2>
-            <p className="text-lg text-gray-700 mb-4 leading-relaxed">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-4 sm:mb-6">{t('about.ourStory')}</h2>
+            <p className="text-base sm:text-lg text-gray-700 mb-4 leading-relaxed">
               {t('about.storyParagraph1')}
             </p>
-            <p className="text-lg text-gray-700 mb-4 leading-relaxed">
+            <p className="text-base sm:text-lg text-gray-700 mb-4 leading-relaxed">
               {t('about.storyParagraph2')}
             </p>
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
               {t('about.storyParagraph3')}
             </p>
           </motion.div>
@@ -104,7 +111,7 @@ export const AboutPage: React.FC = () => {
             <img
               src="/static/about/about-team.jpg"
               alt={t('about.ourStory')}
-              className="w-full h-96 object-cover rounded-2xl shadow-2xl"
+              className="w-full h-56 sm:h-96 object-cover rounded-2xl shadow-2xl"
             />
           </motion.div>
         </div>
@@ -114,7 +121,7 @@ export const AboutPage: React.FC = () => {
       <Section background="gray" className="!py-10 sm:!py-12 lg:!py-16">
         <div className="relative">
           {/* Background with overlay */}
-          <div className="absolute inset-0 rounded-3xl overflow-hidden bg-gradient-to-r from-primary-900 to-accent-900" />
+          <div className="absolute inset-0 rounded-2xl overflow-hidden bg-gradient-to-r from-primary-900 to-accent-900" />
 
 
           <div className="relative z-10 py-16 px-8">
@@ -158,9 +165,9 @@ export const AboutPage: React.FC = () => {
                       prefix={prefix}
                       suffix={suffix}
                       duration={2.5}
-                      className="text-5xl font-bold mb-2"
+                      className="text-3xl sm:text-5xl font-bold mb-2"
                     />
-                    <div className="text-lg opacity-90">{stat.label}</div>
+                    <div className="text-sm sm:text-lg opacity-90">{t(stat.labelKey)}</div>
                   </motion.div>
                 );
               })}
@@ -177,8 +184,8 @@ export const AboutPage: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold mb-6">{t('about.promiseTitle')}</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <h2 className="text-2xl sm:text-4xl font-bold mb-4 sm:mb-6">{t('about.promiseTitle')}</h2>
+          <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             {t('about.promiseDescription')}
           </p>
         </motion.div>
@@ -190,10 +197,10 @@ export const AboutPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-16"
         >
-          <h2 className="text-4xl font-bold mb-4">{t('about.whyChooseTitle')}</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h2 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">{t('about.whyChooseTitle')}</h2>
+          <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto">
             {t('about.whyChooseDescription')}
           </p>
         </motion.div>
@@ -239,28 +246,21 @@ export const AboutPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-16"
           >
             <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-50 border border-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4">
               <div className="w-1.5 h-1.5 rounded-full bg-primary-500" />
               {t('about.teamTitle')}
             </span>
-            <h2 className="text-4xl font-bold mb-4">{t('about.teamTitle')}</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">{t('about.teamTitle')}</h2>
+            <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto">
               {t('about.teamSubtitle')}
             </p>
           </motion.div>
 
           <div className={`grid gap-8 ${team.length <= 2 ? 'sm:grid-cols-2 max-w-3xl mx-auto' : team.length === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4'}`}>
             {team.map((member, index) => {
-              const socialIcons: Record<string, React.FC<{ className?: string }>> = {
-                instagram: Instagram,
-                facebook: Facebook,
-                linkedin: Linkedin,
-                twitter: Twitter,
-              };
-
-              const imageUrl = (member as any).image_url;
+              const imageUrl = member.image_url;
 
               return (
                 <motion.div

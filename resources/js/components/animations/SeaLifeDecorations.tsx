@@ -75,7 +75,7 @@ const TurtleSvg: React.FC<{ className?: string; flip?: boolean }> = ({ className
 export const SeaLifeDecorations: React.FC<SeaLifeDecorationsProps> = ({ className = '' }) => {
   return (
     <div
-      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+      className={`absolute inset-0 overflow-hidden pointer-events-none hidden sm:block ${className}`}
       aria-hidden="true"
     >
       {/* Large fish swimming across top right */}
@@ -148,7 +148,7 @@ export const SeaLifeDecorations: React.FC<SeaLifeDecorationsProps> = ({ classNam
 
       {/* Sea turtle swimming slowly across */}
       <motion.div
-        className="absolute top-[50%] left-[2%] text-accent-600/45 w-40 h-22"
+        className="absolute top-[50%] left-[2%] text-accent-600/45 w-40 h-24"
         animate={{
           x: [0, 150, 400, 600, 400, 150, 0],
           y: [0, -18, 8, -12, 10, -6, 0],
@@ -161,7 +161,7 @@ export const SeaLifeDecorations: React.FC<SeaLifeDecorationsProps> = ({ classNam
 
       {/* Seaweed - bottom left - tall */}
       <motion.div
-        className="absolute bottom-0 left-[4%] text-accent-600/50 w-18 h-52"
+        className="absolute bottom-0 left-[4%] text-accent-600/50 w-20 h-52"
         animate={{ rotateZ: [-5, 5, -5] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         style={{ transformOrigin: 'bottom center' }}
@@ -191,7 +191,7 @@ export const SeaLifeDecorations: React.FC<SeaLifeDecorationsProps> = ({ classNam
 
       {/* Seaweed - bottom right second */}
       <motion.div
-        className="absolute bottom-0 right-[9%] text-primary-500/45 w-14 h-38"
+        className="absolute bottom-0 right-[9%] text-primary-500/45 w-14 h-40"
         animate={{ rotateZ: [-3, 6, -3] }}
         transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
         style={{ transformOrigin: 'bottom center' }}
@@ -229,7 +229,7 @@ export const SeaLifeDecorations: React.FC<SeaLifeDecorationsProps> = ({ classNam
 
       {/* Coral - bottom center-right */}
       <motion.div
-        className="absolute bottom-0 right-[35%] text-primary-400/40 w-22 h-22"
+        className="absolute bottom-0 right-[35%] text-primary-400/40 w-24 h-24"
         animate={{ scale: [1, 1.04, 1] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
       >
