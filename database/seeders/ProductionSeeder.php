@@ -58,8 +58,8 @@ class ProductionSeeder extends Seeder
 <p>Contact us for fees and scheduling. There are special offers for signing up for more than one specialty.</p>',
                 'image' => 'trips/diving-specialties.jpg',
                 'price' => 1400.00,
-                'is_active' => true,
-                'is_featured' => true,
+                'is_active' => false,
+                'is_featured' => false,
                 'translations' => [
                     'name' => ['ar' => 'تخصصات الغوص'],
                     'description' => ['ar' => '<p>نود أن نأخذك في رحلة رائعة من الشاطئ وصولاً إلى عالم الغوص الاحترافي. نقوم بتدريس جميع التخصصات التالية المذكورة أدناه. جدولنا مرن ويمكن أن يلائم جدولك المزدحم.</p>
@@ -467,8 +467,8 @@ class ProductionSeeder extends Seeder
                 'price' => 7000.00,
                 'level' => 'All Levels',
                 'category' => 'Leadership',
-                'is_active' => true,
-                'is_featured' => true,
+                'is_active' => false,
+                'is_featured' => false,
                 'has_certificate' => true,
                 'translations' => [
                     'name' => ['ar' => 'باقة كبير الغواصين'],
@@ -522,8 +522,8 @@ class ProductionSeeder extends Seeder
                 'price' => 2400.00,
                 'level' => 'All Levels',
                 'category' => 'Swim Programs',
-                'is_active' => true,
-                'is_featured' => true,
+                'is_active' => false,
+                'is_featured' => false,
                 'has_certificate' => true,
                 'translations' => [
                     'name' => ['ar' => 'دورة منقذ مسابح وشواطئ'],
@@ -807,43 +807,49 @@ class ProductionSeeder extends Seeder
             [
                 'name' => 'Open Water Diver Course',
                 'slug' => 'open-water-diver-course',
-                'description' => '<p>The Open Water Diver course is the foundation diving course and consists of:</p>
+                'description' => '<h2>Your First Diving Journey</h2>
 
-<ol>
-<li>Theory: 2-3 sessions</li>
-<li>Practical pool training: 2 days (4 hours daily)</li>
-<li>Practical sea application: 2 days (total of 4 dives)</li>
-</ol>
+<p>Learning to dive is not about rushing to certification. At CAS, we focus on building calm, capable divers through structured and progressive training.</p>
 
-<p>The course qualifies you to dive to 18 meters. It also opens the door to other courses such as Advanced Diving (qualifying you to dive to 30 meters), and exciting specialties like Perfect Buoyancy, Search and Recovery, Underwater Photography, and many more.</p>
+<h3>Learning happens step by step:</h3>
 
-<p>Our courses are accredited by international organizations such as SSI and PADI. Trainees receive an international license qualifying them to dive anywhere in the world. All our courses are accredited by the Saudi Diving Federation.</p>
+<p><strong>Step 1 — Preparation</strong><br/>Introduction to equipment, breathing, and safety principles.</p>
 
-<p><strong>Fees include:</strong></p>
-<ol>
+<p><strong>Step 2 — Confined Water Training</strong><br/>Practice essential skills in a controlled environment until comfortable.</p>
+
+<p><strong>Step 3 — Open Water Dives</strong><br/>Apply your skills in the sea under instructor supervision.</p>
+
+<p><strong>Step 4 — Certification</strong><br/>Receive your Open Water Diver certification and begin your diving journey.</p>
+
+<h3>Course Structure</h3>
+<ul>
+<li>Theory: 2–3 sessions</li>
+<li>Pool Training: 2 days</li>
+<li>Open Water Dives: 4 dives over 2 days</li>
+</ul>
+<p>Maximum depth after certification: 18 meters</p>
+
+<h3>Requirements</h3>
+<ul>
+<li>Basic swimming ability (no advanced level required)</li>
+<li>Medical clearance (if applicable)</li>
+<li>Agreement to training standards</li>
+</ul>
+
+<h3>What\'s Included</h3>
+<ul>
 <li>Training materials</li>
-<li>Pool fees</li>
-<li>Equipment for pool and sea and cylinders during the course (except personal equipment)</li>
-<li>License issuance</li>
-<li>Plastic card from the organization</li>
-<li>Wall certificate</li>
-</ol>
+<li>Pool access</li>
+<li>Full diving equipment during training (except personal equipment)</li>
+<li>Certification and license</li>
+</ul>
+<p><em>*Personal equipment includes: mask, snorkel, fins, boots, and exposure suit.</em></p>
 
-<p><strong>Fees do not include personal equipment:</strong></p>
-<ol>
-<li>Mask</li>
-<li>Snorkel</li>
-<li>Boots</li>
-<li>Fins</li>
-<li>Wetsuit</li>
-</ol>
+<h3>Starting for the First Time</h3>
+<p>Many beginners feel unsure before their first dive. Training is conducted step by step, with close guidance to ensure comfort and safety in the water.</p>
 
-<p><strong>Course requirements:</strong></p>
-<ol>
-<li>The trainee must be able to swim and float (high skill not required)</li>
-<li>Approval of the medical statement (some conditions do not conflict with diving but require a doctor\'s note for your safety)</li>
-<li>Agreement to the center\'s terms and conditions</li>
-</ol>',
+<p><strong>If you\'re ready to start your diving journey, you can contact us to learn more or reserve a place in the next group.</strong></p>
+<p>If you are not sure if diving is for you? Contact us.</p>',
                 'image' => 'courses/open-water-1.jpg',
                 'price' => 2500.00,
                 'level' => 'Beginner',
@@ -853,43 +859,49 @@ class ProductionSeeder extends Seeder
                 'has_certificate' => true,
                 'translations' => [
                     'name' => ['ar' => 'دورة الغوص الأبتدائية (المياه المفتوحة)'],
-                    'description' => ['ar' => '<p>دورات الغوص الابتدائية تسمى المياه المفتوحة وتتكون من:</p>
+                    'description' => ['ar' => '<h2>رحلتك الأولى في الغوص</h2>
 
-<ol>
+<p>تعلم الغوص ليس سباقاً للحصول على الشهادة. في CAS، نركز على بناء غواصين هادئين وقادرين من خلال تدريب منظم وتدريجي.</p>
+
+<h3>التعلم يحدث خطوة بخطوة:</h3>
+
+<p><strong>الخطوة 1 — التحضير</strong><br/>مقدمة عن المعدات والتنفس ومبادئ السلامة.</p>
+
+<p><strong>الخطوة 2 — التدريب في المياه المحصورة</strong><br/>ممارسة المهارات الأساسية في بيئة محكومة حتى الشعور بالراحة.</p>
+
+<p><strong>الخطوة 3 — غطسات المياه المفتوحة</strong><br/>تطبيق مهاراتك في البحر تحت إشراف المدرب.</p>
+
+<p><strong>الخطوة 4 — الشهادة</strong><br/>الحصول على شهادة غواص المياه المفتوحة وبدء رحلتك في الغوص.</p>
+
+<h3>هيكل الدورة</h3>
+<ul>
 <li>النظري: 2-3 حصص</li>
-<li>التدريب العملي في المسبح: 2 أيام (4 ساعات يومياً)</li>
-<li>التطبيق العملي في البحر: يومين (المجموع 4 غواصات)</li>
-</ol>
+<li>تدريب المسبح: يومين</li>
+<li>غطسات المياه المفتوحة: 4 غطسات على مدار يومين</li>
+</ul>
+<p>أقصى عمق بعد الشهادة: 18 متراً</p>
 
-<p>تؤهلك الدورة للغوص لـ 18 متر. تتيح لك دورات غوص ابتدائية الفرصة لدخول دورات أخرى كالغوص المتقدم التي تؤهلك للغوص لـ 30 متر، ودورات رائعة كالطفوية المثالية، البحث والانتشال، التصوير تحت الماء وغيرها كثير...</p>
+<h3>المتطلبات</h3>
+<ul>
+<li>القدرة الأساسية على السباحة (لا يلزم مستوى متقدم)</li>
+<li>تصريح طبي (إن لزم الأمر)</li>
+<li>الموافقة على معايير التدريب</li>
+</ul>
 
-<p>الدورات معتمدة من قبل منظمات عالمية مثل منظمة اس اس آي العالمية المشهورة ومنظمة بادي ويحصل المتدرب على رخصة عالمية تؤهله للغوص في أي مكان في العالم. وجميع دوراتنا معتمدة من قبل الاتحاد السعودي للغوص.</p>
+<h3>ما يشمله البرنامج</h3>
+<ul>
+<li>المواد التعليمية</li>
+<li>الوصول إلى المسبح</li>
+<li>معدات غوص كاملة أثناء التدريب (ما عدا المعدات الشخصية)</li>
+<li>الشهادة والرخصة</li>
+</ul>
+<p><em>*المعدات الشخصية تشمل: النظارة، السنوركل، الزعانف، الجزمة، وبدلة الغوص.</em></p>
 
-<p><strong>تشمل الرسوم:</strong></p>
-<ol>
-<li>رسوم المواد التعليمية</li>
-<li>رسوم المسبح</li>
-<li>رسوم المعدات للمسبح والبحر والاسطوانات خلال الدورة (ما عدا المعدات الشخصية)</li>
-<li>استخراج الرخصة</li>
-<li>رسوم البطاقة البلاستيكية من المنظمة</li>
-<li>الشهادة الجدارية</li>
-</ol>
+<h3>البداية لأول مرة</h3>
+<p>كثير من المبتدئين يشعرون بعدم اليقين قبل غطستهم الأولى. يتم التدريب خطوة بخطوة، مع توجيه وثيق لضمان الراحة والسلامة في الماء.</p>
 
-<p><strong>لا تشمل الرسوم المعدات الشخصية وهي:</strong></p>
-<ol>
-<li>النظارة</li>
-<li>القصبة الهوائية أو السنوركل</li>
-<li>الجزمة</li>
-<li>الزعانف</li>
-<li>الملابس أو البدلة</li>
-</ol>
-
-<p><strong>شروط الدورة:</strong></p>
-<ol>
-<li>أن يكون المتدرب يجيد السباحة والطفو (لا يستوجب مهارة عالية)</li>
-<li>الموافقة على الإفادة الطبية (بعض الأمراض لا تتعارض مع الغوص ولكن تستوجب إفادة من طبيبك لضمان سلامتك)</li>
-<li>الموافقة على شروط المركز</li>
-</ol>'],
+<p><strong>إذا كنت مستعداً لبدء رحلتك في الغوص، يمكنك التواصل معنا لمعرفة المزيد أو حجز مكان في المجموعة القادمة.</strong></p>
+<p>إذا لم تكن متأكداً أن الغوص مناسب لك؟ تواصل معنا.</p>'],
                 ],
             ],
             [
@@ -990,6 +1002,58 @@ class ProductionSeeder extends Seeder
 <p>من الأفضل الجمع بين هذه الدورة ودورة التصرف الصحيح من SSI أو المسعف الأول من PADI. هذه الدورات تشمل عدة تخصصات تبدأ من الإسعافات الأولية البسيطة لجروح سطحية وترتقي للإنعاش القلبي والرئوي بالإضافة إلى معرفة كيفية تزويد الأوكسجين للمصاب واستخدام جهاز الصدمات الكهربائية. هذه الدورات تزودك بمهارات الإسعافات للكبار والأطفال.</p>
 
 <p><strong>الرجاء التواصل على الإيميل أو الواتس قبل الدفع للتسجيل والجدولة.</strong></p>'],
+                ],
+            ],
+            [
+                'name' => 'Diving Specialties',
+                'slug' => 'diving-specialties',
+                'description' => '<p>We would like to take you on a wonderful journey from the shore to the world of professional diving. We teach all the following specialties listed below. Our schedule is flexible and can fit your busy schedule.</p>
+
+<p>Let us know what sparks your passion... Dream bigger, the oceans are vast and we have barely seen a fraction of them.</p>
+
+<p><strong>Specialties we offer:</strong></p>
+<ul>
+<li>Navigation — Learn how to use magnetic and digital compasses to navigate your way in the sea</li>
+<li>Search and Recovery — How to search for something lost and if it\'s heavy, how to lift it</li>
+<li>Night Diving</li>
+<li>Underwater Photography</li>
+<li>Computer Diving</li>
+<li>Boat Diving</li>
+<li>Ecology Package</li>
+<li>And more</li>
+</ul>
+
+<p>Our courses are ongoing and conducted by professional, fun-loving instructors who can accommodate your schedule. The course location depends on the specialty you\'re interested in — for example, we like to do navigation in Half Moon Bay because the limited visibility increases the challenge and fun.</p>
+
+<p>Contact us for fees and scheduling. There are special offers for signing up for more than one specialty.</p>',
+                'image' => 'courses/diving-specialties.jpg',
+                'price' => 1400.00,
+                'level' => 'Intermediate',
+                'category' => 'Develop Your Diving',
+                'is_active' => true,
+                'is_featured' => true,
+                'has_certificate' => true,
+                'translations' => [
+                    'name' => ['ar' => 'تخصصات الغوص'],
+                    'description' => ['ar' => '<p>نود أن نأخذك في رحلة رائعة من الشاطئ وصولاً إلى عالم الغوص الاحترافي. نقوم بتدريس جميع التخصصات التالية المذكورة أدناه. جدولنا مرن ويمكن أن يلائم جدولك المزدحم.</p>
+
+<p>دعنا نعرف ما الذي يحمل شغفك... أحلم أكبر، المحيطات شاسعة وبالكاد رأينا جزءًا منها.</p>
+
+<p><strong>التخصصات التي نقدمها:</strong></p>
+<ul>
+<li>الأبحار — تعرف على كيفية استخدام البوصلة المغناطيسية والرقمية للتنقل في طريقك في البحر</li>
+<li>البحث والانتشال — كيف تبحث عن شيء مفقود وإذا كان ثقيلًا فكيف ترفعه؟</li>
+<li>الغوص الليلي</li>
+<li>التصوير تحت الماء</li>
+<li>الغوص بالكمبيوتر</li>
+<li>الغوص من قارب</li>
+<li>الحزمة البيئية</li>
+<li>و غيرها</li>
+</ul>
+
+<p>دوراتنا مستمرة ويتم تنفيذها من قبل مدربين محترفين ومحبين للمرح يمكنهم استيعاب جدولك الزمني. يعتمد موقع الدورة على التخصص الذي تهتم به، على سبيل المثال نود القيام بالملاحة في خليج نصف القمر لأن الرؤية محدودة مما يزيد من التحديات و المتعة.</p>
+
+<p>تواصل معنا للرسوم و الجدولة. هناك عروض خاصة للتسجيل لأكثر من تخصص.</p>'],
                 ],
             ],
         ];

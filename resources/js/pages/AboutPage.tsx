@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Award, Users, TrendingUp, MapPin, Shield, Layers, UserCheck, FileCheck, Anchor, Loader2, Clock, Instagram, Facebook, Linkedin, Twitter } from 'lucide-react';
+import { Award, Users, TrendingUp, Shield, Layers, UserCheck, FileCheck, Anchor, Loader2, Clock, Instagram, Facebook, Linkedin, Twitter } from 'lucide-react';
 import { Section, Card } from '../components/ui';
-import { CountUp } from '../components/animations';
 import { stats } from '../data/mockData';
 import { useGetTeamMembersQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
@@ -120,54 +119,32 @@ export const AboutPage: React.FC = () => {
       {/* Stats Section */}
       <Section background="gray" className="!py-10 sm:!py-12 lg:!py-16">
         <div className="relative">
-          {/* Background with overlay */}
           <div className="absolute inset-0 rounded-2xl overflow-hidden bg-gradient-to-r from-primary-900 to-accent-900" />
 
-
-          <div className="relative z-10 py-16 px-8">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="relative z-10 py-12 px-6 sm:py-16 sm:px-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {stats.map((stat, index) => {
-                const icons = {
-                  Award: Award,
-                  Users: Users,
-                  TrendingUp: TrendingUp,
-                  MapPin: MapPin,
+                const icons: Record<string, React.ComponentType<{ className?: string }>> = {
+                  Users,
+                  UserCheck,
+                  TrendingUp,
+                  Shield,
                 };
-                const Icon = icons[stat.icon as keyof typeof icons];
-
-                // Parse the stat value to extract number and prefix/suffix
-                const parseStatValue = (value: string) => {
-                  const match = value.match(/^([+]?)(\d+)([%+]?)$/);
-                  if (match) {
-                    return {
-                      prefix: match[1] || '',
-                      number: parseInt(match[2]),
-                      suffix: match[3] === '+' ? '' : match[3] || '',
-                    };
-                  }
-                  return { prefix: '', number: 0, suffix: '' };
-                };
-
-                const { prefix, number, suffix } = parseStatValue(stat.value);
+                const Icon = icons[stat.icon];
 
                 return (
                   <motion.div
-                    key={stat.label}
+                    key={stat.labelKey}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
                     className="text-center text-white"
                   >
-                    <Icon className="w-10 h-10 mx-auto mb-4" />
-                    <CountUp
-                      end={number}
-                      prefix={prefix}
-                      suffix={suffix}
-                      duration={2.5}
-                      className="text-3xl sm:text-5xl font-bold mb-2"
-                    />
-                    <div className="text-sm sm:text-lg opacity-90">{t(stat.labelKey)}</div>
+                    <Icon className="w-10 h-10 mx-auto mb-3 opacity-80" />
+                    <div className="text-3xl sm:text-4xl font-bold mb-1">{stat.value}</div>
+                    <div className="text-sm sm:text-lg font-semibold mb-1">{t(stat.labelKey)}</div>
+                    <div className="text-xs sm:text-sm opacity-70">{t(stat.descKey)}</div>
                   </motion.div>
                 );
               })}

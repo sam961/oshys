@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, MapPin, Award, Loader2, Grid3x3, List, Calendar, Anchor, TrendingUp } from 'lucide-react';
+import { Compass, MapPin, Award, Loader2, Grid3x3, List, Calendar, Anchor, TrendingUp, Shield } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { BookingModal } from '../components/features/BookingModal';
@@ -304,8 +304,8 @@ export const TripsPage: React.FC = () => {
           </Card>
 
           <Card className="text-center">
-            <div className="bg-secondary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Compass className="w-8 h-8 text-secondary-600" />
+            <div className="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Shield className="w-8 h-8 text-primary-600" />
             </div>
             <h3 className="text-xl font-bold mb-2">{t('pages.trips.allInclusiveTitle')}</h3>
             <p className="text-gray-600">

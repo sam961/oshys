@@ -195,13 +195,13 @@
     "servicesTitle": "What We Offer",
     "servicesSubtitle": "Programs, trips, and training delivered within clear frameworks",
     "service1Title": "Start Your Diving Journey",
-    "service1Description": "Begin your underwater adventure with our foundational Open Water program, guided safely and confidently by certified professionals.",
+    "service1Description": "A structured entry into diving, focused on building comfort, control, and confidence in the water.",
     "service2Title": "Develop Your Diving",
-    "service2Description": "Blue Watch and advanced training programs to build your skills, confidence, and experience underwater.",
+    "service2Description": "Progressive training designed to refine skills, deepen awareness, and build true independence underwater.",
     "service3Title": "Explore the Sea",
-    "service3Description": "Organized diving expeditions to selected dive sites, led by certified professionals.",
+    "service3Description": "Organized diving expeditions designed to build experience, confidence, and community in the water.",
     "learnMore": "Learn More",
-    "communityTitle": "Community & Initiatives",
+    "communityTitle": "Community & Ocean Initiatives",
     "communityDescription": "CAS is committed to building a responsible diving community. We support social initiatives, environmental awareness, and adaptive diving programs that make the sea accessible to more people.",
     "viewInitiatives": "View Initiatives",
     "aboutTitle": "About Corals & Shells",
@@ -210,7 +210,7 @@
     "calendarTitle": "Upcoming Schedule",
     "calendarSubtitle": "Upcoming events, courses, and trips",
     "tripsTitle": "Our Trips",
-    "tripsSubtitle": "Organized diving expeditions led by certified professionals",
+    "tripsSubtitle": "Organized diving expeditions designed to build experience, confidence, and community in the water.",
     "coursesTitle": "Our Programs",
     "coursesSubtitle": "Structured paths from foundational to advanced certification",
     "productsTitle": "Diving Equipment",
@@ -270,7 +270,15 @@
     "statCertifications": "Certifications",
     "statHappyClients": "Happy Clients",
     "statSatisfaction": "Satisfaction Rate",
-    "statDivingTrips": "Diving Trips"
+    "statDivingTrips": "Diving Trips",
+    "statCommunity": "CAS Community",
+    "statSmallGroups": "Small Groups",
+    "statStructuredPath": "Structured Path",
+    "statSafetyFocused": "Safety Focused",
+    "statCommunityDesc": "300+ divers in the community",
+    "statSmallGroupsDesc": "Maximum 4 students per training group",
+    "statStructuredPathDesc": "Structured diver development path",
+    "statSafetyFocusedDesc": "Safety-focused training philosophy"
   },
   "products": {
     "heroTitle": "Diving Equipment",
@@ -296,9 +304,9 @@
   },
   "pages": {
     "courses": {
-      "heroTitle": "Programs & Paths",
+      "heroTitle": "CAS Academy Training Path",
       "heroSubtitle": "",
-      "heroDescription": "Corals & Shells offers structured swimming and diving programs delivered through clearly defined paths. Each program is designed with specific entry criteria, progression stages, and safety requirements. Participation is based on readiness and commitment, not urgency or availability.",
+      "heroDescription": "Programs at CAS are organized through clear training paths designed to support safe progression, skill development, and long-term diving competence.",
       "noCourses": "No programs available at the moment.",
       "loadingError": "Failed to load programs. Please try again later.",
       "startingFrom": "Starting from",
@@ -345,7 +353,15 @@
       "backToCourses": "Back to Programs",
       "gallery": "Gallery",
       "notFound": "Program not found",
-      "notFoundMessage": "The program you're looking for doesn't exist or has been removed."
+      "notFoundMessage": "The program you're looking for doesn't exist or has been removed.",
+      "categoryDesc": {
+        "swimmingPrograms": "Structured swimming training focused on water confidence, safety, and long-term skill development.",
+        "startDiving": "A structured entry into diving, focused on building comfort, control, and confidence in the water.",
+        "developYourDiving": "Progressive training designed to refine skills, deepen awareness, and build true independence underwater.",
+        "leadership": "Advanced pathways for divers who want to take on greater responsibility, guide others, and contribute to the diving environment.",
+        "blueAccess": "An adaptive diving initiative focused on creating safe and structured access to the underwater world for individuals with disabilities.",
+        "familyAndYouth": "Water and diving programs designed to build confidence, safety, and a positive relationship with the water from an early age."
+      }
     },
     "trips": {
       "heroTitle": "Diving Trips",
@@ -360,8 +376,8 @@
       "expertGuidesDescription": "All our trips are led by certified professionals with years of experience",
       "amazingLocationsTitle": "Amazing Locations",
       "amazingLocationsDescription": "Explore the most beautiful dive sites in the region",
-      "allInclusiveTitle": "All Inclusive",
-      "allInclusiveDescription": "Equipment, transportation, and meals included in all trips",
+      "allInclusiveTitle": "Safety First",
+      "allInclusiveDescription": "Every trip follows structured safety protocols with certified guides and proper equipment checks",
       "diveTrips": "Dive Trips",
       "destinations": "Destinations",
       "happyDivers": "Happy Divers",
@@ -442,7 +458,7 @@
     "visitCenterLocation": "Al Khobar, Eastern Province, Saudi Arabia"
   },
   "initiatives": {
-    "heroTitle": "Social Initiatives",
+    "heroTitle": "Community & Ocean Initiatives",
     "heroSubtitle": "Making a difference in our community",
     "noInitiatives": "No initiatives available yet",
     "loadingError": "Failed to load initiatives",

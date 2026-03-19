@@ -329,8 +329,8 @@ export const blogPosts = [
 ];
 
 export const stats = [
-  { value: '+1000', labelKey: 'about.statCertifications', icon: 'Award' },
-  { value: '+600', labelKey: 'about.statHappyClients', icon: 'Users' },
-  { value: '95%', labelKey: 'about.statSatisfaction', icon: 'TrendingUp' },
-  { value: '+200', labelKey: 'about.statDivingTrips', icon: 'MapPin' },
+  { value: '300+', labelKey: 'about.statCommunity', descKey: 'about.statCommunityDesc', icon: 'Users' },
+  { value: '4', labelKey: 'about.statSmallGroups', descKey: 'about.statSmallGroupsDesc', icon: 'UserCheck' },
+  { value: '✓', labelKey: 'about.statStructuredPath', descKey: 'about.statStructuredPathDesc', icon: 'TrendingUp' },
+  { value: '✓', labelKey: 'about.statSafetyFocused', descKey: 'about.statSafetyFocusedDesc', icon: 'Shield' },
 ];
