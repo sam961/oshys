@@ -299,7 +299,7 @@ class ProductionSeeder extends Seeder
             $translations = $tripData['translations'] ?? [];
             unset($tripData['translations']);
 
-            $trip = Trip::firstOrCreate(
+            $trip = Trip::updateOrCreate(
                 ['slug' => $tripData['slug']],
                 $tripData
             );
