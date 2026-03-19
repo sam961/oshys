@@ -231,7 +231,8 @@ export const CoursesPage: React.FC = () => {
             >
             {sortedCourses.map((course) => (
               viewMode === 'grid' ? (
-                <Card key={course.id} className="h-full group cursor-pointer overflow-hidden relative">
+                <Link key={course.id} to={`/shop/courses/${course.id}`} className="block h-full">
+                <Card className="h-full group cursor-pointer overflow-hidden relative">
                   <div className="relative overflow-hidden rounded-xl mb-4">
                     {course.image_url ? (
                       <img
@@ -284,8 +285,10 @@ export const CoursesPage: React.FC = () => {
                     </div>
                   </div>
                 </Card>
+                </Link>
               ) : (
-                <Card key={course.id} className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
+                <Link key={course.id} to={`/shop/courses/${course.id}`} className="block">
+                <Card className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
                   <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                     <div className="relative w-full sm:w-64 h-48 shrink-0 overflow-hidden rounded-xl">
                       {course.image_url ? (
@@ -345,6 +348,7 @@ export const CoursesPage: React.FC = () => {
                     </div>
                   </div>
                 </Card>
+                </Link>
               )
             ))}
             </StaggerContainer>

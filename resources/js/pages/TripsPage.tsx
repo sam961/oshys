@@ -158,7 +158,8 @@ export const TripsPage: React.FC = () => {
             >
             {sortedTrips.map((trip) => (
               viewMode === 'grid' ? (
-                <Card key={trip.id} className="h-full group cursor-pointer overflow-hidden relative">
+                <Link key={trip.id} to={`/shop/trips/${trip.id}`} className="block h-full">
+                <Card className="h-full group cursor-pointer overflow-hidden relative">
                   <div className="relative overflow-hidden rounded-xl mb-4">
                     {trip.image_url ? (
                       <>
@@ -212,8 +213,10 @@ export const TripsPage: React.FC = () => {
                     </div>
                   </div>
                 </Card>
+                </Link>
               ) : (
-                <Card key={trip.id} className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
+                <Link key={trip.id} to={`/shop/trips/${trip.id}`} className="block">
+                <Card className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
                   <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                     <div className="relative w-full sm:w-72 h-48 sm:h-56 shrink-0 overflow-hidden rounded-xl">
                       {trip.image_url ? (
@@ -272,6 +275,7 @@ export const TripsPage: React.FC = () => {
                     </div>
                   </div>
                 </Card>
+                </Link>
               )
             ))}
             </StaggerContainer>
