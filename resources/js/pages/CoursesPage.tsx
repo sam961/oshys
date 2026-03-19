@@ -37,12 +37,12 @@ export const CoursesPage: React.FC = () => {
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useGetCoursesQuery({ active: true });
 
   const categories = [
-    { key: 'Swim Programs', label: t('pages.courses.categorySwimming') },
-    { key: 'Start Diving', label: t('pages.courses.categoryStartDiving') },
-    { key: 'Develop Your Diving', label: t('pages.courses.categoryDevelop') },
-    { key: 'Leadership', label: t('pages.courses.categoryLeadership') },
-    { key: 'Family and Youth', label: t('pages.courses.categoryFamily') },
-    { key: 'Blue Access', label: t('pages.courses.categoryBlueAccess') },
+    { key: 'Swim Programs', label: t('pages.courses.categorySwimming'), descKey: 'pages.courses.categoryDesc.swimmingPrograms' },
+    { key: 'Start Diving', label: t('pages.courses.categoryStartDiving'), descKey: 'pages.courses.categoryDesc.startDiving' },
+    { key: 'Develop Your Diving', label: t('pages.courses.categoryDevelop'), descKey: 'pages.courses.categoryDesc.developYourDiving' },
+    { key: 'Leadership', label: t('pages.courses.categoryLeadership'), descKey: 'pages.courses.categoryDesc.leadership' },
+    { key: 'Family and Youth', label: t('pages.courses.categoryFamily'), descKey: 'pages.courses.categoryDesc.familyAndYouth' },
+    { key: 'Blue Access', label: t('pages.courses.categoryBlueAccess'), descKey: 'pages.courses.categoryDesc.blueAccess' },
   ];
 
   const filteredCourses = selectedCategory
@@ -195,6 +195,18 @@ export const CoursesPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Category Description */}
+      {selectedCategory && (() => {
+        const activeCat = categories.find(c => c.key === selectedCategory);
+        return activeCat ? (
+          <div className="bg-gradient-to-r from-accent-50 to-primary-50 border-b border-gray-200">
+            <div className="container mx-auto px-6 py-4">
+              <p className="text-gray-600 text-sm sm:text-base max-w-3xl">{t(activeCat.descKey)}</p>
+            </div>
+          </div>
+        ) : null;
+      })()}
 
       {/* Courses Grid */}
       <div className="bg-gray-50 min-h-screen">

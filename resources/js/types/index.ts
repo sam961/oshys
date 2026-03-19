@@ -161,6 +161,7 @@ export interface Banner {
   title: string;
   description?: string;
   image: string;
+  image_url?: string;
   button_text?: string;
   button_link?: string;
   position: 'hero' | 'secondary' | 'promo';

@@ -85,7 +85,7 @@ export const HeroSlider: React.FC = () => {
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${(slides[currentSlide] as any).image_url || slides[currentSlide].image})` }}
+            style={{ backgroundImage: `url(${slides[currentSlide].image_url || slides[currentSlide].image})` }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
           </div>
