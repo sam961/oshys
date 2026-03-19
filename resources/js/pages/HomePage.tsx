@@ -177,7 +177,7 @@ export const HomePage: React.FC = () => {
           {serviceCards.map((service) => {
             const Icon = service.icon;
             return (
-              <Link key={service.id} to={service.link} className="shrink-0 w-[80vw] snap-center sm:w-auto">
+              <Link key={service.id} to={service.link}>
                 <Card className="group cursor-pointer h-full">
                   <div className="relative overflow-hidden rounded-xl mb-6">
                     <img
@@ -247,7 +247,7 @@ export const HomePage: React.FC = () => {
             <>
               <HorizontalScroll itemCount={Math.min(blogPosts.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
                 {blogPosts.slice(0, 3).map((post) => (
-                  <div key={post.id} className="shrink-0 w-[80vw] snap-center sm:w-auto">
+                  <div key={post.id}>
                     <Link to={`/blog/${post.id}`}>
                       <Card className="group cursor-pointer h-full overflow-hidden">
                         <div className="relative overflow-hidden rounded-xl mb-4">
@@ -316,7 +316,7 @@ export const HomePage: React.FC = () => {
             <>
               <HorizontalScroll itemCount={Math.min(trips.length, 3)} className="sm:grid-cols-2 lg:grid-cols-3">
                 {trips.slice(0, 3).map((trip) => (
-                    <Card key={trip.id} className="h-full flex flex-col group cursor-pointer overflow-hidden shrink-0 w-[80vw] snap-center sm:w-auto">
+                    <Card key={trip.id} className="h-full flex flex-col group cursor-pointer overflow-hidden">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
                           src={trip.image_url || '/placeholder.svg'}
@@ -440,7 +440,7 @@ export const HomePage: React.FC = () => {
             <>
               <HorizontalScroll itemCount={Math.min(products.length, 4)} className="sm:grid-cols-2 lg:grid-cols-4">
                 {products.slice(0, 4).map((product) => (
-                  <div key={product.id} className="shrink-0 w-[65vw] snap-center sm:w-auto">
+                  <div key={product.id}>
                     <Card className="group cursor-pointer h-full">
                       <div className="relative overflow-hidden rounded-xl mb-4">
                         <img
