@@ -218,7 +218,7 @@ class ProductionSeeder extends Seeder
 
 <p><strong>Register now!</strong></p>',
                 'image' => 'trips/discover-diving-from-shore.jpg',
-                'price' => 450.00,
+                'price' => 750.00,
                 'is_active' => true,
                 'is_featured' => true,
                 'translations' => [
@@ -267,8 +267,8 @@ class ProductionSeeder extends Seeder
 <p><strong>The fee covers one air tank, weights, and refreshments.</strong></p>',
                 'image' => 'trips/half-moon-bay-diving-trip.jpg',
                 'price' => 130.00,
-                'is_active' => true,
-                'is_featured' => true,
+                'is_active' => false,
+                'is_featured' => false,
                 'translations' => [
                     'name' => ['ar' => 'رحلة غوص شاطئ نصف القمر (للغواصين)'],
                     'description' => ['ar' => '<p>يعد شاطئ نصف القمر وجهة غواصي المنطقة الشرقية و كما دائماً نقول إذا ضبطت طفويتك في الهالفمون تقدر تغوص في أي مكان بحرفنة.</p>
