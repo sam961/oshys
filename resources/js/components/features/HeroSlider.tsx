@@ -104,22 +104,22 @@ export const HeroSlider: React.FC = () => {
                   {slides[currentSlide].description}
                 </p>
               )}
-              {slides[currentSlide].button_text && slides[currentSlide].button_link && (
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+                {slides[currentSlide].button_text && slides[currentSlide].button_link && (
                   <Link
                     to={slides[currentSlide].button_link || '#'}
                     className="inline-block px-5 py-2.5 sm:px-8 sm:py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white text-sm sm:text-base font-semibold rounded-lg hover:shadow-lg transition-all"
                   >
                     {slides[currentSlide].button_text}
                   </Link>
-                  <Link
-                    to="/blog"
-                    className="inline-block px-5 py-2.5 sm:px-8 sm:py-4 border-2 border-white/80 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-white/10 transition-all"
-                  >
-                    {t('home.learnHowWeWork')}
-                  </Link>
-                </div>
-              )}
+                )}
+                <Link
+                  to="/blog"
+                  className="inline-block px-5 py-2.5 sm:px-8 sm:py-4 border-2 border-white/80 text-white text-sm sm:text-base font-semibold rounded-lg hover:bg-white/10 transition-all"
+                >
+                  {t('home.learnHowWeWork')}
+                </Link>
+              </div>
             </div>
           </div>
         </motion.div>

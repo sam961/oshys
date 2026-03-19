@@ -257,7 +257,7 @@ export const api = createApi({
       invalidatesTags: ['BlogPost'],
     }),
 
-    // Social Initiatives
+    // Community & Ocean Initiatives
     getSocialInitiatives: builder.query<SocialInitiative[], { published?: boolean; featured?: boolean; search?: string }>({
       query: (params) => ({
         url: '/social-initiatives',

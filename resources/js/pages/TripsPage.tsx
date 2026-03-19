@@ -307,9 +307,9 @@ export const TripsPage: React.FC = () => {
             <div className="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <Shield className="w-8 h-8 text-primary-600" />
             </div>
-            <h3 className="text-xl font-bold mb-2">{t('pages.trips.allInclusiveTitle')}</h3>
+            <h3 className="text-xl font-bold mb-2">{t('pages.trips.safetyFirstTitle')}</h3>
             <p className="text-gray-600">
-              {t('pages.trips.allInclusiveDescription')}
+              {t('pages.trips.safetyFirstDescription')}
             </p>
           </Card>
         </StaggerContainer>

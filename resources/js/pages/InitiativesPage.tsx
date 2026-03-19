@@ -16,7 +16,7 @@ export const InitiativesPage: React.FC = () => {
       <div className="relative h-96 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1920&h=600&fit=crop"
-          alt="Social Initiatives"
+          alt={t('initiatives.heroTitle')}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-accent-900/80" />
