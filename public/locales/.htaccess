@@ -1,0 +1,6 @@
+# Long-cache locale JSON files — versioned via ?v= query string in i18n config
+<FilesMatch "\.json$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header unset Expires
+    Header unset Pragma
+</FilesMatch>
