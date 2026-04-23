@@ -19,103 +19,71 @@ class CachePublicGet
             return $next($request);
         }
 
-        $encoding = $this->negotiateEncoding($request);
-        $key = $this->cacheKey($request, $encoding);
-
-        $cached = Cache::get($key);
-
-        if ($cached !== null) {
-            return $this->buildResponse($cached, $encoding, 'HIT');
-        }
-
-        /** @var Response $response */
-        $response = $next($request);
-
-        if ($response->getStatusCode() !== 200) {
-            return $response;
-        }
-
-        $body = $response->getContent();
-        $contentType = $response->headers->get('Content-Type', 'application/json');
-
-        $payload = [
-            'body' => $body,
-            'status' => 200,
-            'content_type' => $contentType,
-            'compressed_body' => null,
-            'compression' => null,
-        ];
-
-        if ($encoding !== null && strlen($body) >= self::MIN_COMPRESS_BYTES) {
-            $compressed = $this->compress($body, $encoding);
-            if ($compressed !== null) {
-                $payload['compressed_body'] = $compressed;
-                $payload['compression'] = $encoding;
-            }
-        }
-
-        Cache::put($key, $payload, self::TTL_SECONDS);
-
-        return $this->buildResponse($payload, $encoding, 'MISS');
-    }
-
-    private function cacheKey(Request $request, ?string $encoding): string
-    {
-        return sprintf(
-            '%s:%s:%s:%s?%s',
+        $key = sprintf(
+            '%s:%s:%s?%s',
             self::CACHE_PREFIX,
             app()->getLocale(),
-            $encoding ?? 'identity',
             $request->path(),
             http_build_query($request->query())
         );
+
+        $cached = Cache::get($key);
+        $cacheStatus = 'MISS';
+
+        if ($cached !== null) {
+            $cacheStatus = 'HIT';
+        } else {
+            /** @var Response $response */
+            $response = $next($request);
+
+            if ($response->getStatusCode() !== 200) {
+                return $response;
+            }
+
+            $cached = [
+                'body' => $response->getContent(),
+                'content_type' => $response->headers->get('Content-Type', 'application/json'),
+            ];
+
+            Cache::put($key, $cached, self::TTL_SECONDS);
+        }
+
+        return $this->buildResponse($cached, $request, $cacheStatus);
     }
 
-    private function negotiateEncoding(Request $request): ?string
+    private function buildResponse(array $cached, Request $request, string $cacheStatus): Response
     {
-        $accept = strtolower((string) $request->header('Accept-Encoding', ''));
+        $body = $cached['body'];
+        $contentType = $cached['content_type'];
+        $encoding = null;
+        $contentLength = strlen($body);
 
-        if (str_contains($accept, 'br') && function_exists('brotli_compress')) {
-            return 'br';
+        if ($contentLength >= self::MIN_COMPRESS_BYTES) {
+            $accept = strtolower((string) $request->header('Accept-Encoding', ''));
+            if (str_contains($accept, 'br') && function_exists('brotli_compress')) {
+                $compressed = @brotli_compress($body, 5);
+                if ($compressed !== false) {
+                    $body = $compressed;
+                    $encoding = 'br';
+                }
+            }
+            if ($encoding === null && str_contains($accept, 'gzip') && function_exists('gzencode')) {
+                $compressed = @gzencode($body, 6);
+                if ($compressed !== false) {
+                    $body = $compressed;
+                    $encoding = 'gzip';
+                }
+            }
         }
 
-        if (str_contains($accept, 'gzip') && function_exists('gzencode')) {
-            return 'gzip';
-        }
-
-        return null;
-    }
-
-    private function compress(string $body, string $encoding): ?string
-    {
-        if ($encoding === 'br' && function_exists('brotli_compress')) {
-            $result = @brotli_compress($body, 5);
-            return $result === false ? null : $result;
-        }
-
-        if ($encoding === 'gzip' && function_exists('gzencode')) {
-            $result = @gzencode($body, 6);
-            return $result === false ? null : $result;
-        }
-
-        return null;
-    }
-
-    private function buildResponse(array $payload, ?string $encoding, string $cacheStatus): Response
-    {
-        $useCompressed = $payload['compression'] !== null
-            && $payload['compression'] === $encoding
-            && $payload['compressed_body'] !== null;
-
-        $body = $useCompressed ? $payload['compressed_body'] : $payload['body'];
-
-        $response = response($body, $payload['status'])
-            ->header('Content-Type', $payload['content_type'])
+        $response = response($body, 200)
+            ->header('Content-Type', $contentType)
             ->header('X-Cache', $cacheStatus)
             ->header('Vary', 'Accept-Encoding');
 
-        if ($useCompressed) {
-            $response->header('Content-Encoding', $payload['compression']);
+        if ($encoding !== null) {
+            $response->header('Content-Encoding', $encoding);
+            $response->header('Content-Length', (string) strlen($body));
         }
 
         return $response;
