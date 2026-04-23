@@ -5,6 +5,7 @@ import { Menu, X, CalendarDays, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { LanguageSwitcher } from '../shared/LanguageSwitcher';
+import { prefetchRoute } from '../../utils/prefetchRoute';
 
 interface NavItem {
   name: string;
@@ -83,7 +84,13 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo - Left aligned */}
           <div className="shrink-0">
-            <Link to="/" className="flex items-center group">
+            <Link
+              to="/"
+              onMouseEnter={() => prefetchRoute('/')}
+              onFocus={() => prefetchRoute('/')}
+              onTouchStart={() => prefetchRoute('/')}
+              className="flex items-center group"
+            >
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
@@ -103,6 +110,8 @@ export const Navbar: React.FC = () => {
               <div key={item.name} className="relative">
                 <Link
                   to={item.href}
+                  onMouseEnter={() => prefetchRoute(item.href)}
+                  onFocus={() => prefetchRoute(item.href)}
                   className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-primary-50"
                 >
                   {item.name}
@@ -135,6 +144,8 @@ export const Navbar: React.FC = () => {
                 ) : (
                   <Link
                     to={item.href}
+                    onMouseEnter={() => prefetchRoute(item.href)}
+                    onFocus={() => prefetchRoute(item.href)}
                     className="relative px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors rounded-lg hover:bg-primary-50"
                   >
                     {item.name}
@@ -161,7 +172,11 @@ export const Navbar: React.FC = () => {
               <CalendarDays className="w-5 h-5" />
             </button>
             <LanguageSwitcher />
-            <Link to="/contact">
+            <Link
+              to="/contact"
+              onMouseEnter={() => prefetchRoute('/contact')}
+              onFocus={() => prefetchRoute('/contact')}
+            >
               <Button size="sm">{t('common.bookNow')}</Button>
             </Link>
           </div>
@@ -201,6 +216,9 @@ export const Navbar: React.FC = () => {
                 <div key={item.name}>
                   <Link
                     to={item.href}
+                    onMouseEnter={() => prefetchRoute(item.href)}
+                    onFocus={() => prefetchRoute(item.href)}
+                    onTouchStart={() => prefetchRoute(item.href)}
                     className={`block px-4 py-3 rounded-lg transition-colors ${
                       location.pathname === item.href
                         ? 'bg-primary-50 text-primary-600 font-medium'
@@ -230,6 +248,9 @@ export const Navbar: React.FC = () => {
                   ) : (
                     <Link
                       to={item.href}
+                      onMouseEnter={() => prefetchRoute(item.href)}
+                      onFocus={() => prefetchRoute(item.href)}
+                      onTouchStart={() => prefetchRoute(item.href)}
                       className={`block px-4 py-3 rounded-lg transition-colors ${
                         location.pathname === item.href
                           ? 'bg-primary-50 text-primary-600 font-medium'
@@ -246,7 +267,12 @@ export const Navbar: React.FC = () => {
                 <div className="px-4">
                   <LanguageSwitcher />
                 </div>
-                <Link to="/contact">
+                <Link
+                  to="/contact"
+                  onMouseEnter={() => prefetchRoute('/contact')}
+                  onFocus={() => prefetchRoute('/contact')}
+                  onTouchStart={() => prefetchRoute('/contact')}
+                >
                   <Button className="w-full" size="sm">{t('common.bookNow')}</Button>
                 </Link>
               </div>

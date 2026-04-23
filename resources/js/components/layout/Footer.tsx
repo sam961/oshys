@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Instagram, Twitter, Ghost, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useGetFooterLinksQuery } from '../../services/api';
+import { prefetchRoute } from '../../utils/prefetchRoute';
 
 const socialLinks = [
   { Icon: Instagram, href: 'https://www.instagram.com/OSHYS_OCEANS', label: 'Instagram' },
@@ -36,7 +37,13 @@ export const Footer: React.FC = () => {
 
         {/* Top row: logo + socials */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8 sm:mb-10">
-          <Link to="/" className="shrink-0">
+          <Link
+            to="/"
+            onMouseEnter={() => prefetchRoute('/')}
+            onFocus={() => prefetchRoute('/')}
+            onTouchStart={() => prefetchRoute('/')}
+            className="shrink-0"
+          >
             <img
               src="/images/logo.png"
               alt={t('brand.name')}
@@ -81,6 +88,9 @@ export const Footer: React.FC = () => {
               <Link
                 key={link.name}
                 to={link.href}
+                onMouseEnter={() => prefetchRoute(link.href)}
+                onFocus={() => prefetchRoute(link.href)}
+                onTouchStart={() => prefetchRoute(link.href)}
                 className="text-sm text-gray-400 hover:text-white transition-colors py-1"
               >
                 {link.name}
