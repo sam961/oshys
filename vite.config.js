@@ -41,15 +41,27 @@ export default defineConfig({
                         },
                     },
                     {
-                        // Match server-side CachePublicGet TTL (300s) so admin edits
-                        // propagate within the same window on both layers, avoiding
-                        // a compounded stale-window.
+                        // NetworkFirst so online users always see fresh + correctly-localized
+                        // content (SW-cached responses don't vary by Accept-Language, which
+                        // would otherwise serve stale English to a user who just switched to AR).
+                        // Offline: fall back to the locale-keyed cache.
                         urlPattern: /\/api\/(settings|banners|home-data|team-members-featured|footer-links|social-initiatives)/,
-                        handler: 'StaleWhileRevalidate',
+                        handler: 'NetworkFirst',
                         options: {
                             cacheName: 'api-cache',
-                            expiration: { maxEntries: 50, maxAgeSeconds: 60 * 5 },
+                            networkTimeoutSeconds: 3,
+                            expiration: { maxEntries: 100, maxAgeSeconds: 60 * 5 },
                             cacheableResponse: { statuses: [0, 200] },
+                            plugins: [
+                                {
+                                    cacheKeyWillBeUsed: async ({ request }) => {
+                                        const lang = (request.headers.get('Accept-Language') || 'en').substring(0, 2);
+                                        const url = new URL(request.url);
+                                        url.searchParams.set('_lang', lang);
+                                        return url.toString();
+                                    },
+                                },
+                            ],
                         },
                     },
                     {
