@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, CalendarDays, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
+import { FastLink } from '../ui/FastLink';
 import { LanguageSwitcher } from '../shared/LanguageSwitcher';
-import { prefetchRoute } from '../../utils/prefetchRoute';
 
 interface NavItem {
   name: string;
@@ -84,11 +84,8 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo - Left aligned */}
           <div className="shrink-0">
-            <Link
+            <FastLink
               to="/"
-              onMouseEnter={() => prefetchRoute('/')}
-              onFocus={() => prefetchRoute('/')}
-              onTouchStart={() => prefetchRoute('/')}
               className="flex items-center group"
             >
               <motion.div
@@ -101,17 +98,15 @@ export const Navbar: React.FC = () => {
                   className="h-20 w-auto"
                 />
               </motion.div>
-            </Link>
+            </FastLink>
           </div>
 
           {/* Desktop Navigation - Center */}
           <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {mainNav.map((item) => (
               <div key={item.name} className="relative">
-                <Link
+                <FastLink
                   to={item.href}
-                  onMouseEnter={() => prefetchRoute(item.href)}
-                  onFocus={() => prefetchRoute(item.href)}
                   className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-primary-50"
                 >
                   {item.name}
@@ -122,7 +117,7 @@ export const Navbar: React.FC = () => {
                       transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                     />
                   )}
-                </Link>
+                </FastLink>
               </div>
             ))}
 
@@ -142,10 +137,8 @@ export const Navbar: React.FC = () => {
                     <ExternalLink className="w-3 h-3 opacity-50" />
                   </a>
                 ) : (
-                  <Link
+                  <FastLink
                     to={item.href}
-                    onMouseEnter={() => prefetchRoute(item.href)}
-                    onFocus={() => prefetchRoute(item.href)}
                     className="relative px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors rounded-lg hover:bg-primary-50"
                   >
                     {item.name}
@@ -156,7 +149,7 @@ export const Navbar: React.FC = () => {
                         transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                       />
                     )}
-                  </Link>
+                  </FastLink>
                 )}
               </div>
             ))}
@@ -172,13 +165,9 @@ export const Navbar: React.FC = () => {
               <CalendarDays className="w-5 h-5" />
             </button>
             <LanguageSwitcher />
-            <Link
-              to="/contact"
-              onMouseEnter={() => prefetchRoute('/contact')}
-              onFocus={() => prefetchRoute('/contact')}
-            >
+            <FastLink to="/contact">
               <Button size="sm">{t('common.bookNow')}</Button>
-            </Link>
+            </FastLink>
           </div>
 
           {/* Mobile - Calendar Icon and Menu Button */}
@@ -214,11 +203,8 @@ export const Navbar: React.FC = () => {
             <div className="px-4 py-4 space-y-2">
               {mainNav.map((item) => (
                 <div key={item.name}>
-                  <Link
+                  <FastLink
                     to={item.href}
-                    onMouseEnter={() => prefetchRoute(item.href)}
-                    onFocus={() => prefetchRoute(item.href)}
-                    onTouchStart={() => prefetchRoute(item.href)}
                     className={`block px-4 py-3 rounded-lg transition-colors ${
                       location.pathname === item.href
                         ? 'bg-primary-50 text-primary-600 font-medium'
@@ -226,7 +212,7 @@ export const Navbar: React.FC = () => {
                     }`}
                   >
                     {item.name}
-                  </Link>
+                  </FastLink>
                 </div>
               ))}
 
@@ -246,11 +232,8 @@ export const Navbar: React.FC = () => {
                       <ExternalLink className="w-4 h-4 opacity-50" />
                     </a>
                   ) : (
-                    <Link
+                    <FastLink
                       to={item.href}
-                      onMouseEnter={() => prefetchRoute(item.href)}
-                      onFocus={() => prefetchRoute(item.href)}
-                      onTouchStart={() => prefetchRoute(item.href)}
                       className={`block px-4 py-3 rounded-lg transition-colors ${
                         location.pathname === item.href
                           ? 'bg-primary-50 text-primary-600 font-medium'
@@ -258,7 +241,7 @@ export const Navbar: React.FC = () => {
                       }`}
                     >
                       {item.name}
-                    </Link>
+                    </FastLink>
                   )}
                 </div>
               ))}
@@ -267,14 +250,9 @@ export const Navbar: React.FC = () => {
                 <div className="px-4">
                   <LanguageSwitcher />
                 </div>
-                <Link
-                  to="/contact"
-                  onMouseEnter={() => prefetchRoute('/contact')}
-                  onFocus={() => prefetchRoute('/contact')}
-                  onTouchStart={() => prefetchRoute('/contact')}
-                >
+                <FastLink to="/contact">
                   <Button className="w-full" size="sm">{t('common.bookNow')}</Button>
-                </Link>
+                </FastLink>
               </div>
             </div>
           </motion.div>
