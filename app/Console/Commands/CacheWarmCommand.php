@@ -3,31 +3,18 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Contracts\Http\Kernel as HttpKernel;
+use Illuminate\Http\Request;
 use Throwable;
 
 class CacheWarmCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'cache:warm';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Pre-warm the CachePublicGet middleware cache for both EN and AR locales';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function handle(HttpKernel $kernel): int
     {
-        $baseUrl = rtrim(config('app.url'), '/');
         $locales = ['en', 'ar'];
         $endpoints = [
             '/api/home-data',
@@ -48,23 +35,24 @@ class CacheWarmCommand extends Command
             foreach ($endpoints as $endpoint) {
                 $this->info("Warming {$endpoint} [{$locale}]...");
 
-                $url = $baseUrl . $endpoint;
-
                 try {
-                    $response = Http::withHeaders([
-                        'Accept-Language' => $locale,
-                        'Accept' => 'application/json',
-                    ])->timeout(30)->get($url);
+                    $request = Request::create($endpoint, 'GET');
+                    $request->headers->set('Accept', 'application/json');
+                    $request->headers->set('Accept-Language', $locale);
 
-                    if ($response->successful()) {
+                    $response = $kernel->handle($request);
+
+                    if ($response->getStatusCode() === 200) {
                         $successCount++;
                     } else {
                         $failureCount++;
-                        $this->warn("  -> HTTP {$response->status()} for {$endpoint} [{$locale}]");
+                        $this->warn("  -> HTTP {$response->getStatusCode()} for {$endpoint} [{$locale}]");
                     }
+
+                    $kernel->terminate($request, $response);
                 } catch (Throwable $e) {
                     $failureCount++;
-                    $this->warn("  -> Request failed for {$endpoint} [{$locale}]: {$e->getMessage()}");
+                    $this->warn("  -> Failed {$endpoint} [{$locale}]: {$e->getMessage()}");
                 }
             }
         }
