@@ -25,28 +25,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [AuthController::class, 'user']);
 });
 
-// Public read routes (index + show)
-Route::get('courses', [CourseController::class, 'index']);
-Route::get('courses/{course}', [CourseController::class, 'show']);
-Route::get('trips', [TripController::class, 'index']);
-Route::get('trips/{trip}', [TripController::class, 'show']);
-Route::get('products', [ProductController::class, 'index']);
-Route::get('products/{product}', [ProductController::class, 'show']);
-Route::get('blog-posts', [BlogPostController::class, 'index']);
-Route::get('blog-posts/{blog_post}', [BlogPostController::class, 'show']);
-Route::get('events', [EventController::class, 'index']);
-Route::get('events/{event}', [EventController::class, 'show']);
-Route::get('team-members', [TeamMemberController::class, 'index']);
-Route::get('team-members/{team_member}', [TeamMemberController::class, 'show']);
-Route::get('team-members-featured', [TeamMemberController::class, 'featured']);
-Route::get('settings', [SettingController::class, 'index']);
-Route::get('settings/{setting}', [SettingController::class, 'show']);
-Route::get('banners', [BannerController::class, 'index']);
-Route::get('banners/{banner}', [BannerController::class, 'show']);
-Route::get('social-initiatives', [SocialInitiativeController::class, 'index']);
-Route::get('social-initiatives/{social_initiative}', [SocialInitiativeController::class, 'show']);
-Route::get('footer-links', [FooterLinkController::class, 'index']);
-Route::get('footer-links/{footer_link}', [FooterLinkController::class, 'show']);
+// Public read routes (index + show) — cached for 5 minutes per locale
+Route::middleware(\App\Http\Middleware\CachePublicGet::class)->group(function () {
+    Route::get('courses', [CourseController::class, 'index']);
+    Route::get('courses/{course}', [CourseController::class, 'show']);
+    Route::get('trips', [TripController::class, 'index']);
+    Route::get('trips/{trip}', [TripController::class, 'show']);
+    Route::get('products', [ProductController::class, 'index']);
+    Route::get('products/{product}', [ProductController::class, 'show']);
+    Route::get('blog-posts', [BlogPostController::class, 'index']);
+    Route::get('blog-posts/{blog_post}', [BlogPostController::class, 'show']);
+    Route::get('events', [EventController::class, 'index']);
+    Route::get('events/{event}', [EventController::class, 'show']);
+    Route::get('team-members', [TeamMemberController::class, 'index']);
+    Route::get('team-members/{team_member}', [TeamMemberController::class, 'show']);
+    Route::get('team-members-featured', [TeamMemberController::class, 'featured']);
+    Route::get('settings', [SettingController::class, 'index']);
+    Route::get('settings/{setting}', [SettingController::class, 'show']);
+    Route::get('banners', [BannerController::class, 'index']);
+    Route::get('banners/{banner}', [BannerController::class, 'show']);
+    Route::get('social-initiatives', [SocialInitiativeController::class, 'index']);
+    Route::get('social-initiatives/{social_initiative}', [SocialInitiativeController::class, 'show']);
+    Route::get('footer-links', [FooterLinkController::class, 'index']);
+    Route::get('footer-links/{footer_link}', [FooterLinkController::class, 'show']);
+});
+
 Route::get('bookings', [BookingController::class, 'index']);
 Route::get('bookings/{booking}', [BookingController::class, 'show']);
 

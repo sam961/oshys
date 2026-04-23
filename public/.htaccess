@@ -27,6 +27,11 @@
 # ----------------------------------------------------------------------
 # Compression (gzip/brotli) — covers JSON API, HTML, CSS, JS, SVG, fonts
 # ----------------------------------------------------------------------
+# LiteSpeed-specific: force compression for dynamic content
+<IfModule LiteSpeed>
+    SetEnv no-gzip 0
+</IfModule>
+
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
     AddOutputFilterByType DEFLATE application/json application/javascript application/x-javascript
