@@ -6,11 +6,13 @@
     <title>Corals & Shells Diving — CAS Academy</title>
     <meta name="description" content="Corals & Shells Diving — CAS Academy. Structured swimming and diving programs in Al Khobar, Saudi Arabia. Built on safety, progression, and commitment.">
 
-    <!-- Fonts -->
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0891b2">
+
+    <!-- Tajawal (Arabic UI font) still loaded via Google Fonts in app.css — preconnect helps -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
     @vite(['resources/css/app.css', 'resources/js/main.tsx'])
 </head>
 <body class="antialiased">

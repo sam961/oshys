@@ -5,6 +5,13 @@
 
     RewriteEngine On
 
+    # Serve the PWA service worker and its manifest from the site root so the
+    # SW can control the full origin (scope=/). Built assets live in /build/.
+    RewriteRule ^sw\.js$ build/sw.js [L]
+    RewriteRule ^workbox-([a-z0-9]+)\.js$ build/workbox-$1.js [L]
+    RewriteRule ^registerSW\.js$ build/registerSW.js [L]
+    RewriteRule ^manifest\.webmanifest$ build/manifest.webmanifest [L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -84,4 +91,18 @@
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Long-cache locale JSON — versioned via query string
+    <FilesMatch "\.(json)$">
+        <If "%{REQUEST_URI} =~ m#^/locales/#">
+            Header set Cache-Control "public, max-age=31536000, immutable"
+            Header unset Expires
+        </If>
+    </FilesMatch>
+
+    # Service worker must not be cached and needs site-wide scope.
+    <FilesMatch "sw\.js$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Service-Worker-Allowed "/"
+    </FilesMatch>
 </IfModule>

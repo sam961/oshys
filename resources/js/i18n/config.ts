@@ -24,7 +24,10 @@ i18n
 
     // Backend configuration
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json?v=' + Date.now(),
+      // NOTE: Bump VITE_TRANSLATIONS_VERSION (or the hardcoded fallback) whenever
+      // files in public/locales/*.json change. Browsers cache locale JSON for 1
+      // year (see public/.htaccess) so a stale version will serve old strings.
+      loadPath: '/locales/{{lng}}/{{ns}}.json?v=' + (import.meta.env.VITE_TRANSLATIONS_VERSION || '20260424'),
     },
 
     // Language detection options

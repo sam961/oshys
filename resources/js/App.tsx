@@ -1,50 +1,60 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { WhatsAppButton } from './components/features/WhatsAppButton';
-import { HomePage } from './pages/HomePage';
-import { AboutPage } from './pages/AboutPage';
-import { CoursesPage } from './pages/CoursesPage';
-import { TripsPage } from './pages/TripsPage';
-import { BlogPage } from './pages/BlogPage';
-import { BlogDetailPage } from './pages/BlogDetailPage';
-import { ContactPage } from './pages/ContactPage';
-import { EventsPage } from './pages/EventsPage';
-import { EventDetailPage } from './pages/EventDetailPage';
-import { InitiativesPage } from './pages/InitiativesPage';
-import { InitiativeDetailPage } from './pages/InitiativeDetailPage';
-import { FooterLinkPage } from './pages/FooterLinkPage';
-import { FAQPage } from './pages/FAQPage';
-import { CourseDetailPage } from './pages/CourseDetailPage';
-import { TripDetailPage } from './pages/TripDetailPage';
+import { PageLoader } from './components/ui/PageLoader';
 
-// Admin imports
-import { LoginPage } from './admin/pages/LoginPage';
-import { ProtectedRoute } from './admin/components/ProtectedRoute';
-import { AdminLayout } from './admin/layouts/AdminLayout';
-import { Dashboard } from './admin/pages/Dashboard';
-import { ProductsManagement } from './admin/pages/ProductsManagement';
-import { CoursesManagement } from './admin/pages/CoursesManagement';
-import { TripsManagement } from './admin/pages/TripsManagement';
-import { BlogManagement } from './admin/pages/BlogManagement';
-import { EventsManagement } from './admin/pages/EventsManagement';
-import { TeamManagement } from './admin/pages/TeamManagement';
-import { BannerManagement } from './admin/pages/BannerManagement';
-import { InitiativesManagement } from './admin/pages/InitiativesManagement';
-import { FooterLinksManagement } from './admin/pages/FooterLinksManagement';
-import { BookingsManagement } from './admin/pages/BookingsManagement';
-import { Settings } from './admin/pages/Settings';
-import { ProductEditPage } from './admin/pages/ProductEditPage';
-import { CourseEditPage } from './admin/pages/CourseEditPage';
-import { TripEditPage } from './admin/pages/TripEditPage';
-import { BlogEditPage } from './admin/pages/BlogEditPage';
-import { EventEditPage } from './admin/pages/EventEditPage';
-import { BannerEditPage } from './admin/pages/BannerEditPage';
-import { InitiativeEditPage } from './admin/pages/InitiativeEditPage';
-import { FooterLinkEditPage } from './admin/pages/FooterLinkEditPage';
-import { TeamMemberEditPage } from './admin/pages/TeamMemberEditPage';
+// Public pages — lazy-loaded for route-level code splitting.
+// Each page ships as its own chunk and is only fetched when the user
+// navigates to it. Pages use named exports, so we map them to `default`
+// for React.lazy.
+const HomePage = React.lazy(() =>
+  import('./pages/HomePage').then((m) => ({ default: m.HomePage }))
+);
+const AboutPage = React.lazy(() =>
+  import('./pages/AboutPage').then((m) => ({ default: m.AboutPage }))
+);
+const CoursesPage = React.lazy(() =>
+  import('./pages/CoursesPage').then((m) => ({ default: m.CoursesPage }))
+);
+const CourseDetailPage = React.lazy(() =>
+  import('./pages/CourseDetailPage').then((m) => ({ default: m.CourseDetailPage }))
+);
+const TripsPage = React.lazy(() =>
+  import('./pages/TripsPage').then((m) => ({ default: m.TripsPage }))
+);
+const TripDetailPage = React.lazy(() =>
+  import('./pages/TripDetailPage').then((m) => ({ default: m.TripDetailPage }))
+);
+const BlogPage = React.lazy(() =>
+  import('./pages/BlogPage').then((m) => ({ default: m.BlogPage }))
+);
+const BlogDetailPage = React.lazy(() =>
+  import('./pages/BlogDetailPage').then((m) => ({ default: m.BlogDetailPage }))
+);
+const ContactPage = React.lazy(() =>
+  import('./pages/ContactPage').then((m) => ({ default: m.ContactPage }))
+);
+const EventsPage = React.lazy(() =>
+  import('./pages/EventsPage').then((m) => ({ default: m.EventsPage }))
+);
+const EventDetailPage = React.lazy(() =>
+  import('./pages/EventDetailPage').then((m) => ({ default: m.EventDetailPage }))
+);
+const InitiativesPage = React.lazy(() =>
+  import('./pages/InitiativesPage').then((m) => ({ default: m.InitiativesPage }))
+);
+const InitiativeDetailPage = React.lazy(() =>
+  import('./pages/InitiativeDetailPage').then((m) => ({ default: m.InitiativeDetailPage }))
+);
+const FooterLinkPage = React.lazy(() =>
+  import('./pages/FooterLinkPage').then((m) => ({ default: m.FooterLinkPage }))
+);
+const FAQPage = React.lazy(() =>
+  import('./pages/FAQPage').then((m) => ({ default: m.FAQPage }))
+);
 
 // Simple scroll to top on navigation (except back/forward)
 const ScrollToTop: React.FC = () => {
@@ -66,52 +76,13 @@ const ScrollToTop: React.FC = () => {
 };
 
 const AppRoutes: React.FC = () => {
-  const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
-
   return (
     <>
       <ScrollToTop />
-      {isAdminRoute ? (
-        <Routes>
-          <Route path="/admin/login" element={<LoginPage />} />
-          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-            <Route index element={<Dashboard />} />
-            <Route path="bookings" element={<BookingsManagement />} />
-            <Route path="products" element={<ProductsManagement />} />
-            <Route path="products/new" element={<ProductEditPage />} />
-            <Route path="products/:id/edit" element={<ProductEditPage />} />
-            <Route path="courses" element={<CoursesManagement />} />
-            <Route path="courses/new" element={<CourseEditPage />} />
-            <Route path="courses/:id/edit" element={<CourseEditPage />} />
-            <Route path="trips" element={<TripsManagement />} />
-            <Route path="trips/new" element={<TripEditPage />} />
-            <Route path="trips/:id/edit" element={<TripEditPage />} />
-            <Route path="blog" element={<BlogManagement />} />
-            <Route path="blog/new" element={<BlogEditPage />} />
-            <Route path="blog/:id/edit" element={<BlogEditPage />} />
-            <Route path="events" element={<EventsManagement />} />
-            <Route path="events/new" element={<EventEditPage />} />
-            <Route path="events/:id/edit" element={<EventEditPage />} />
-            <Route path="team" element={<TeamManagement />} />
-            <Route path="team/new" element={<TeamMemberEditPage />} />
-            <Route path="team/:id/edit" element={<TeamMemberEditPage />} />
-            <Route path="banners" element={<BannerManagement />} />
-            <Route path="banners/new" element={<BannerEditPage />} />
-            <Route path="banners/:id/edit" element={<BannerEditPage />} />
-            <Route path="initiatives" element={<InitiativesManagement />} />
-            <Route path="initiatives/new" element={<InitiativeEditPage />} />
-            <Route path="initiatives/:id/edit" element={<InitiativeEditPage />} />
-            <Route path="footer-links" element={<FooterLinksManagement />} />
-            <Route path="footer-links/new" element={<FooterLinkEditPage />} />
-            <Route path="footer-links/:id/edit" element={<FooterLinkEditPage />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-        </Routes>
-      ) : (
-        <div className="flex flex-col min-h-screen bg-white">
-          <Navbar />
-          <main className="grow">
+      <div className="flex flex-col min-h-screen bg-white">
+        <Navbar />
+        <main className="grow">
+          <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
@@ -129,10 +100,10 @@ const AppRoutes: React.FC = () => {
               <Route path="/faqs" element={<FAQPage />} />
               <Route path="/pages/:slug" element={<FooterLinkPage />} />
             </Routes>
-          </main>
-          <Footer />
-        </div>
-      )}
+          </Suspense>
+        </main>
+        <Footer />
+      </div>
     </>
   );
 };

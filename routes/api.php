@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\SocialInitiativeController;
 use App\Http\Controllers\Api\FooterLinkController;
+use App\Http\Controllers\Api\HomeDataController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\CourseImageController;
@@ -40,6 +41,7 @@ Route::middleware(\App\Http\Middleware\CachePublicGet::class)->group(function ()
     Route::get('team-members', [TeamMemberController::class, 'index']);
     Route::get('team-members/{team_member}', [TeamMemberController::class, 'show']);
     Route::get('team-members-featured', [TeamMemberController::class, 'featured']);
+    Route::get('home-data', [HomeDataController::class, 'index']);
     Route::get('settings', [SettingController::class, 'index']);
     Route::get('settings/{setting}', [SettingController::class, 'show']);
     Route::get('banners', [BannerController::class, 'index']);

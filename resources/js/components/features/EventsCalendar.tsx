@@ -7,7 +7,16 @@ import { useGetEventsQuery } from '../../services/api';
 import { useTranslation } from 'react-i18next';
 import type { Event } from '../../types';
 
-export const EventsCalendar: React.FC = () => {
+interface EventsCalendarProps {
+  /**
+   * Optional pre-fetched events. When provided, the internal fetch is skipped.
+   * Used by HomePage which loads events via the aggregated `/home-data` endpoint.
+   * When omitted, the component falls back to its own RTK Query request.
+   */
+  events?: Event[];
+}
+
+export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsProp }) => {
   const { t, i18n } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -16,8 +25,14 @@ export const EventsCalendar: React.FC = () => {
 
   const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
 
-  // Fetch events from API
-  const { data: eventsData = [], isLoading: eventsLoading, error: eventsError } = useGetEventsQuery({ active: true });
+  // Fetch events from API only if not provided via prop
+  const { data: eventsFetched = [], isLoading: isFetching, error: fetchError } = useGetEventsQuery(
+    { active: true },
+    { skip: eventsProp !== undefined },
+  );
+  const eventsData = eventsProp ?? eventsFetched;
+  const eventsLoading = eventsProp === undefined && isFetching;
+  const eventsError = eventsProp === undefined ? fetchError : undefined;
 
   // Navigate months
   const previousMonth = () => {

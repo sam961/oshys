@@ -1,14 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useGetBannersQuery } from '../../services/api';
 import { UnderwaterOverlay } from '../animations/UnderwaterOverlay';
+import type { Banner } from '../../types';
 
-export const HeroSlider: React.FC = () => {
+interface HeroSliderProps {
+  /**
+   * Optional pre-fetched banners. When provided, the internal fetch is skipped.
+   * Used by HomePage which loads banners via the aggregated `/home-data` endpoint.
+   * When omitted, the component falls back to its own RTK Query request.
+   */
+  banners?: Banner[];
+}
+
+export const HeroSlider: React.FC<HeroSliderProps> = ({ banners: bannersProp }) => {
   const { t } = useTranslation();
-  const { data: banners = [], isLoading } = useGetBannersQuery({ active: true, position: 'hero' });
+  const { data: bannersFetched = [], isLoading: isFetching } = useGetBannersQuery(
+    { active: true, position: 'hero' },
+    { skip: bannersProp !== undefined },
+  );
+  const banners = bannersProp ?? bannersFetched;
+  const isLoading = bannersProp === undefined && isFetching;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -52,8 +67,27 @@ export const HeroSlider: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="relative h-screen w-full flex items-center justify-center bg-gray-900">
-        <Loader2 className="w-12 h-12 animate-spin text-white" />
+      <div
+        className="relative h-screen w-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse"
+        aria-hidden="true"
+      >
+        <div className="relative h-full flex items-center justify-center px-6 sm:px-8">
+          <div className="max-w-2xl w-full mx-auto space-y-4 sm:space-y-6">
+            {/* Heading placeholder */}
+            <div className="h-6 sm:h-10 lg:h-14 bg-white/40 rounded-lg w-3/4 mx-auto" />
+            <div className="h-6 sm:h-10 lg:h-14 bg-white/40 rounded-lg w-1/2 mx-auto" />
+            {/* Description placeholder */}
+            <div className="space-y-2 pt-2 sm:pt-4">
+              <div className="h-3 sm:h-4 bg-white/30 rounded w-full" />
+              <div className="h-3 sm:h-4 bg-white/30 rounded w-5/6 mx-auto" />
+            </div>
+            {/* Buttons placeholder */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6">
+              <div className="h-10 sm:h-14 w-40 sm:w-48 bg-white/40 rounded-lg" />
+              <div className="h-10 sm:h-14 w-40 sm:w-48 bg-white/30 rounded-lg" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -82,11 +116,17 @@ export const HeroSlider: React.FC = () => {
           className="absolute inset-0"
           style={{ willChange: 'opacity' }}
         >
-          {/* Background Image */}
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${slides[currentSlide].image_url || slides[currentSlide].image})` }}
-          >
+          {/* Background Image — <img> so we can hint fetchpriority/loading */}
+          <div className="absolute inset-0">
+            <img
+              src={slides[currentSlide].image_url || slides[currentSlide].image}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover"
+              {...(currentSlide === 0
+                ? { fetchPriority: 'high' as const, loading: 'eager' as const }
+                : { loading: 'lazy' as const })}
+            />
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
           </div>
 

@@ -532,6 +532,23 @@ export const api = createApi({
         body,
       }),
     }),
+
+    // Aggregated homepage data — single request for all homepage sections
+    getHomeData: builder.query<{
+      banners: Banner[];
+      courses: Course[];
+      trips: Trip[];
+      products: Product[];
+      blog_posts: BlogPost[];
+      events: Event[];
+      team_featured: TeamMember | null;
+      settings: Setting[];
+      social_initiatives: SocialInitiative[];
+      footer_links: FooterLink[];
+    }, void>({
+      query: () => '/home-data',
+      providesTags: ['Course', 'Trip', 'Product', 'BlogPost', 'Event', 'Banner', 'Setting', 'SocialInitiative', 'FooterLink', 'TeamMember'],
+    }),
   }),
 });
 
@@ -614,4 +631,6 @@ export const {
   useDeleteBookingMutation,
 
   useSendContactMessageMutation,
+
+  useGetHomeDataQuery,
 } = api;

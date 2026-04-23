@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Compass, GraduationCap, ArrowRight, ShoppingBag, Loader2, Anchor, Users, Award, Shield } from 'lucide-react';
+import { Compass, GraduationCap, ArrowRight, ShoppingBag, Anchor, Users, Award, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Lottie from 'lottie-react';
 import DOMPurify from 'dompurify';
@@ -10,8 +10,8 @@ import { EventsCalendar } from '../components/features/EventsCalendar';
 import { BookingModal } from '../components/features/BookingModal';
 import { Section, Card, Button, GridSkeleton, HorizontalScroll, SaudiRiyalPrice } from '../components/ui';
 import { LiquidBackground, WaveBackground, UnderwaterOverlay, SeaLifeDecorations, DivingDecorations, OceanDecorations } from '../components/animations';
-import { useGetCoursesQuery, useGetTripsQuery, useGetProductsQuery, useGetBlogPostsQuery } from '../services/api';
-import type { Course, Trip, Product, BlogPost } from '../types';
+import { useGetHomeDataQuery } from '../services/api';
+import type { Course, Trip } from '../types';
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
@@ -55,11 +55,21 @@ export const HomePage: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  // Fetch featured data from API
-  const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useGetCoursesQuery({ active: true, featured: true });
-  const { data: trips = [], isLoading: tripsLoading, error: tripsError } = useGetTripsQuery({ active: true, featured: true });
-  const { data: products = [], isLoading: productsLoading, error: productsError } = useGetProductsQuery({ active: true, featured: true });
-  const { data: blogPosts = [], isLoading: blogPostsLoading, error: blogPostsError } = useGetBlogPostsQuery({ published: true, featured: true });
+  // Fetch all homepage data in a single aggregated request
+  const { data: homeData, isLoading: homeLoading, error: homeError } = useGetHomeDataQuery();
+  const trips = homeData?.trips ?? [];
+  const products = homeData?.products ?? [];
+  const blogPosts = homeData?.blog_posts ?? [];
+  const banners = homeData?.banners;
+  const events = homeData?.events;
+
+  // Per-section loading/error derived from the aggregated request
+  const tripsLoading = homeLoading;
+  const productsLoading = homeLoading;
+  const blogPostsLoading = homeLoading;
+  const tripsError = homeError;
+  const productsError = homeError;
+  const blogPostsError = homeError;
 
   // Service cards data for "What We Offer"
   const serviceCards = [
@@ -92,7 +102,7 @@ export const HomePage: React.FC = () => {
   return (
     <div className="overflow-hidden">
       {/* 1. Hero Slider */}
-      <HeroSlider />
+      <HeroSlider banners={banners} />
 
       {/* 2. Start Diving — Your Journey Underwater */}
       <Section background="gradient" className="text-center relative overflow-hidden">
@@ -226,8 +236,19 @@ export const HomePage: React.FC = () => {
 
         <div className="relative z-10">
           {blogPostsLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="w-8 h-8 sm:w-12 sm:h-12 animate-spin text-primary-600" />
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              aria-hidden="true"
+            >
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-lg mb-4" />
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : blogPostsError ? (
             <div className="text-center py-12">
@@ -408,7 +429,7 @@ export const HomePage: React.FC = () => {
         </motion.div>
 
         <div className="relative z-10">
-          <EventsCalendar />
+          <EventsCalendar events={events} />
         </div>
       </Section>
 
