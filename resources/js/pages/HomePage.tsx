@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Compass, GraduationCap, ArrowRight, ShoppingBag, Anchor, Users, Award, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import Lottie from 'lottie-react';
 import DOMPurify from 'dompurify';
+
+// Lottie is ~100 KB and the snorkeling animation JSON is ~600 KB.
+// Lazy-load the library so it only ships after the page is interactive,
+// gated on the animation JSON being fetched below.
+const Lottie = React.lazy(() => import('lottie-react'));
 import { HeroSlider } from '../components/features/HeroSlider';
 import { EventsCalendar } from '../components/features/EventsCalendar';
 import { BookingModal } from '../components/features/BookingModal';
@@ -46,13 +50,26 @@ export const HomePage: React.FC = () => {
     setSelectedTrip(null);
   };
 
-  // Lottie diver animation
+  // Lottie diver animation — fetch the 600 KB JSON only when the browser
+  // is idle, so it never competes with LCP or page-interactive work.
   const [diverData, setDiverData] = useState<object | null>(null);
   useEffect(() => {
-    fetch('/animations/snorkeling.json')
-      .then((res) => res.json())
-      .then(setDiverData)
-      .catch(() => {});
+    const load = () => {
+      fetch('/animations/snorkeling.json')
+        .then((res) => res.json())
+        .then(setDiverData)
+        .catch(() => {});
+    };
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof win.requestIdleCallback === 'function') {
+      const id = win.requestIdleCallback(load);
+      return () => win.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(load, 1200);
+    return () => window.clearTimeout(t);
   }, []);
 
   // Fetch all homepage data in a single aggregated request
@@ -124,11 +141,13 @@ export const HomePage: React.FC = () => {
             }}
             aria-hidden="true"
           >
-            <Lottie
-              animationData={diverData}
-              loop
-              className="w-full h-full opacity-80 drop-shadow-[0_0_25px_rgba(6,182,212,0.2)]"
-            />
+            <Suspense fallback={null}>
+              <Lottie
+                animationData={diverData}
+                loop
+                className="w-full h-full opacity-80 drop-shadow-[0_0_25px_rgba(6,182,212,0.2)]"
+              />
+            </Suspense>
           </motion.div>
         )}
 

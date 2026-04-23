@@ -79,7 +79,12 @@ class CachePublicGet
         $response = response($body, 200)
             ->header('Content-Type', $contentType)
             ->header('X-Cache', $cacheStatus)
-            ->header('Vary', 'Accept-Encoding');
+            ->header('Vary', 'Accept-Encoding, Accept-Language')
+            // Browser may re-use this response without hitting the server for 60s,
+            // then revalidates in the background (stale-while-revalidate). This
+            // is the single biggest TTFB win on shared hosting — repeat requests
+            // never touch PHP.
+            ->header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
 
         if ($encoding !== null) {
             $response->header('Content-Encoding', $encoding);

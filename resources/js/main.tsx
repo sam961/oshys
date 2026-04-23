@@ -1,4 +1,9 @@
 import '@fontsource-variable/inter/wght.css';
+import '@fontsource/tajawal/300.css';
+import '@fontsource/tajawal/400.css';
+import '@fontsource/tajawal/500.css';
+import '@fontsource/tajawal/700.css';
+import '@fontsource/tajawal/800.css';
 import '../css/app.css';
 import './bootstrap';
 import './i18n/config';

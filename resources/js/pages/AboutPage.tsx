@@ -62,11 +62,23 @@ export const AboutPage: React.FC = () => {
     <div className="pt-20">
       {/* Hero */}
       <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
-        <img
-          src="/static/about/about-hero.jpg"
-          alt={t('about.heroTitle')}
-          className="w-full h-full object-cover"
-        />
+        <picture>
+          <source
+            type="image/webp"
+            srcSet="/static/about/about-hero-mobile.webp 800w, /static/about/about-hero.webp 1920w"
+            sizes="100vw"
+          />
+          <img
+            src="/static/about/about-hero.jpg"
+            alt={t('about.heroTitle')}
+            width={1920}
+            height={600}
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
+            className="w-full h-full object-cover"
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-accent-900/80" />
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div
@@ -107,11 +119,22 @@ export const AboutPage: React.FC = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <img
-              src="/static/about/about-team.jpg"
-              alt={t('about.ourStory')}
-              className="w-full h-56 sm:h-96 object-cover rounded-2xl shadow-2xl"
-            />
+            <picture>
+              <source
+                type="image/webp"
+                srcSet="/static/about/about-team-mobile.webp 800w, /static/about/about-team.webp 1600w"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+              <img
+                src="/static/about/about-team.jpg"
+                alt={t('about.ourStory')}
+                width={1200}
+                height={900}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-56 sm:h-96 object-cover rounded-2xl shadow-2xl"
+              />
+            </picture>
           </motion.div>
         </div>
       </Section>

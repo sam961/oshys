@@ -95,6 +95,10 @@ export const Navbar: React.FC = () => {
                 <img
                   src="/images/logo.png"
                   alt={t('brand.name')}
+                  width={80}
+                  height={80}
+                  fetchPriority="high"
+                  decoding="async"
                   className="h-20 w-auto"
                 />
               </motion.div>

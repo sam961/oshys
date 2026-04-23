@@ -43,6 +43,10 @@ export const Footer: React.FC = () => {
             <img
               src="/images/logo.png"
               alt={t('brand.name')}
+              width={80}
+              height={80}
+              loading="lazy"
+              decoding="async"
               className="h-16 sm:h-20 w-auto brightness-110"
             />
           </FastLink>
