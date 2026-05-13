@@ -91,7 +91,7 @@ export const ContactPage: React.FC = () => {
                 <Mail className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{t('contactPage.emailUs')}</h3>
-              <a href="mailto:diver.cas1@gmail.com" className="text-gray-600 hover:text-primary-600 transition-colors">diver.cas1@gmail.com</a>
+              <a href="mailto:hello@coralsandshells.com" className="text-gray-600 hover:text-primary-600 transition-colors">hello@coralsandshells.com</a>
             </Card>
           </motion.div>
 

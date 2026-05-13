@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 export const Settings: React.FC = () => {
   const [settings, setSettings] = useState({
     siteName: 'Corals & Shells Diving — CAS Academy',
-    siteEmail: 'diver.cas1@gmail.com',
+    siteEmail: 'hello@coralsandshells.com',
     sitePhone: '+966 54 100 0233',
     siteAddress: 'Al Khobar, Eastern Province, Saudi Arabia',
     currency: 'SAR',

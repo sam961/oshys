@@ -101,8 +101,8 @@ export const Footer: React.FC = () => {
           <a href="tel:+966541000233" className="hover:text-white transition-colors" dir="ltr">
             +966 54 100 0233
           </a>
-          <a href="mailto:diver.cas1@gmail.com" className="hover:text-white transition-colors">
-            diver.cas1@gmail.com
+          <a href="mailto:hello@coralsandshells.com" className="hover:text-white transition-colors">
+            hello@coralsandshells.com
           </a>
           <span>{t('footer.location')}</span>
         </div>
