@@ -4,27 +4,14 @@ namespace Database\Seeders;
 
 use App\Models\Banner;
 use App\Models\Course;
-use App\Models\Image;
 use App\Models\TeamMember;
 use App\Models\Trip;
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class ProductionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create admin user
-        User::firstOrCreate(
-            ['email' => 'admin@oshys.com'],
-            [
-                'name' => 'Admin',
-                'password' => Hash::make('password'),
-            ]
-        );
-
         $this->seedTrips();
         $this->seedCourses();
         $this->seedBanners();
