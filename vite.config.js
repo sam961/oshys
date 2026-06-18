@@ -14,7 +14,7 @@ export default defineConfig({
                 'resources/js/admin-main.tsx',
             ],
             refresh: true,
-            detectTls: 'oshys.test',
+            detectTls: 'coralsandshells.test',
         }),
         react({
             jsxImportSource: 'react',

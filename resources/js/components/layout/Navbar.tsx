@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { FastLink } from '../ui/FastLink';
 import { LanguageSwitcher } from '../shared/LanguageSwitcher';
+import { CurrencySwitcher } from '../shared/CurrencySwitcher';
 
 interface NavItem {
   name: string;
@@ -168,6 +169,7 @@ export const Navbar: React.FC = () => {
             >
               <CalendarDays className="w-5 h-5" />
             </button>
+            <CurrencySwitcher />
             <LanguageSwitcher />
             <FastLink to="/contact">
               <Button size="sm">{t('common.bookNow')}</Button>
@@ -251,6 +253,9 @@ export const Navbar: React.FC = () => {
               ))}
 
               <div className="pt-2 space-y-2">
+                <div className="px-4">
+                  <CurrencySwitcher />
+                </div>
                 <div className="px-4">
                   <LanguageSwitcher />
                 </div>

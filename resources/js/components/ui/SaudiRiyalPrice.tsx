@@ -1,36 +1,55 @@
 import React from 'react';
 import '@abdulrysr/saudi-riyal-new-symbol-font/style.css';
+import { useCurrency } from '../../context/CurrencyContext';
 
 interface SaudiRiyalPriceProps {
+  /** The price amount in SAR (the base currency). */
   amount: number | string;
   className?: string;
   showSymbol?: boolean;
 }
 
 /**
- * Displays a price with the official Saudi Riyal symbol (٪)
- * as approved by the Saudi Central Bank (SAMA).
+ * Displays a price, respecting the user's selected display currency.
  *
- * The symbol works in both LTR (English) and RTL (Arabic) contexts.
+ * Amounts are always passed in SAR (the base currency). When the user
+ * has selected USD, the amount is converted via the fixed peg and shown
+ * with a "$" symbol and whole-dollar rounding. In SAR it renders with the
+ * official Saudi Riyal symbol as approved by the Saudi Central Bank (SAMA),
+ * which works in both LTR (English) and RTL (Arabic) contexts.
  */
 export const SaudiRiyalPrice: React.FC<SaudiRiyalPriceProps> = ({
   amount,
   className = '',
-  showSymbol = true
+  showSymbol = true,
 }) => {
-  const formatPrice = (value: number | string): string => {
-    const num = typeof value === 'string' ? parseFloat(value) : value;
-    if (isNaN(num)) return String(value);
+  const { currency, convert } = useCurrency();
 
-    // Remove trailing zeros (e.g., 45.00 -> 45, 45.50 -> 45.5)
-    const formatted = num % 1 === 0
-      ? num.toLocaleString('en-US', { maximumFractionDigits: 0 })
-      : num.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 }).replace(/\.?0+$/, '');
+  const sarValue = typeof amount === 'string' ? parseFloat(amount) : amount;
 
-    return formatted;
-  };
+  // Guard against non-numeric input — render the raw value untouched.
+  if (isNaN(sarValue)) {
+    return <span className={className}>{String(amount)}</span>;
+  }
 
-  const formattedAmount = formatPrice(amount);
+  if (currency === 'USD') {
+    const usd = Math.round(convert(sarValue));
+    const formatted = usd.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    return (
+      <span className={className}>
+        {showSymbol && <span style={{ marginInlineEnd: '0.15em' }}>$</span>}
+        {formatted}
+      </span>
+    );
+  }
+
+  // SAR — strip trailing zeros (45.00 -> 45, 45.50 -> 45.5).
+  const formatted =
+    sarValue % 1 === 0
+      ? sarValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
+      : sarValue
+          .toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 })
+          .replace(/\.?0+$/, '');
 
   return (
     <span className={className}>
@@ -43,7 +62,7 @@ export const SaudiRiyalPrice: React.FC<SaudiRiyalPriceProps> = ({
           &#xea;
         </span>
       )}
-      {formattedAmount}
+      {formatted}
     </span>
   );
 };

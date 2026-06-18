@@ -5,6 +5,7 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { WhatsAppButton } from './components/features/WhatsAppButton';
 import { PageLoader } from './components/ui/PageLoader';
+import { CurrencyProvider } from './context/CurrencyContext';
 
 // Public pages — lazy-loaded for route-level code splitting.
 // Each page ships as its own chunk and is only fetched when the user
@@ -110,11 +111,13 @@ const AppRoutes: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Toaster position="top-right" />
-      <WhatsAppButton />
-      <AppRoutes />
-    </Router>
+    <CurrencyProvider>
+      <Router>
+        <Toaster position="top-right" />
+        <WhatsAppButton />
+        <AppRoutes />
+      </Router>
+    </CurrencyProvider>
   );
 };
 
