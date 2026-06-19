@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../ui';
 import { FastLink } from '../ui/FastLink';
 import { LanguageSwitcher } from '../shared/LanguageSwitcher';
-import { CurrencySwitcher } from '../shared/CurrencySwitcher';
 
 interface NavItem {
   name: string;
@@ -81,7 +80,10 @@ export const Navbar: React.FC = () => {
           : 'bg-white/90 backdrop-blur-sm'
       }`}
     >
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12">
+      {/* Force LTR layout so the bar's structure (logo left, controls + language
+          toggle right) stays fixed when switching to Arabic. Item text still
+          renders in the active language; only the chrome layout is anchored. */}
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12" dir="ltr">
         <div className="flex items-center justify-between h-20">
           {/* Logo - Left aligned */}
           <div className="shrink-0">
@@ -169,7 +171,6 @@ export const Navbar: React.FC = () => {
             >
               <CalendarDays className="w-5 h-5" />
             </button>
-            <CurrencySwitcher />
             <LanguageSwitcher />
             <FastLink to="/contact">
               <Button size="sm">{t('common.bookNow')}</Button>
@@ -253,9 +254,6 @@ export const Navbar: React.FC = () => {
               ))}
 
               <div className="pt-2 space-y-2">
-                <div className="px-4">
-                  <CurrencySwitcher />
-                </div>
                 <div className="px-4">
                   <LanguageSwitcher />
                 </div>

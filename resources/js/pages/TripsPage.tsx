@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, MapPin, Award, Loader2, Grid3x3, List, Calendar, Anchor, TrendingUp, Shield } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
+import { CurrencySwitcher } from '../components/shared/CurrencySwitcher';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { BookingModal } from '../components/features/BookingModal';
 import { useGetTripsQuery } from '../services/api';
@@ -85,6 +86,9 @@ export const TripsPage: React.FC = () => {
       <div className="bg-white border-b border-gray-200 sticky top-20 z-40 shadow-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-end gap-4">
+              {/* Currency Switcher */}
+              <CurrencySwitcher />
+
               {/* Sort Dropdown */}
               <select
                 value={sortBy}

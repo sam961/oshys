@@ -65,7 +65,6 @@ class BlogPostController extends Controller
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
 
-            'author_id' => 'required|exists:users,id',
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
             'published_at' => 'nullable|date',
@@ -74,6 +73,11 @@ class BlogPostController extends Controller
             'excerpt_translations' => 'nullable',
             'content_translations' => 'nullable',
         ]);
+
+        // Author is always the authenticated admin — never trust a client-supplied
+        // id (the previous hardcoded author_id=1 broke once the admin user's id
+        // changed). The store route is behind auth:sanctum, so a user is present.
+        $validated['author_id'] = $request->user()->id;
 
         // Convert boolean strings to actual booleans
         $validated['is_published'] = filter_var($request->input('is_published', false), FILTER_VALIDATE_BOOLEAN);
@@ -122,7 +126,6 @@ class BlogPostController extends Controller
             'content' => 'sometimes|required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
 
-            'author_id' => 'sometimes|required|exists:users,id',
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
             'published_at' => 'nullable|date',

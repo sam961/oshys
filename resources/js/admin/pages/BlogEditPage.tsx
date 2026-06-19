@@ -91,7 +91,7 @@ export const BlogEditPage: React.FC = () => {
       submitData.append('content', formData.content);
       submitData.append('is_published', formData.is_published ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
-      submitData.append('author_id', '1');
+      // author_id is set server-side from the authenticated user.
       if (formData.published_at) submitData.append('published_at', formData.published_at);
       if (imageFile) submitData.append('image', imageFile);
       submitData.append('title_translations', JSON.stringify(formData.title_translations));

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, Users, Filter, Grid3x3, List, ArrowRight } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
+import { CurrencySwitcher } from '../components/shared/CurrencySwitcher';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { useGetEventsQuery } from '../services/api';
 import type { Event } from '../types';
@@ -172,6 +173,9 @@ export const EventsPage: React.FC = () => {
 
             {/* View Controls */}
             <div className="flex items-center gap-4">
+              {/* Currency Switcher */}
+              <CurrencySwitcher />
+
               {/* Sort Dropdown */}
               <select
                 value={sortBy}

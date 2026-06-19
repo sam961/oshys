@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Loader2, Grid3x3, List, TrendingUp } from 'lucide-react';
 import { Section, Card, Button, GridSkeleton, SaudiRiyalPrice } from '../components/ui';
+import { CurrencySwitcher } from '../components/shared/CurrencySwitcher';
 import { StaggerContainer, WaveBackground } from '../components/animations';
 import { useGetProductsQuery } from '../services/api';
 import type { Product } from '../types';
@@ -71,6 +72,9 @@ export const ProductsPage: React.FC = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end gap-4">
             {/* View Controls */}
             <div className="flex items-center gap-4">
+              {/* Currency Switcher */}
+              <CurrencySwitcher />
+
               {/* Sort Dropdown */}
               <select
                 value={sortBy}
