@@ -61,6 +61,9 @@ Route::post('bookings', [BookingController::class, 'store']);
 
 // Protected write routes (create, update, delete)
 Route::middleware('auth:sanctum')->group(function () {
+    // Media library — lists previously-uploaded images for the admin picker.
+    Route::get('media', [\App\Http\Controllers\Api\MediaController::class, 'index']);
+
     Route::apiResource('courses', CourseController::class)->except(['index', 'show']);
     Route::post('courses/{course}/images', [CourseImageController::class, 'store']);
     Route::put('courses/{course}/images/reorder', [CourseImageController::class, 'reorder']);

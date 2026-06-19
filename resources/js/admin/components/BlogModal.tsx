@@ -6,6 +6,9 @@ import type { BlogPost } from '../../types';
 import toast from 'react-hot-toast';
 import TranslatableField from './TranslatableField';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from './ImageUploadWithCrop';
+import { MediaPicker } from './MediaPicker';
+import { ImagePlus } from 'lucide-react';
+import type { MediaItem } from '../../types';
 
 interface BlogModalProps {
   isOpen: boolean;
@@ -34,6 +37,9 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  // Path of an existing image chosen from the media library (vs. a fresh upload).
+  const [selectedImagePath, setSelectedImagePath] = useState<string>('');
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   useEffect(() => {
     if (blogPost && mode !== 'create') {
@@ -55,6 +61,7 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         setImagePreview((blogPost as any).image_url);
       }
       setImageFile(null);
+      setSelectedImagePath('');
     } else if (mode === 'create') {
       setFormData({
         title: '',
@@ -70,6 +77,7 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
       });
       setImageFile(null);
       setImagePreview('');
+      setSelectedImagePath('');
     }
   }, [blogPost, mode]);
 
@@ -97,9 +105,11 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         submitData.append('published_at', formData.published_at);
       }
 
-      // Add image file if selected
+      // Featured image: a newly-uploaded file, or a path chosen from the library.
       if (imageFile) {
         submitData.append('image', imageFile);
+      } else if (selectedImagePath) {
+        submitData.append('image_path', selectedImagePath);
       }
 
       // Add translations
@@ -145,12 +155,22 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
   const handleImageCropped = (file: File, previewUrl: string) => {
     setImageFile(file);
     setImagePreview(previewUrl);
+    // A fresh upload supersedes any library selection.
+    setSelectedImagePath('');
+  };
+
+  const handleMediaSelect = (item: MediaItem) => {
+    setSelectedImagePath(item.path);
+    setImagePreview(item.url);
+    // A library selection supersedes any pending upload.
+    setImageFile(null);
   };
 
   const isViewMode = mode === 'view';
   const isLoading = isCreating || isUpdating;
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <>
@@ -210,8 +230,9 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
                   type="textarea"
                   required
                   rows={2}
-                  placeholder="Enter a brief excerpt"
-                  placeholderAr="أدخل مقتطف قصير"
+                  maxLength={160}
+                  placeholder="Enter a brief excerpt (max 160 characters)"
+                  placeholderAr="أدخل مقتطف قصير (160 حرف كحد أقصى)"
                   disabled={isViewMode}
                 />
 
@@ -259,12 +280,25 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
                       />
                     </div>
                   ) : (
-                    <ImageUploadWithCrop
-                      onImageCropped={handleImageCropped}
-                      currentPreview={imagePreview}
-                      guideline={IMAGE_GUIDELINES.blog}
-                      disabled={isViewMode}
-                    />
+                    <>
+                      <ImageUploadWithCrop
+                        onImageCropped={handleImageCropped}
+                        currentPreview={imagePreview}
+                        guideline={IMAGE_GUIDELINES.blog}
+                        disabled={isViewMode}
+                      />
+                      <div className="mt-2 flex items-center gap-2">
+                        <span className="text-xs text-gray-400">or</span>
+                        <button
+                          type="button"
+                          onClick={() => setIsPickerOpen(true)}
+                          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
+                        >
+                          <ImagePlus className="w-4 h-4" />
+                          Choose from media library
+                        </button>
+                      </div>
+                    </>
                   )}
                 </div>
 
@@ -320,5 +354,12 @@ export const BlogModal: React.FC<BlogModalProps> = ({ isOpen, onClose, blogPost,
         </>
       )}
     </AnimatePresence>
+
+    <MediaPicker
+      isOpen={isPickerOpen}
+      onClose={() => setIsPickerOpen(false)}
+      onSelect={handleMediaSelect}
+    />
+    </>
   );
 };

@@ -14,6 +14,8 @@ interface TranslatableFieldProps {
   rows?: number;
   disabled?: boolean;
   className?: string;
+  /** When set, limits input length and shows a live character counter. */
+  maxLength?: number;
 }
 
 const TranslatableField: React.FC<TranslatableFieldProps> = ({
@@ -30,6 +32,7 @@ const TranslatableField: React.FC<TranslatableFieldProps> = ({
   rows = 4,
   disabled = false,
   className = '',
+  maxLength,
 }) => {
   const [activeLocale, setActiveLocale] = useState<'en' | 'ar'>('en');
 
@@ -103,6 +106,7 @@ const TranslatableField: React.FC<TranslatableFieldProps> = ({
             required={required && activeLocale === 'en'}
             placeholder={currentPlaceholder}
             disabled={disabled}
+            maxLength={maxLength}
             className={inputClassName}
             dir={activeLocale === 'ar' ? 'rtl' : 'ltr'}
           />
@@ -116,6 +120,7 @@ const TranslatableField: React.FC<TranslatableFieldProps> = ({
             required={required && activeLocale === 'en'}
             placeholder={currentPlaceholder}
             disabled={disabled}
+            maxLength={maxLength}
             className={inputClassName}
             dir={activeLocale === 'ar' ? 'rtl' : 'ltr'}
           />
@@ -144,6 +149,15 @@ const TranslatableField: React.FC<TranslatableFieldProps> = ({
           <span className={`w-2 h-2 rounded-full ${translationValue ? 'bg-green-500' : 'bg-gray-300'}`}></span>
           <span className="text-gray-500">AR</span>
         </div>
+        {maxLength && (
+          <span
+            className={`ml-auto tabular-nums ${
+              currentValue.length >= maxLength ? 'text-red-500 font-medium' : 'text-gray-400'
+            }`}
+          >
+            {currentValue.length}/{maxLength}
+          </span>
+        )}
       </div>
     </div>
   );

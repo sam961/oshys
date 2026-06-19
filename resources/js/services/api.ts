@@ -14,6 +14,7 @@ import type {
   Banner,
   FooterLink,
   Booking,
+  MediaItem,
   Image,
 } from '../types';
 
@@ -222,6 +223,9 @@ export const api = createApi({
     }),
 
     // Blog Posts
+    getMedia: builder.query<{ data: MediaItem[] }, void>({
+      query: () => '/media',
+    }),
     getBlogPosts: builder.query<BlogPost[], { published?: boolean; featured?: boolean; search?: string }>({
       query: (params) => ({
         url: '/blog-posts',
@@ -580,6 +584,7 @@ export const {
   useUpdateProductMutation,
   useDeleteProductMutation,
 
+  useGetMediaQuery,
   useGetBlogPostsQuery,
   useGetBlogPostQuery,
   useCreateBlogPostMutation,

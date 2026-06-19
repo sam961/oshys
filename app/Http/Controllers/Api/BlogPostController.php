@@ -61,9 +61,11 @@ class BlogPostController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'excerpt' => 'required|string',
+            'excerpt' => 'required|string|max:160',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            // Relative path to an existing uploaded image, chosen from the media picker.
+            'image_path' => 'nullable|string',
 
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
@@ -83,13 +85,17 @@ class BlogPostController extends Controller
         $validated['is_published'] = filter_var($request->input('is_published', false), FILTER_VALIDATE_BOOLEAN);
         $validated['is_featured'] = filter_var($request->input('is_featured', false), FILTER_VALIDATE_BOOLEAN);
 
-        // Handle image upload
+        // Featured image: an uploaded file takes priority; otherwise reuse an
+        // existing image selected from the media library.
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $filename = time() . '_' . Str::slug($validated['title']) . '.' . $image->getClientOriginalExtension();
             $path = $image->storeAs('blog', $filename, 'public');
             $validated['image'] = $path;
+        } elseif ($mediaPath = $this->resolveMediaPath($request->input('image_path'))) {
+            $validated['image'] = $mediaPath;
         }
+        unset($validated['image_path']);
 
         $validated['slug'] = Str::slug($validated['title']);
 
@@ -102,6 +108,25 @@ class BlogPostController extends Controller
         $this->saveTranslationsFromRequest($blogPost, $request);
 
         return response()->json($blogPost->load('translations'), 201);
+    }
+
+    /**
+     * Validate a media-picker path and return it only if it points to an
+     * existing file on the public disk. Guards against path traversal / arbitrary
+     * values being written into the image column.
+     */
+    private function resolveMediaPath(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        // Reject traversal and absolute paths; only allow disk-relative paths.
+        if (str_contains($path, '..') || str_starts_with($path, '/')) {
+            return null;
+        }
+
+        return Storage::disk('public')->exists($path) ? $path : null;
     }
 
     /**
@@ -122,9 +147,11 @@ class BlogPostController extends Controller
 
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
-            'excerpt' => 'sometimes|required|string',
+            'excerpt' => 'sometimes|required|string|max:160',
             'content' => 'sometimes|required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            // Relative path to an existing uploaded image, chosen from the media picker.
+            'image_path' => 'nullable|string',
 
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
@@ -143,7 +170,8 @@ class BlogPostController extends Controller
             $validated['is_featured'] = filter_var($request->input('is_featured'), FILTER_VALIDATE_BOOLEAN);
         }
 
-        // Handle image upload
+        // Featured image: an uploaded file takes priority; otherwise reuse an
+        // existing image selected from the media library.
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($blogPost->image && Storage::disk('public')->exists($blogPost->image)) {
@@ -154,7 +182,12 @@ class BlogPostController extends Controller
             $filename = time() . '_' . Str::slug($validated['title'] ?? $blogPost->title) . '.' . $image->getClientOriginalExtension();
             $path = $image->storeAs('blog', $filename, 'public');
             $validated['image'] = $path;
+        } elseif ($mediaPath = $this->resolveMediaPath($request->input('image_path'))) {
+            // Reusing an existing image — do not delete the old file, another
+            // post may reference it.
+            $validated['image'] = $mediaPath;
         }
+        unset($validated['image_path']);
 
         if (isset($validated['title'])) {
             $validated['slug'] = Str::slug($validated['title']);

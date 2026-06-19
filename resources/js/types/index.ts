@@ -235,3 +235,12 @@ export interface Booking {
   created_at: string;
   updated_at: string;
 }
+
+// A previously-uploaded image returned by the media library endpoint.
+export interface MediaItem {
+  path: string;        // disk-relative path, e.g. "blog/123_title.jpg"
+  url: string;         // public URL for display
+  name: string;        // file basename
+  folder: string;      // source folder (blog, courses, trips, ...)
+  last_modified: number;
+}
