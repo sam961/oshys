@@ -15,7 +15,7 @@ interface MediaPickerProps {
  * reuse one (e.g. as a blog featured image) instead of re-uploading.
  */
 export const MediaPicker: React.FC<MediaPickerProps> = ({ isOpen, onClose, onSelect }) => {
-  const { data, isLoading, isError } = useGetMediaQuery(undefined, { skip: !isOpen });
+  const { data, isLoading, isError, error } = useGetMediaQuery(undefined, { skip: !isOpen });
   const [selected, setSelected] = useState<MediaItem | null>(null);
 
   if (!isOpen) return null;
@@ -60,6 +60,9 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({ isOpen, onClose, onSel
             <div className="flex flex-col items-center justify-center py-16 text-gray-500">
               <ImageOff className="w-8 h-8 mb-2" />
               <p>Could not load the media library.</p>
+              {(error as any)?.status && (
+                <p className="text-xs text-gray-400 mt-1">Error: {String((error as any).status)}</p>
+              )}
             </div>
           ) : images.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-gray-500">

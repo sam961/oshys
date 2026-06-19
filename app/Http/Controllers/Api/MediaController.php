@@ -25,24 +25,36 @@ class MediaController extends Controller
         $images = [];
 
         foreach (self::DIRECTORIES as $dir) {
-            if (! $disk->exists($dir)) {
-                continue;
-            }
-
-            foreach ($disk->files($dir) as $path) {
-                $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-                if (! in_array($ext, self::IMAGE_EXTENSIONS, true)) {
+            try {
+                if (! $disk->exists($dir)) {
                     continue;
                 }
 
-                $images[] = [
-                    // Relative path stored on models (e.g. "blog/123_title.jpg").
-                    'path' => $path,
-                    'url' => asset('storage/' . $path),
-                    'name' => basename($path),
-                    'folder' => $dir,
-                    'last_modified' => $disk->lastModified($path),
-                ];
+                foreach ($disk->files($dir) as $path) {
+                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                    if (! in_array($ext, self::IMAGE_EXTENSIONS, true)) {
+                        continue;
+                    }
+
+                    // lastModified can throw if a file vanishes mid-scan; default to 0.
+                    try {
+                        $lastModified = $disk->lastModified($path);
+                    } catch (\Throwable $e) {
+                        $lastModified = 0;
+                    }
+
+                    $images[] = [
+                        // Relative path stored on models (e.g. "blog/123_title.jpg").
+                        'path' => $path,
+                        'url' => asset('storage/' . $path),
+                        'name' => basename($path),
+                        'folder' => $dir,
+                        'last_modified' => $lastModified,
+                    ];
+                }
+            } catch (\Throwable $e) {
+                // A single unreadable directory must not break the whole listing.
+                continue;
             }
         }
 
