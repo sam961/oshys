@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, ImagePlus } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
+import { MediaPicker } from '../components/MediaPicker';
 import { useGetSocialInitiativeQuery, useCreateSocialInitiativeMutation, useUpdateSocialInitiativeMutation } from '../../services/api';
+import type { MediaItem } from '../../types';
 import toast from 'react-hot-toast';
 
 interface FormData {
@@ -45,6 +47,9 @@ export const InitiativeEditPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  // Path of an existing image chosen from the media library (vs. a fresh upload).
+  const [selectedImagePath, setSelectedImagePath] = useState<string>('');
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
 
@@ -68,8 +73,8 @@ export const InitiativeEditPage: React.FC = () => {
   }, [initiative, isEditMode]);
 
   useEffect(() => {
-    setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialData) || imageFile !== null);
-  }, [formData, initialData, imageFile]);
+    setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialData) || imageFile !== null || selectedImagePath !== '');
+  }, [formData, initialData, imageFile, selectedImagePath]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => { if (isDirty) { e.preventDefault(); e.returnValue = ''; } };
@@ -92,7 +97,9 @@ export const InitiativeEditPage: React.FC = () => {
       submitData.append('is_published', formData.is_published ? '1' : '0');
       submitData.append('is_featured', formData.is_featured ? '1' : '0');
       if (formData.published_at) submitData.append('published_at', formData.published_at);
+      // Featured image: a newly-uploaded file, or a path chosen from the library.
       if (imageFile) submitData.append('image', imageFile);
+      else if (selectedImagePath) submitData.append('image_path', selectedImagePath);
       submitData.append('title_translations', JSON.stringify(formData.title_translations));
       submitData.append('excerpt_translations', JSON.stringify(formData.excerpt_translations));
       submitData.append('content_translations', JSON.stringify(formData.content_translations));
@@ -138,7 +145,7 @@ export const InitiativeEditPage: React.FC = () => {
           <FormSection title="Content" description="Title, excerpt, and content">
             <div className="space-y-5">
               <TranslatableField label="Title" name="title" value={formData.title} translationValue={formData.title_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, title: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, title_translations: { ar: v } }))} required placeholder="Enter initiative title" placeholderAr="أدخل عنوان المبادرة" />
-              <TranslatableRichText label="Excerpt" name="excerpt" value={formData.excerpt} translationValue={formData.excerpt_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, excerpt: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, excerpt_translations: { ar: v } }))} required />
+              <TranslatableField label="Excerpt" name="excerpt" type="textarea" rows={3} maxLength={160} value={formData.excerpt} translationValue={formData.excerpt_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, excerpt: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, excerpt_translations: { ar: v } }))} required placeholder="Enter a brief excerpt (max 160 characters)" placeholderAr="أدخل مقتطف قصير (160 حرف كحد أقصى)" />
               <TranslatableRichText label="Content" name="content" value={formData.content} translationValue={formData.content_translations.ar} onChangeEnglish={(v) => setFormData(p => ({ ...p, content: v }))} onChangeArabic={(v) => setFormData(p => ({ ...p, content_translations: { ar: v } }))} required minHeight="250px" />
             </div>
           </FormSection>
@@ -150,8 +157,15 @@ export const InitiativeEditPage: React.FC = () => {
               </div>
             </FormSection>
 
-            <FormSection title="Featured Image" description="Upload initiative image">
-              <ImageUploadWithCrop onImageCropped={(f, u) => { setImageFile(f); setImagePreview(u); }} currentPreview={imagePreview} guideline={IMAGE_GUIDELINES.initiative} />
+            <FormSection title="Featured Image" description="Upload or choose from the media library">
+              <ImageUploadWithCrop onImageCropped={(f, u) => { setImageFile(f); setImagePreview(u); setSelectedImagePath(''); }} currentPreview={imagePreview} guideline={IMAGE_GUIDELINES.initiative} />
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs text-gray-400">or</span>
+                <button type="button" onClick={() => setIsPickerOpen(true)} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700">
+                  <ImagePlus className="w-4 h-4" />
+                  Choose from media library
+                </button>
+              </div>
             </FormSection>
 
             <FormSection title="Status" description="Publish and feature settings">
@@ -165,6 +179,12 @@ export const InitiativeEditPage: React.FC = () => {
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex items-center gap-3 z-50"><button type="button" onClick={handleBack} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium">Cancel</button><button type="submit" disabled={isLoading} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-lg font-medium disabled:opacity-50">{isLoading && <Loader2 className="w-4 h-4 animate-spin" />}{isEditMode ? 'Save' : 'Create'}</button></div>
         <div className="lg:hidden h-24" />
       </form>
+
+      <MediaPicker
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        onSelect={(item: MediaItem) => { setSelectedImagePath(item.path); setImagePreview(item.url); setImageFile(null); }}
+      />
     </div>
   );
 };

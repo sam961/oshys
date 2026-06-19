@@ -12,7 +12,7 @@ class MediaController extends Controller
      * The media picker lists images already uploaded across the site so an
      * admin can reuse one (e.g. as a blog featured image) without re-uploading.
      */
-    private const DIRECTORIES = ['blog', 'courses', 'trips', 'banners', 'team', 'events', 'products'];
+    private const DIRECTORIES = ['blog', 'initiatives', 'courses', 'trips', 'banners', 'team', 'events', 'products'];
 
     private const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 

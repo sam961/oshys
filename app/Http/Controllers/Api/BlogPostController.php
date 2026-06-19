@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class BlogPostController extends Controller
 {
     use TranslatableController;
+    use ResolvesMediaPath;
 
     /**
      * Display a listing of the resource.
@@ -108,25 +109,6 @@ class BlogPostController extends Controller
         $this->saveTranslationsFromRequest($blogPost, $request);
 
         return response()->json($blogPost->load('translations'), 201);
-    }
-
-    /**
-     * Validate a media-picker path and return it only if it points to an
-     * existing file on the public disk. Guards against path traversal / arbitrary
-     * values being written into the image column.
-     */
-    private function resolveMediaPath(?string $path): ?string
-    {
-        if (! $path) {
-            return null;
-        }
-
-        // Reject traversal and absolute paths; only allow disk-relative paths.
-        if (str_contains($path, '..') || str_starts_with($path, '/')) {
-            return null;
-        }
-
-        return Storage::disk('public')->exists($path) ? $path : null;
     }
 
     /**

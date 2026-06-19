@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class SocialInitiativeController extends Controller
 {
     use TranslatableController;
+    use ResolvesMediaPath;
 
     public function index(Request $request)
     {
@@ -47,9 +48,11 @@ class SocialInitiativeController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'excerpt' => 'required|string',
+            'excerpt' => 'required|string|max:160',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            // Relative path to an existing uploaded image, chosen from the media picker.
+            'image_path' => 'nullable|string',
 
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
@@ -63,12 +66,17 @@ class SocialInitiativeController extends Controller
         $validated['is_published'] = filter_var($request->input('is_published', false), FILTER_VALIDATE_BOOLEAN);
         $validated['is_featured'] = filter_var($request->input('is_featured', false), FILTER_VALIDATE_BOOLEAN);
 
+        // Featured image: an uploaded file takes priority; otherwise reuse an
+        // existing image selected from the media library.
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $filename = time() . '_' . Str::slug($validated['title']) . '.' . $image->getClientOriginalExtension();
             $path = $image->storeAs('initiatives', $filename, 'public');
             $validated['image'] = $path;
+        } elseif ($mediaPath = $this->resolveMediaPath($request->input('image_path'))) {
+            $validated['image'] = $mediaPath;
         }
+        unset($validated['image_path']);
 
         $validated['slug'] = Str::slug($validated['title']);
 
@@ -95,9 +103,11 @@ class SocialInitiativeController extends Controller
 
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
-            'excerpt' => 'sometimes|required|string',
+            'excerpt' => 'sometimes|required|string|max:160',
             'content' => 'sometimes|required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            // Relative path to an existing uploaded image, chosen from the media picker.
+            'image_path' => 'nullable|string',
 
             'is_published' => 'nullable',
             'is_featured' => 'nullable',
@@ -115,6 +125,8 @@ class SocialInitiativeController extends Controller
             $validated['is_featured'] = filter_var($request->input('is_featured'), FILTER_VALIDATE_BOOLEAN);
         }
 
+        // Featured image: an uploaded file takes priority; otherwise reuse an
+        // existing image selected from the media library.
         if ($request->hasFile('image')) {
             if ($initiative->image && Storage::disk('public')->exists($initiative->image)) {
                 Storage::disk('public')->delete($initiative->image);
@@ -124,7 +136,12 @@ class SocialInitiativeController extends Controller
             $filename = time() . '_' . Str::slug($validated['title'] ?? $initiative->title) . '.' . $image->getClientOriginalExtension();
             $path = $image->storeAs('initiatives', $filename, 'public');
             $validated['image'] = $path;
+        } elseif ($mediaPath = $this->resolveMediaPath($request->input('image_path'))) {
+            // Reusing an existing image — do not delete the old file, another
+            // record may reference it.
+            $validated['image'] = $mediaPath;
         }
+        unset($validated['image_path']);
 
         if (isset($validated['title'])) {
             $validated['slug'] = Str::slug($validated['title']);
