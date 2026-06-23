@@ -103,7 +103,9 @@
     # Content Security Policy — production-ready baseline.
     # Permissive where required: 'unsafe-inline' + 'unsafe-eval' are needed for
     # Vite module runtime, React dev helpers, and inline admin handlers.
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    # img-src includes blob: so the admin image-upload preview (an in-browser
+    # cropped blob: URL) can render; without it the CSP blocks the preview.
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
 
     # Cross-origin isolation hardening
     Header always set Cross-Origin-Opener-Policy "same-origin"

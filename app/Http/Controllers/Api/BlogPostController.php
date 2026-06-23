@@ -78,9 +78,10 @@ class BlogPostController extends Controller
         ]);
 
         // Author is always the authenticated admin — never trust a client-supplied
-        // id (the previous hardcoded author_id=1 broke once the admin user's id
-        // changed). The store route is behind auth:sanctum, so a user is present.
-        $validated['author_id'] = $request->user()->id;
+        // id. The store route is behind auth:sanctum, so a user is normally
+        // present; fall back to the first user rather than fatally erroring if
+        // resolution ever fails.
+        $validated['author_id'] = $request->user()?->id ?? \App\Models\User::min('id');
 
         // Convert boolean strings to actual booleans
         $validated['is_published'] = filter_var($request->input('is_published', false), FILTER_VALIDATE_BOOLEAN);
