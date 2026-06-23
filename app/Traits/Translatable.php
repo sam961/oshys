@@ -64,10 +64,15 @@ trait Translatable
             ->pluck('value', 'locale')
             ->toArray();
 
-        // Include the original value as the default locale
-        $defaultLocale = config('app.locale', 'en');
-        if (isset($this->attributes[$field])) {
-            $translations[$defaultLocale] = $this->attributes[$field];
+        // The base column always holds the English (default) value, so key it
+        // under 'en' explicitly. Do NOT use config('app.locale') here — the
+        // SetLocale middleware may have switched it to 'ar' for the request,
+        // which would mis-file the English value under the Arabic key.
+        // getRawOriginal bypasses the locale-aware accessor so we get the true
+        // stored value, not a translated one.
+        $raw = $this->getRawOriginal($field);
+        if ($raw !== null) {
+            $translations['en'] = $raw;
         }
 
         return $translations;
@@ -139,6 +144,14 @@ trait Translatable
 
         if (property_exists($this, 'translatable')) {
             foreach ($this->translatable as $field) {
+                // Force the base field back to the raw English value. toArray()
+                // locale-swaps it (e.g. returns Arabic when the request locale
+                // is 'ar'), but the admin editor needs the canonical English
+                // value here and the translations in the *_translations key.
+                $raw = $this->getRawOriginal($field);
+                if ($raw !== null) {
+                    $data[$field] = $raw;
+                }
                 $data[$field . '_translations'] = $this->getTranslations($field);
             }
         }
