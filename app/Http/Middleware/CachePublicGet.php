@@ -19,6 +19,14 @@ class CachePublicGet
             return $next($request);
         }
 
+        // Never serve cached responses to authenticated requests. The admin
+        // panel reads from these same public endpoints; serving it a stale
+        // 5-minute cache made writes (create/update/delete) appear to do
+        // nothing until the cache expired. The cache is for anonymous visitors.
+        if ($request->bearerToken() || $request->user()) {
+            return $next($request);
+        }
+
         $key = sprintf(
             '%s:%s:%s?%s',
             self::CACHE_PREFIX,
