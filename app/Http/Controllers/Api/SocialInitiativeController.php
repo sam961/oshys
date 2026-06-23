@@ -78,7 +78,7 @@ class SocialInitiativeController extends Controller
         }
         unset($validated['image_path']);
 
-        $validated['slug'] = Str::slug($validated['title']);
+        $validated['slug'] = $this->uniqueSlug(SocialInitiative::class, $validated['title']);
 
         // Remove translation fields from validated data
         unset($validated['title_translations'], $validated['excerpt_translations'], $validated['content_translations']);
@@ -144,7 +144,7 @@ class SocialInitiativeController extends Controller
         unset($validated['image_path']);
 
         if (isset($validated['title'])) {
-            $validated['slug'] = Str::slug($validated['title']);
+            $validated['slug'] = $this->uniqueSlug(SocialInitiative::class, $validated['title'], $initiative->id);
         }
 
         // Remove translation fields from validated data

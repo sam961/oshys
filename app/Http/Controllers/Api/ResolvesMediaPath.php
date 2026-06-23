@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
- * Shared helper for validating a media-picker image path. Used by controllers
- * that let an admin reuse an existing uploaded image (e.g. blog, initiatives)
- * instead of uploading a new file.
+ * Shared helpers for controllers that manage uploaded images and slugged
+ * content (e.g. blog, initiatives).
  */
 trait ResolvesMediaPath
 {
@@ -28,5 +28,30 @@ trait ResolvesMediaPath
         }
 
         return Storage::disk('public')->exists($path) ? $path : null;
+    }
+
+    /**
+     * Build a slug from the title that is unique within the model's table.
+     * Appends -2, -3, ... on collision. Pass $ignoreId to exclude the record
+     * being updated so re-saving the same post keeps its slug.
+     *
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $modelClass
+     */
+    private function uniqueSlug(string $modelClass, string $title, ?int $ignoreId = null): string
+    {
+        $base = Str::slug($title) ?: 'item';
+        $slug = $base;
+        $suffix = 2;
+
+        while (
+            $modelClass::withTrashed()
+                ->where('slug', $slug)
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
+            $slug = $base . '-' . $suffix++;
+        }
+
+        return $slug;
     }
 }

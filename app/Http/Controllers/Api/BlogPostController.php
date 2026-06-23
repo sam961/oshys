@@ -99,24 +99,15 @@ class BlogPostController extends Controller
         }
         unset($validated['image_path']);
 
-        $validated['slug'] = Str::slug($validated['title']);
+        $validated['slug'] = $this->uniqueSlug(BlogPost::class, $validated['title']);
 
         // Remove translation fields from validated data
         unset($validated['title_translations'], $validated['excerpt_translations'], $validated['content_translations']);
 
-        // TEMP DIAGNOSTIC: surface the real failure so production 500s are
-        // visible in the response. Remove once the root cause is confirmed.
-        try {
-            $blogPost = BlogPost::create($validated);
-            $this->saveTranslationsFromRequest($blogPost, $request);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Create failed',
-                'error' => $e->getMessage(),
-                'class' => get_class($e),
-                'at' => basename($e->getFile()) . ':' . $e->getLine(),
-            ], 500);
-        }
+        $blogPost = BlogPost::create($validated);
+
+        // Save translations
+        $this->saveTranslationsFromRequest($blogPost, $request);
 
         return response()->json($blogPost->load('translations'), 201);
     }
@@ -182,7 +173,7 @@ class BlogPostController extends Controller
         unset($validated['image_path']);
 
         if (isset($validated['title'])) {
-            $validated['slug'] = Str::slug($validated['title']);
+            $validated['slug'] = $this->uniqueSlug(BlogPost::class, $validated['title'], $blogPost->id);
         }
 
         // Remove translation fields from validated data
