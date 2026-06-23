@@ -24,6 +24,10 @@ class MediaController extends Controller
         $disk = Storage::disk('public');
         $images = [];
 
+        // Track content fingerprints so the same image re-uploaded under
+        // different timestamped names appears only once in the picker.
+        $seenHashes = [];
+
         foreach (self::DIRECTORIES as $dir) {
             try {
                 if (! $disk->exists($dir)) {
@@ -34,6 +38,17 @@ class MediaController extends Controller
                     $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
                     if (! in_array($ext, self::IMAGE_EXTENSIONS, true)) {
                         continue;
+                    }
+
+                    // Fingerprint by size + content checksum; skip exact duplicates.
+                    try {
+                        $hash = $disk->size($path) . ':' . md5($disk->get($path));
+                        if (isset($seenHashes[$hash])) {
+                            continue;
+                        }
+                        $seenHashes[$hash] = true;
+                    } catch (\Throwable $e) {
+                        // If a file can't be read, fall back to listing it by path.
                     }
 
                     // lastModified can throw if a file vanishes mid-scan; default to 0.
