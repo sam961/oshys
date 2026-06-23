@@ -104,10 +104,19 @@ class BlogPostController extends Controller
         // Remove translation fields from validated data
         unset($validated['title_translations'], $validated['excerpt_translations'], $validated['content_translations']);
 
-        $blogPost = BlogPost::create($validated);
-
-        // Save translations
-        $this->saveTranslationsFromRequest($blogPost, $request);
+        // TEMP DIAGNOSTIC: surface the real failure so production 500s are
+        // visible in the response. Remove once the root cause is confirmed.
+        try {
+            $blogPost = BlogPost::create($validated);
+            $this->saveTranslationsFromRequest($blogPost, $request);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Create failed',
+                'error' => $e->getMessage(),
+                'class' => get_class($e),
+                'at' => basename($e->getFile()) . ':' . $e->getLine(),
+            ], 500);
+        }
 
         return response()->json($blogPost->load('translations'), 201);
     }
