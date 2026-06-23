@@ -66,9 +66,13 @@ export const BlogManagement: React.FC = () => {
       try {
         await deleteBlogPost(item.id).unwrap();
         toast.success(t('messages.deleteSuccess'));
-      } catch (error) {
-        toast.error(t('messages.deleteError'));
-        console.error('Delete error:', error);
+      } catch (error: any) {
+        // Surface the real failure instead of a silent no-op. `status` is the
+        // HTTP status (or 'PARSING_ERROR' / 'FETCH_ERROR' from RTK Query).
+        const status = error?.status ?? error?.originalStatus;
+        const detail = status ? ` (${status})` : '';
+        toast.error(`${t('messages.deleteError')}${detail}`);
+        console.error('Delete error:', status, error);
       }
     }
   };
