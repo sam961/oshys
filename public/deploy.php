@@ -111,8 +111,10 @@ try {
         // 'npm ci 2>&1',
         // 'npm run build 2>&1',
 
-        // Create storage symlink (if not exists)
-        'php artisan storage:link 2>&1',
+        // Create storage symlink. --force recreates a stale/broken link (e.g.
+        // after the project directory moves); without it, storage:link silently
+        // skips when any link already exists, leaving uploaded images 404ing.
+        'php artisan storage:link --force 2>&1',
 
         // Set proper permissions
         'chmod -R 775 storage 2>&1',
