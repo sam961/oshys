@@ -161,12 +161,12 @@ class SocialInitiativeController extends Controller
     public function destroy($id)
     {
         $initiative = SocialInitiative::findOrFail($id);
-
-        if ($initiative->image && Storage::disk('public')->exists($initiative->image)) {
-            Storage::disk('public')->delete($initiative->image);
-        }
+        $image = $initiative->image;
 
         $initiative->delete();
+
+        // Remove the image file only if no other record still references it.
+        $this->deleteImageIfUnused($image);
 
         return response()->json(['message' => 'Initiative deleted successfully']);
     }

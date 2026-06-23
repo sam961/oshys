@@ -193,13 +193,12 @@ class BlogPostController extends Controller
     public function destroy($id)
     {
         $blogPost = BlogPost::findOrFail($id);
-
-        // Delete image if exists
-        if ($blogPost->image && Storage::disk('public')->exists($blogPost->image)) {
-            Storage::disk('public')->delete($blogPost->image);
-        }
+        $image = $blogPost->image;
 
         $blogPost->delete();
+
+        // Remove the image file only if no other record still references it.
+        $this->deleteImageIfUnused($image);
 
         return response()->json(['message' => 'Blog post deleted successfully']);
     }
