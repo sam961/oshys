@@ -80,10 +80,11 @@ export const Navbar: React.FC = () => {
           : 'bg-white/90 backdrop-blur-sm'
       }`}
     >
-      {/* Force LTR layout so the bar's structure (logo left, controls + language
-          toggle right) stays fixed when switching to Arabic. Item text still
-          renders in the active language; only the chrome layout is anchored. */}
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12" dir="ltr">
+      {/* The bar follows the document direction: in Arabic it mirrors (logo on
+          the right, nav items RTL, controls on the left) as expected for an RTL
+          layout. flex + justify-between keep logo at the start edge and controls
+          at the end edge in both directions. */}
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex items-center justify-between h-20">
           {/* Logo - Left aligned */}
           <div className="shrink-0">
