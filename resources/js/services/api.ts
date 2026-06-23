@@ -44,6 +44,26 @@ const baseQueryWithAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQuery
   return result;
 };
 
+/**
+ * Build a method-spoofed request (POST + `_method`) for DELETE/PUT.
+ *
+ * Some production hosts (LiteSpeed / shared hosting) block or mishandle raw
+ * DELETE and PUT verbs, causing the request to fall through to the SPA
+ * catch-all and return 404. Laravel honours the `_method` field on a POST and
+ * routes it to the real DELETE/PUT handler, so this works everywhere the app
+ * is deployed — the same trick already used for form/file updates.
+ */
+const spoofedRequest = (url: string, method: 'DELETE' | 'PUT', body?: Record<string, unknown>) => {
+  const form = new FormData();
+  form.append('_method', method);
+  if (body) {
+    for (const [key, value] of Object.entries(body)) {
+      form.append(key, typeof value === 'string' ? value : JSON.stringify(value));
+    }
+  }
+  return { url, method: 'POST', body: form };
+};
+
 // Define base query
 export const api = createApi({
   reducerPath: 'api',
@@ -79,10 +99,7 @@ export const api = createApi({
       invalidatesTags: ['Course'],
     }),
     deleteCourse: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/courses/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/courses/${id}`, 'DELETE'),
       invalidatesTags: ['Course'],
     }),
 
@@ -96,25 +113,15 @@ export const api = createApi({
       invalidatesTags: ['Course', 'CourseImage'],
     }),
     deleteCourseImage: builder.mutation<Image[], { courseId: number; imageId: number }>({
-      query: ({ courseId, imageId }) => ({
-        url: `/courses/${courseId}/images/${imageId}`,
-        method: 'DELETE',
-      }),
+      query: ({ courseId, imageId }) => spoofedRequest(`/courses/${courseId}/images/${imageId}`, 'DELETE'),
       invalidatesTags: ['Course', 'CourseImage'],
     }),
     setCourseMainImage: builder.mutation<Image[], { courseId: number; imageId: number }>({
-      query: ({ courseId, imageId }) => ({
-        url: `/courses/${courseId}/images/${imageId}/set-main`,
-        method: 'PUT',
-      }),
+      query: ({ courseId, imageId }) => spoofedRequest(`/courses/${courseId}/images/${imageId}/set-main`, 'PUT'),
       invalidatesTags: ['Course', 'CourseImage'],
     }),
     reorderCourseImages: builder.mutation<Image[], { courseId: number; order: { id: number; order: number }[] }>({
-      query: ({ courseId, order }) => ({
-        url: `/courses/${courseId}/images/reorder`,
-        method: 'PUT',
-        body: { order },
-      }),
+      query: ({ courseId, order }) => spoofedRequest(`/courses/${courseId}/images/reorder`, 'PUT', { order }),
       invalidatesTags: ['CourseImage'],
     }),
 
@@ -147,10 +154,7 @@ export const api = createApi({
       invalidatesTags: ['Trip'],
     }),
     deleteTrip: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/trips/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/trips/${id}`, 'DELETE'),
       invalidatesTags: ['Trip'],
     }),
 
@@ -164,25 +168,15 @@ export const api = createApi({
       invalidatesTags: ['Trip', 'TripImage'],
     }),
     deleteTripImage: builder.mutation<Image[], { tripId: number; imageId: number }>({
-      query: ({ tripId, imageId }) => ({
-        url: `/trips/${tripId}/images/${imageId}`,
-        method: 'DELETE',
-      }),
+      query: ({ tripId, imageId }) => spoofedRequest(`/trips/${tripId}/images/${imageId}`, 'DELETE'),
       invalidatesTags: ['Trip', 'TripImage'],
     }),
     setTripMainImage: builder.mutation<Image[], { tripId: number; imageId: number }>({
-      query: ({ tripId, imageId }) => ({
-        url: `/trips/${tripId}/images/${imageId}/set-main`,
-        method: 'PUT',
-      }),
+      query: ({ tripId, imageId }) => spoofedRequest(`/trips/${tripId}/images/${imageId}/set-main`, 'PUT'),
       invalidatesTags: ['Trip', 'TripImage'],
     }),
     reorderTripImages: builder.mutation<Image[], { tripId: number; order: { id: number; order: number }[] }>({
-      query: ({ tripId, order }) => ({
-        url: `/trips/${tripId}/images/reorder`,
-        method: 'PUT',
-        body: { order },
-      }),
+      query: ({ tripId, order }) => spoofedRequest(`/trips/${tripId}/images/reorder`, 'PUT', { order }),
       invalidatesTags: ['TripImage'],
     }),
 
@@ -215,10 +209,7 @@ export const api = createApi({
       invalidatesTags: ['Product'],
     }),
     deleteProduct: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/products/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/products/${id}`, 'DELETE'),
       invalidatesTags: ['Product'],
     }),
 
@@ -254,10 +245,7 @@ export const api = createApi({
       invalidatesTags: ['BlogPost'],
     }),
     deleteBlogPost: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/blog-posts/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/blog-posts/${id}`, 'DELETE'),
       invalidatesTags: ['BlogPost'],
     }),
 
@@ -290,10 +278,7 @@ export const api = createApi({
       invalidatesTags: ['SocialInitiative'],
     }),
     deleteSocialInitiative: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/social-initiatives/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/social-initiatives/${id}`, 'DELETE'),
       invalidatesTags: ['SocialInitiative'],
     }),
 
@@ -326,10 +311,7 @@ export const api = createApi({
       invalidatesTags: ['Event'],
     }),
     deleteEvent: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/events/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/events/${id}`, 'DELETE'),
       invalidatesTags: ['Event'],
     }),
 
@@ -366,10 +348,7 @@ export const api = createApi({
       invalidatesTags: ['TeamMember'],
     }),
     deleteTeamMember: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/team-members/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/team-members/${id}`, 'DELETE'),
       invalidatesTags: ['TeamMember'],
     }),
 
@@ -402,10 +381,7 @@ export const api = createApi({
       invalidatesTags: ['Setting'],
     }),
     deleteSetting: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/settings/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/settings/${id}`, 'DELETE'),
       invalidatesTags: ['Setting'],
     }),
 
@@ -438,10 +414,7 @@ export const api = createApi({
       invalidatesTags: ['Banner'],
     }),
     deleteBanner: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/banners/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/banners/${id}`, 'DELETE'),
       invalidatesTags: ['Banner'],
     }),
 
@@ -478,10 +451,7 @@ export const api = createApi({
       invalidatesTags: ['FooterLink'],
     }),
     deleteFooterLink: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/footer-links/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/footer-links/${id}`, 'DELETE'),
       invalidatesTags: ['FooterLink'],
     }),
 
@@ -521,10 +491,7 @@ export const api = createApi({
       invalidatesTags: ['Booking'],
     }),
     deleteBooking: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/bookings/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => spoofedRequest(`/bookings/${id}`, 'DELETE'),
       invalidatesTags: ['Booking'],
     }),
 
