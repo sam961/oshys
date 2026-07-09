@@ -25,7 +25,13 @@ const rawBaseQuery = fetchBaseQuery({
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     }
-    const locale = localStorage.getItem('i18nextLng') || 'en';
+    // The admin panel is English-only and its edit forms need the canonical
+    // English values in the base fields, so always request 'en' under /admin.
+    // The public site requests the visitor's chosen language and the API
+    // returns translatable fields already swapped to that locale.
+    const locale = window.location.pathname.startsWith('/admin')
+      ? 'en'
+      : localStorage.getItem('i18nextLng') || 'en';
     headers.set('Accept-Language', locale);
     return headers;
   },

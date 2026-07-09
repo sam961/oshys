@@ -253,7 +253,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
 
       {/* Back to Site Button */}
       <div className="p-3 border-t border-gray-700/50">
-        <Link to="/">
+        {/* Full page load so the public site refetches API data in the
+            visitor's language — the admin cache is always English. */}
+        <a href="/">
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -266,7 +268,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
               <span className="text-sm text-gray-300">Back to Site</span>
             )}
           </motion.div>
-        </Link>
+        </a>
       </div>
 
       {/* Footer */}

@@ -144,14 +144,10 @@ trait Translatable
 
         if (property_exists($this, 'translatable')) {
             foreach ($this->translatable as $field) {
-                // Force the base field back to the raw English value. toArray()
-                // locale-swaps it (e.g. returns Arabic when the request locale
-                // is 'ar'), but the admin editor needs the canonical English
-                // value here and the translations in the *_translations key.
-                $raw = $this->getRawOriginal($field);
-                if ($raw !== null) {
-                    $data[$field] = $raw;
-                }
+                // Base fields stay locale-swapped (via toArray) so the public
+                // site gets the request locale. The admin editor always sends
+                // Accept-Language: en (see services/api.ts), so it receives
+                // canonical English here, with all locales in *_translations.
                 $data[$field . '_translations'] = $this->getTranslations($field);
             }
         }

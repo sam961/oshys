@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
 import { Bell, User, Search, ArrowLeft, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -53,13 +53,15 @@ export const AdminLayout: React.FC = () => {
         <header className="bg-white shadow-sm sticky top-0 z-40">
           <div className="flex items-center justify-between px-8 py-4">
             <div className="flex items-center gap-4">
-              <Link
-                to="/"
+              {/* Full page load so the public site refetches API data in the
+                  visitor's language — the admin cache is always English. */}
+              <a
+                href="/"
                 className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Website
-              </Link>
+              </a>
             </div>
 
             <div className="flex items-center gap-4">
