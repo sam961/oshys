@@ -54,7 +54,10 @@ export const Navbar: React.FC = () => {
   ];
 
   const shopNav: NavItem[] = [
-    { name: t('nav.shop'), href: 'https://coralsandshells.sa', external: true },
+    // Replaces the previous external link to coralsandshells.sa: the store is
+    // being brought in-house, so the nav points at the local placeholder until
+    // it opens.
+    { name: t('nav.store'), href: '/store' },
     { name: t('nav.programs'), href: '/shop/courses' },
     { name: t('trips.allTrips'), href: '/shop/trips' },
   ];

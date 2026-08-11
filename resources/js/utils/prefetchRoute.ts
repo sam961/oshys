@@ -63,6 +63,10 @@ export const routePrefetchers: Record<string, RoutePrefetcher> = {
       store.dispatch(api.util.prefetch('getEvents', { active: true }, { force: false }));
     },
   },
+  // Static placeholder — no data to warm.
+  '/store': {
+    chunk: () => import('../pages/StorePage'),
+  },
   // Note: the app router exposes the FAQ page at `/faqs`, but some links
   // (e.g. the footer) still point to `/faq`. Register both so prefetch
   // works regardless of which variant is clicked.

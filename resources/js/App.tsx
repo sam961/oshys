@@ -53,6 +53,9 @@ const InitiativeDetailPage = React.lazy(() =>
 const FooterLinkPage = React.lazy(() =>
   import('./pages/FooterLinkPage').then((m) => ({ default: m.FooterLinkPage }))
 );
+const StorePage = React.lazy(() =>
+  import('./pages/StorePage').then((m) => ({ default: m.StorePage }))
+);
 const FAQPage = React.lazy(() =>
   import('./pages/FAQPage').then((m) => ({ default: m.FAQPage }))
 );
@@ -98,6 +101,7 @@ const AppRoutes: React.FC = () => {
               <Route path="/events/:id" element={<EventDetailPage />} />
               <Route path="/initiatives" element={<InitiativesPage />} />
               <Route path="/initiatives/:id" element={<InitiativeDetailPage />} />
+              <Route path="/store" element={<StorePage />} />
               <Route path="/faqs" element={<FAQPage />} />
               <Route path="/pages/:slug" element={<FooterLinkPage />} />
             </Routes>

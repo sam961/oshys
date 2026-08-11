@@ -6,6 +6,7 @@
     "programs": "Programs",
     "trips": "Trips",
     "shop": "Shop",
+    "store": "Store",
     "blog": "Blog",
     "initiatives": "Initiatives",
     "events": "Events",
@@ -160,6 +161,14 @@
     "price": "Price",
     "bookNow": "Inquire Now",
     "viewDetails": "View Details"
+  },
+  "store": {
+    "eyebrow": "Coming Soon",
+    "heroTitle": "The CAS Store",
+    "heroSubtitle": "We are preparing an online store for diving essentials and CAS equipment.",
+    "description": "It is not open yet. Until it is, our team can help you directly with gear questions, sizing, and orders.",
+    "ctaContact": "Talk to Our Team",
+    "ctaPrograms": "Explore Programs"
   },
   "shop": {
     "title": "Dive Shop",
