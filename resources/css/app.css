@@ -211,3 +211,29 @@ html {
 .prose li { margin-bottom: 0.5rem; }
 .prose strong { font-weight: 600; }
 .prose em { font-style: italic; }
+
+/* Inline images inserted from the rich-text editor.
+   `.prose` here is hand-rolled (no typography plugin), so images need explicit
+   constraints — authors upload straight-off-the-phone photos that are far wider
+   than the column they land in. */
+.prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Same treatment inside the editor so the admin sees what visitors will get. */
+.tiptap img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+}
+
+/* ProseMirror flags the selected node; without this an image gives no
+   feedback when clicked, so it is not obvious it can be deleted. */
+.tiptap img.ProseMirror-selectednode {
+    outline: 2px solid #0891b2;
+    outline-offset: 2px;
+}

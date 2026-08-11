@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Compass, GraduationCap, ArrowRight, ShoppingBag, Anchor, Users, Award, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import DOMPurify from 'dompurify';
+import { sanitizeExcerpt } from '../utils/sanitizeHtml';
 
 // Lottie is ~100 KB and the snorkeling animation JSON is ~600 KB.
 // Lazy-load the library so it only ships after the page is interactive,
@@ -304,7 +304,7 @@ export const HomePage: React.FC = () => {
                         <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
                           {post.title}
                         </h3>
-                        <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.excerpt || '') }} />
+                        <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(post.excerpt) }} />
                         <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all text-sm">
                           {t('home.readMore')}
                           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -371,7 +371,7 @@ export const HomePage: React.FC = () => {
                         </div>
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold mb-2">{trip.name}</h3>
-                      <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(trip.description || '') }} />
+                      <div className="text-gray-600 text-sm mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(trip.description) }} />
                       <div className="flex gap-2 mt-auto">
                         <Link to={`/shop/trips/${trip.id}`} className="flex-1">
                           <Button variant="outline" className="w-full" size="sm">
@@ -497,7 +497,7 @@ export const HomePage: React.FC = () => {
                         )}
                       </div>
                       <h3 className="text-base sm:text-lg font-bold mb-2 line-clamp-2">{product.name}</h3>
-                      <div className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description || '') }} />
+                      <div className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(product.description) }} />
                       <div className="flex items-center justify-between">
                         <SaudiRiyalPrice amount={product.price} className="text-lg sm:text-xl font-bold text-primary-600" />
                         <Button size="sm" variant="ghost">

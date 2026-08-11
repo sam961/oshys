@@ -7,7 +7,7 @@ import { StaggerContainer, WaveBackground } from '../components/animations';
 import { useGetProductsQuery } from '../services/api';
 import type { Product } from '../types';
 import { useTranslation } from 'react-i18next';
-import DOMPurify from 'dompurify';
+import { sanitizeExcerpt } from '../utils/sanitizeHtml';
 
 export const ProductsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -179,7 +179,7 @@ export const ProductsPage: React.FC = () => {
                     <h3 className="text-lg font-bold line-clamp-2 group-hover:text-primary-600 transition-colors">
                       {product.name}
                     </h3>
-                    <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description || '') }} />
+                    <div className="text-gray-600 text-sm line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(product.description) }} />
 
                     <div className="pt-2">
                       <SaudiRiyalPrice
@@ -225,7 +225,7 @@ export const ProductsPage: React.FC = () => {
                             {product.name}
                           </h3>
                         </div>
-                        <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description || '') }} />
+                        <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(product.description) }} />
                         <div className="flex items-center gap-3 text-sm text-gray-500">
                           {product.in_stock ? (
                             <span className="text-green-600 flex items-center gap-1">

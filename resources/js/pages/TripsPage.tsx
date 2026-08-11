@@ -9,7 +9,7 @@ import { BookingModal } from '../components/features/BookingModal';
 import { useGetTripsQuery } from '../services/api';
 import type { Trip } from '../types';
 import { useTranslation } from 'react-i18next';
-import DOMPurify from 'dompurify';
+import { sanitizeExcerpt } from '../utils/sanitizeHtml';
 
 export const TripsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -188,7 +188,7 @@ export const TripsPage: React.FC = () => {
                       {trip.name}
                     </h3>
 
-                    <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(trip.description || '') }} />
+                    <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(trip.description) }} />
 
                     <div className="pt-3 border-t border-gray-100">
                       <div className="flex items-center justify-between mb-3">
@@ -247,7 +247,7 @@ export const TripsPage: React.FC = () => {
                             {trip.name}
                           </h3>
                         </div>
-                        <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(trip.description || '') }} />
+                        <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(trip.description) }} />
 
                         <div className="flex items-center gap-3">
                           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">

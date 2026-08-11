@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { sanitizeExcerpt } from '../../utils/sanitizeHtml';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Loader2, ArrowRight, X } from 'lucide-react';
@@ -307,7 +308,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
                     onClick={() => setMobilePopup(null)}
                   >
                     <h4 className="font-semibold text-gray-900 mb-1">{event.title}</h4>
-                    <div className="text-sm text-gray-600 line-clamp-2 mb-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description }} />
+                    <div className="text-sm text-gray-600 line-clamp-2 mb-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
                     <div className="flex items-center gap-2 text-xs text-gray-500">
                       <span>
                         {new Date(event.start_date).toLocaleTimeString(dateLocale, {
@@ -384,7 +385,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
                       </div>
                       <div className="flex-1">
                         <h4 className="font-bold text-lg mb-1 hover:text-primary-600 transition-colors">{event.title}</h4>
-                        <div className="text-sm text-gray-600 mb-2 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description }} />
+                        <div className="text-sm text-gray-600 mb-2 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
                         <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                           <span>
                             {new Date(event.start_date).toLocaleTimeString(dateLocale, {
@@ -443,7 +444,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-lg mb-1 hover:text-primary-600 transition-colors">{event.title}</h4>
-                      <div className="text-sm text-gray-600 mb-2 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: event.description }} />
+                      <div className="text-sm text-gray-600 mb-2 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
                       <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                         <span>
                           {new Date(event.start_date).toLocaleDateString(dateLocale, {

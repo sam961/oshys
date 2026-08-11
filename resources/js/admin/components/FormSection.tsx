@@ -8,7 +8,10 @@ interface FormSectionProps {
 
 export const FormSection: React.FC<FormSectionProps> = ({ title, description, children }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    // No `overflow-hidden`: this card wraps the rich-text editor, and any
+    // overflow other than `visible` on an ancestor makes it the sticky
+    // containing block, which stops the editor's toolbar from sticking.
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       <div className="px-6 py-4 border-b border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         {description && (

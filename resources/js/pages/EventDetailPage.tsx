@@ -1,4 +1,5 @@
 import React from 'react';
+import { sanitizeRichText } from '../utils/sanitizeHtml';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -167,7 +168,7 @@ export const EventDetailPage: React.FC = () => {
                   <Info className="w-6 h-6 text-primary-600" />
                   {t('events.aboutThisEvent')}
                 </h2>
-                <div className="prose prose-lg max-w-none text-gray-600" dangerouslySetInnerHTML={{ __html: event.description }} />
+                <div className="prose prose-lg max-w-none text-gray-600" dangerouslySetInnerHTML={{ __html: sanitizeRichText(event.description) }} />
               </motion.div>
 
               {/* Event Timeline */}

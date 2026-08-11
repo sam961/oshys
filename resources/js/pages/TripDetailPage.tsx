@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { sanitizeRichText } from '../utils/sanitizeHtml';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -173,7 +174,7 @@ export const TripDetailPage: React.FC = () => {
               </h2>
               <div
                 className="prose prose-lg max-w-none text-gray-600 prose-headings:text-gray-900 prose-a:text-secondary-600 prose-strong:text-gray-800"
-                dangerouslySetInnerHTML={{ __html: trip.description }}
+                dangerouslySetInnerHTML={{ __html: sanitizeRichText(trip.description) }}
               />
             </motion.div>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { sanitizeExcerpt } from '../utils/sanitizeHtml';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Calendar, ArrowRight, Loader2 } from 'lucide-react';
@@ -92,7 +93,7 @@ export const InitiativesPage: React.FC = () => {
                       {initiative.title}
                     </h3>
 
-                    <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: initiative.excerpt }} />
+                    <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(initiative.excerpt) }} />
 
                     <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
                       {t('initiatives.learnMore')}

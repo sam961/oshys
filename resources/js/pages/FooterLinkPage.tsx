@@ -1,4 +1,5 @@
 import React from 'react';
+import { sanitizeRichText } from '../utils/sanitizeHtml';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, FileText } from 'lucide-react';
@@ -89,7 +90,7 @@ export const FooterLinkPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="prose prose-lg max-w-none mb-12"
-              dangerouslySetInnerHTML={{ __html: page.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeRichText(page.content) }}
             />
           ) : (
             <motion.div

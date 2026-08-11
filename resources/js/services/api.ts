@@ -74,7 +74,7 @@ const spoofedRequest = (url: string, method: 'DELETE' | 'PUT', body?: Record<str
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithAuth,
-  tagTypes: ['Course', 'CourseImage', 'Trip', 'TripImage', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Setting', 'Banner', 'FooterLink', 'Booking'],
+  tagTypes: ['Course', 'CourseImage', 'Trip', 'TripImage', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Setting', 'Banner', 'FooterLink', 'Booking', 'Media'],
   endpoints: (builder) => ({
     // Courses
     getCourses: builder.query<Course[], { active?: boolean; featured?: boolean; level?: string; search?: string }>({
@@ -219,10 +219,26 @@ export const api = createApi({
       invalidatesTags: ['Product'],
     }),
 
-    // Blog Posts
+    // Media library
     getMedia: builder.query<{ data: MediaItem[] }, void>({
       query: () => '/media',
+      providesTags: ['Media'],
     }),
+    /**
+     * Upload an image chosen from inside the rich-text editor. Returns the
+     * stored path and its public URL, which the editor inserts as an <img>.
+     */
+    uploadMedia: builder.mutation<{ path: string; url: string; name: string }, File>({
+      query: (file) => {
+        const form = new FormData();
+        form.append('image', file);
+        return { url: '/media', method: 'POST', body: form };
+      },
+      // A freshly uploaded image should show up in the media picker too.
+      invalidatesTags: ['Media'],
+    }),
+
+    // Blog Posts
     getBlogPosts: builder.query<BlogPost[], { published?: boolean; featured?: boolean; search?: string }>({
       query: (params) => ({
         url: '/blog-posts',
@@ -558,6 +574,7 @@ export const {
   useDeleteProductMutation,
 
   useGetMediaQuery,
+  useUploadMediaMutation,
   useGetBlogPostsQuery,
   useGetBlogPostQuery,
   useCreateBlogPostMutation,

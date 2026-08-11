@@ -8,7 +8,7 @@ import { StaggerContainer, WaveBackground } from '../components/animations';
 import { useGetEventsQuery } from '../services/api';
 import type { Event } from '../types';
 import { useTranslation } from 'react-i18next';
-import DOMPurify from 'dompurify';
+import { sanitizeExcerpt } from '../utils/sanitizeHtml';
 
 export const EventsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -292,7 +292,7 @@ export const EventsPage: React.FC = () => {
                             {event.title}
                           </h3>
 
-                          <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description || '') }} />
+                          <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
 
                           <div className="space-y-2 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
@@ -359,7 +359,7 @@ export const EventsPage: React.FC = () => {
                                   {getTypeLabel(event.type)}
                                 </span>
                               </div>
-                              <div className="text-gray-600 mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description || '') }} />
+                              <div className="text-gray-600 mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
 
                               <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">

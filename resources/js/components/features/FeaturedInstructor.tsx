@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { sanitizeExcerpt } from '../../utils/sanitizeHtml';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, ArrowRight, Instagram, Facebook, Linkedin, Twitter, Quote, ChevronDown, ChevronUp } from 'lucide-react';
@@ -158,7 +159,7 @@ export const FeaturedInstructor: React.FC = () => {
                   className={`text-gray-600 text-base sm:text-lg leading-relaxed pl-6 border-l-2 border-primary-200 prose prose-lg max-w-none overflow-hidden transition-all duration-500 ${
                     !bioExpanded && bioOverflows ? 'max-h-[120px]' : 'max-h-[2000px]'
                   }`}
-                  dangerouslySetInnerHTML={{ __html: instructor.bio }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(instructor.bio) }}
                 />
                 {!bioExpanded && bioOverflows && (
                   <div className="absolute bottom-0 left-6 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />

@@ -1,4 +1,5 @@
 import React from 'react';
+import { sanitizeRichText } from '../utils/sanitizeHtml';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Share2, Loader2 } from 'lucide-react';
@@ -93,7 +94,7 @@ export const InitiativeDetailPage: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="text-xl text-gray-700 mb-8 p-6 bg-gray-50 rounded-xl border-l-4 border-primary-600"
             >
-              <div dangerouslySetInnerHTML={{ __html: initiative.excerpt }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeRichText(initiative.excerpt) }} />
             </motion.div>
           )}
 
@@ -103,7 +104,7 @@ export const InitiativeDetailPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             className="prose prose-lg max-w-none mb-12"
-            dangerouslySetInnerHTML={{ __html: initiative.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(initiative.content) }}
           />
 
         </div>

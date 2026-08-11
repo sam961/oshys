@@ -6,7 +6,7 @@ import { Section, Card, Button } from '../components/ui';
 import { useGetBlogPostsQuery } from '../services/api';
 import type { BlogPost } from '../types';
 import { useTranslation } from 'react-i18next';
-import DOMPurify from 'dompurify';
+import { sanitizeExcerpt } from '../utils/sanitizeHtml';
 
 export const BlogPage: React.FC = () => {
   const { t } = useTranslation();
@@ -101,7 +101,7 @@ export const BlogPage: React.FC = () => {
                     {post.title}
                   </h3>
 
-                  <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.excerpt || '') }} />
+                  <div className="text-gray-600 mb-4 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(post.excerpt) }} />
 
                   <div className="flex items-center text-primary-600 font-semibold group-hover:gap-3 gap-2 transition-all">
                     {t('pages.blog.readMore')}
