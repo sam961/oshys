@@ -49,6 +49,7 @@ export const Navbar: React.FC = () => {
     { name: t('nav.about'), href: '/about' },
     { name: t('nav.blog'), href: '/blog' },
     { name: t('nav.initiatives'), href: '/initiatives' },
+    { name: t('nav.events'), href: '/events' },
     { name: t('nav.contact'), href: '/contact' },
   ];
 
@@ -110,12 +111,18 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop Navigation - Center */}
-          <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+          {/* The full horizontal nav needs ~1090px between the logo and the
+              right-hand controls (6 main links + 3 shop links). At lg (1024px)
+              that overflows and clips the Contact Us button — worse in Arabic,
+              where the overflow lands at the clipped start edge. It first fits
+              around 1152px, so the desktop bar starts at xl and everything
+              below uses the mobile menu. */}
+          <div className="hidden xl:flex items-center gap-1 flex-1 justify-center">
             {mainNav.map((item) => (
               <div key={item.name} className="relative">
                 <FastLink
                   to={item.href}
-                  className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-primary-50"
+                  className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-primary-50 whitespace-nowrap"
                 >
                   {item.name}
                   {location.pathname === item.href && (
@@ -139,7 +146,7 @@ export const Navbar: React.FC = () => {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors rounded-lg hover:bg-primary-50"
+                    className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors rounded-lg hover:bg-primary-50 whitespace-nowrap"
                   >
                     {item.name}
                     <ExternalLink className="w-3 h-3 opacity-50" />
@@ -147,7 +154,7 @@ export const Navbar: React.FC = () => {
                 ) : (
                   <FastLink
                     to={item.href}
-                    className="relative px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors rounded-lg hover:bg-primary-50"
+                    className="relative px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors rounded-lg hover:bg-primary-50 whitespace-nowrap"
                   >
                     {item.name}
                     {location.pathname === item.href && (
@@ -164,7 +171,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Side - Calendar, Language Switcher and {t('common.bookNow')} Button */}
-          <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+          <div className="hidden xl:flex items-center gap-3 flex-shrink-0">
             <button
               onClick={handleCalendarClick}
               className="p-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
@@ -179,7 +186,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile - Calendar Icon and Menu Button */}
-          <div className="lg:hidden flex items-center gap-2">
+          <div className="xl:hidden flex items-center gap-2">
             <button
               onClick={handleCalendarClick}
               className="p-3 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
@@ -206,7 +213,7 @@ export const Navbar: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-gray-200"
+            className="xl:hidden bg-white border-t border-gray-200"
           >
             <div className="px-4 py-4 space-y-2">
               {mainNav.map((item) => (
