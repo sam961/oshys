@@ -16,6 +16,10 @@ import type {
   Booking,
   MediaItem,
   Image,
+  Schedule,
+  ScheduleFrequency,
+  ScheduleOccurrence as ScheduleOccurrenceType,
+  SchedulableType,
 } from '../types';
 
 const rawBaseQuery = fetchBaseQuery({
@@ -64,7 +68,18 @@ const spoofedRequest = (url: string, method: 'DELETE' | 'PUT', body?: Record<str
   form.append('_method', method);
   if (body) {
     for (const [key, value] of Object.entries(body)) {
-      form.append(key, typeof value === 'string' ? value : JSON.stringify(value));
+      if (value === null || value === undefined) {
+        // FormData has no null. JSON.stringify would send the literal string
+        // "null", which passes Laravel's `nullable` (it is not empty) and then
+        // fails `integer` — so clearing a nullable field would 422 forever.
+        // An empty string is what a real form posts, and Laravel's
+        // ConvertEmptyStringsToNull middleware turns it back into null.
+        form.append(key, '');
+      } else if (typeof value === 'string') {
+        form.append(key, value);
+      } else {
+        form.append(key, JSON.stringify(value));
+      }
     }
   }
   return { url, method: 'POST', body: form };
@@ -74,7 +89,7 @@ const spoofedRequest = (url: string, method: 'DELETE' | 'PUT', body?: Record<str
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithAuth,
-  tagTypes: ['Course', 'CourseImage', 'Trip', 'TripImage', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Setting', 'Banner', 'FooterLink', 'Booking', 'Media'],
+  tagTypes: ['Course', 'CourseImage', 'Trip', 'TripImage', 'Product', 'BlogPost', 'SocialInitiative', 'Event', 'TeamMember', 'Setting', 'Banner', 'FooterLink', 'Booking', 'Media', 'Schedule'],
   endpoints: (builder) => ({
     // Courses
     getCourses: builder.query<Course[], { active?: boolean; featured?: boolean; level?: string; search?: string }>({
@@ -236,6 +251,55 @@ export const api = createApi({
       },
       // A freshly uploaded image should show up in the media picker too.
       invalidatesTags: ['Media'],
+    }),
+
+    // Scheduling (events, courses, trips)
+    getSchedule: builder.query<Schedule, { type: SchedulableType; id: number }>({
+      query: ({ type, id }) => `/schedules/${type}/${id}`,
+      providesTags: (_r, _e, { type, id }) => [{ type: 'Schedule' as const, id: `${type}-${id}` }],
+    }),
+    /** Save the repeat rule and regenerate the dates it produces. */
+    saveSchedule: builder.mutation<Schedule, {
+      type: SchedulableType;
+      id: number;
+      data: {
+        start_at: string;
+        end_at?: string | null;
+        frequency: ScheduleFrequency;
+        interval: number;
+        weekdays?: number[];
+        until_date?: string | null;
+      };
+    }>({
+      query: ({ type, id, data }) => ({ url: `/schedules/${type}/${id}`, method: 'POST', body: data }),
+      invalidatesTags: (_r, _e, { type, id }) => [{ type: 'Schedule' as const, id: `${type}-${id}` }, 'Event'],
+    }),
+    /** Remove the repeat rule and every date it generated. */
+    deleteSchedule: builder.mutation<Schedule, { type: SchedulableType; id: number }>({
+      query: ({ type, id }) => spoofedRequest(`/schedules/${type}/${id}`, 'DELETE'),
+      invalidatesTags: (_r, _e, { type, id }) => [{ type: 'Schedule' as const, id: `${type}-${id}` }, 'Event'],
+    }),
+    /** Add a one-off date outside the repeat rule. */
+    addOccurrence: builder.mutation<Schedule, {
+      type: SchedulableType;
+      id: number;
+      data: { start_at: string; end_at?: string | null; capacity?: number | null };
+    }>({
+      query: ({ type, id, data }) => ({ url: `/schedules/${type}/${id}/occurrences`, method: 'POST', body: data }),
+      invalidatesTags: (_r, _e, { type, id }) => [{ type: 'Schedule' as const, id: `${type}-${id}` }, 'Event'],
+    }),
+    updateOccurrence: builder.mutation<ScheduleOccurrenceType, {
+      occurrenceId: number;
+      type: SchedulableType;
+      parentId: number;
+      data: Partial<Pick<ScheduleOccurrenceType, 'start_at' | 'end_at' | 'capacity' | 'status'>>;
+    }>({
+      query: ({ occurrenceId, data }) => spoofedRequest(`/schedule-occurrences/${occurrenceId}`, 'PUT', data as Record<string, unknown>),
+      invalidatesTags: (_r, _e, { type, parentId }) => [{ type: 'Schedule' as const, id: `${type}-${parentId}` }, 'Event'],
+    }),
+    deleteOccurrence: builder.mutation<void, { occurrenceId: number; type: SchedulableType; parentId: number }>({
+      query: ({ occurrenceId }) => spoofedRequest(`/schedule-occurrences/${occurrenceId}`, 'DELETE'),
+      invalidatesTags: (_r, _e, { type, parentId }) => [{ type: 'Schedule' as const, id: `${type}-${parentId}` }, 'Event'],
     }),
 
     // Blog Posts
@@ -575,6 +639,12 @@ export const {
 
   useGetMediaQuery,
   useUploadMediaMutation,
+  useGetScheduleQuery,
+  useSaveScheduleMutation,
+  useDeleteScheduleMutation,
+  useAddOccurrenceMutation,
+  useUpdateOccurrenceMutation,
+  useDeleteOccurrenceMutation,
   useGetBlogPostsQuery,
   useGetBlogPostQuery,
   useCreateBlogPostMutation,

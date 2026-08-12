@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\CourseImageController;
 use App\Http\Controllers\Api\TripImageController;
 use App\Http\Controllers\Api\MediaController;
+use App\Http\Controllers\Api\ScheduleController;
 
 // Auth routes
 Route::post('login', [AuthController::class, 'login']);
@@ -66,6 +67,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // and accepts uploads made from inside the rich-text editor.
     Route::get('media', [MediaController::class, 'index']);
     Route::post('media', [MediaController::class, 'store']);
+
+    // Scheduling. {type} is one of events|courses|trips and is whitelisted in
+    // the controller. Datetimes on this boundary are venue-local naive strings.
+    Route::get('schedules/{type}/{id}', [ScheduleController::class, 'show']);
+    Route::post('schedules/{type}/{id}', [ScheduleController::class, 'store']);
+    Route::delete('schedules/{type}/{id}', [ScheduleController::class, 'destroy']);
+    Route::post('schedules/{type}/{id}/occurrences', [ScheduleController::class, 'storeOccurrence']);
+    Route::put('schedule-occurrences/{occurrence}', [ScheduleController::class, 'updateOccurrence']);
+    Route::delete('schedule-occurrences/{occurrence}', [ScheduleController::class, 'destroyOccurrence']);
 
     Route::apiResource('courses', CourseController::class)->except(['index', 'show']);
     Route::post('courses/{course}/images', [CourseImageController::class, 'store']);

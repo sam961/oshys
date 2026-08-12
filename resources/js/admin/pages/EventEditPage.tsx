@@ -5,6 +5,7 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
+import { ScheduleEditor } from '../components/ScheduleEditor';
 import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -91,7 +92,13 @@ export const EventEditPage: React.FC = () => {
     e.preventDefault();
     try {
       if (isEditMode) {
-        await updateEvent({ id: Number(id), data: formData }).unwrap();
+        // Dates are owned by the schedule once the event exists. Posting the
+        // form's copy would overwrite what ScheduleController just wrote — and
+        // with the other timezone interpretation, since this form's naive
+        // strings are cast in app.timezone (UTC) rather than venue time.
+        // `sometimes` validation means omitting them leaves the columns alone.
+        const { start_date, end_date, ...withoutDates } = formData;
+        await updateEvent({ id: Number(id), data: withoutDates }).unwrap();
         toast.success('Event updated successfully');
       } else {
         await createEvent(formData).unwrap();
@@ -138,16 +145,44 @@ export const EventEditPage: React.FC = () => {
           <FormSection title="Event Details" description="Type, dates, and capacity">
             <div className="space-y-5">
               <div><label className="block text-sm font-medium text-gray-700 mb-2">Event Type *</label><select value={formData.type} onChange={(e) => setFormData(p => ({ ...p, type: e.target.value as any }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"><option value="workshop">Workshop</option><option value="course">Course</option><option value="trip">Trip</option><option value="other">Other</option></select></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-2">Start Date & Time *</label><input type="datetime-local" value={formData.start_date} onChange={(e) => setFormData(p => ({ ...p, start_date: e.target.value }))} required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-2">End Date & Time</label><input type="datetime-local" value={formData.end_date} onChange={(e) => setFormData(p => ({ ...p, end_date: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+              {/* Once the event exists, its dates are managed in Dates &
+                  Capacity below — a repeating event has many, and editing one
+                  here would silently disagree with them. Kept editable while
+                  creating, because the API requires a start date and the
+                  schedule editor cannot attach to a record that has no id. */}
+              {isEditMode ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Dates</label>
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                    <p className="text-sm text-gray-600">Managed in <span className="font-medium text-gray-900">Dates &amp; Capacity</span> below.</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-2">Start Date & Time *</label><input type="datetime-local" value={formData.start_date} onChange={(e) => setFormData(p => ({ ...p, start_date: e.target.value }))} required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /><p className="mt-1 text-xs text-gray-500">You can add more dates and a repeat rule after saving.</p></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-2">End Date & Time</label><input type="datetime-local" value={formData.end_date} onChange={(e) => setFormData(p => ({ ...p, end_date: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+                </>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Price (SAR)</label><input type="number" value={formData.price || ''} onChange={(e) => setFormData(p => ({ ...p, price: e.target.value === '' ? null : Number(e.target.value) }))} step="0.01" min="0" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Max Participants</label><input type="number" value={formData.max_participants || ''} onChange={(e) => setFormData(p => ({ ...p, max_participants: e.target.value === '' ? null : Number(e.target.value) }))} min="1" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-2">Max Participants</label><input type="number" value={formData.max_participants || ''} onChange={(e) => setFormData(p => ({ ...p, max_participants: e.target.value === '' ? null : Number(e.target.value) }))} min="1" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /><p className="mt-1 text-xs text-gray-500">Applies to every date unless a date sets its own below.</p></div>
               </div>
               <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50"><input type="checkbox" checked={formData.is_active} onChange={(e) => setFormData(p => ({ ...p, is_active: e.target.checked }))} className="w-5 h-5 text-primary-600 border-gray-300 rounded" /><div><span className="text-sm font-medium text-gray-900 block">Active</span><span className="text-xs text-gray-500">Event is visible on the website</span></div></label>
             </div>
           </FormSection>
         </div>
+
+        {/* Dates live on their own record, so they save independently of this
+            form — hence the note rather than a hidden dependency on Save. */}
+        <div className="mt-6">
+          <FormSection
+            title="Dates & Capacity"
+            description="When this event runs. Saved as you edit, separately from the fields above."
+          >
+            <ScheduleEditor type="events" id={isEditMode ? Number(id) : null} />
+          </FormSection>
+        </div>
+
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex items-center gap-3 z-50"><button type="button" onClick={handleBack} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium">Cancel</button><button type="submit" disabled={isLoading} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-lg font-medium disabled:opacity-50">{isLoading && <Loader2 className="w-4 h-4 animate-spin" />}{isEditMode ? 'Save' : 'Create'}</button></div>
         <div className="lg:hidden h-24" />
       </form>
