@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
+import { ScheduleEditor } from '../components/ScheduleEditor';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
@@ -170,6 +171,18 @@ export const TripEditPage: React.FC = () => {
             </div>
           </FormSection>
         </div>
+
+        {/* Trips had neither dates nor a capacity field, so a per-date seat
+            limit here is the only limit a trip can express. */}
+        <div className="mt-6">
+          <FormSection
+            title="Dates & Capacity"
+            description="Optional. When this trip departs — add a date, or a repeat rule for a trip that runs regularly."
+          >
+            <ScheduleEditor type="trips" id={isEditMode ? Number(id) : null} />
+          </FormSection>
+        </div>
+
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex items-center gap-3 z-50"><button type="button" onClick={handleBack} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium">Cancel</button><button type="submit" disabled={isLoading} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-lg font-medium disabled:opacity-50">{isLoading && <Loader2 className="w-4 h-4 animate-spin" />}{isEditMode ? 'Save' : 'Create'}</button></div>
         <div className="lg:hidden h-24" />
       </form>

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
+import { ScheduleEditor } from '../components/ScheduleEditor';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
@@ -289,6 +290,19 @@ export const CourseEditPage: React.FC = () => {
                 <div><span className="text-sm font-medium text-gray-900 block">Featured</span><span className="text-xs text-gray-500">Show in featured courses section</span></div>
               </label>
             </div>
+          </FormSection>
+        </div>
+
+        {/* Courses had no dates at all before this — only the free-text
+            "Duration" field, which describes length rather than when a course
+            runs. Sessions are optional: a course with none behaves exactly as
+            it did. */}
+        <div className="mt-6">
+          <FormSection
+            title="Dates & Capacity"
+            description="Optional. When this course runs — add a session date, or a repeat rule for a course that runs regularly."
+          >
+            <ScheduleEditor type="courses" id={isEditMode ? Number(id) : null} />
           </FormSection>
         </div>
 
