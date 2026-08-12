@@ -290,9 +290,42 @@ feature for events; 4 and 5 are largely reuse.
 - The backfill migration touches existing event data. Take a database backup first.
 - Bump the translations version any time locale files change.
 
+## Decision: existing event times shift by three hours
+
+Found during Phase 1 and worth the client knowing before Phase 3 ships.
+
+Existing events store the admin's wall clock **as though it were UTC**. The edit form slices the
+UTC `HH:MM` out of the serialized date into a `datetime-local` input and posts the naive string
+back, which Laravel casts in `app.timezone` (UTC). So an event entered as `10:00`, meaning 10:00 in
+Al Khobar, sits in the column as `10:00 UTC` — and renders as **13:00** to a visitor in Riyadh.
+Every existing event is already displaying three hours late.
+
+The backfill therefore re-reads legacy values as venue-local and converts them, so
+`schedule_occurrences.start_at` means one thing throughout. The visible consequence is that once
+Phase 3 reads occurrences, pre-existing events display their **originally intended** time —
+a correction, but a change the client will notice.
+
+Verified on a legacy-shaped row: stored `07:00 UTC`, renders `10:00` venue.
+
+If the client would rather keep the current (incorrect) displayed times, the conversion in
+`2026_08_11_100002_backfill_event_dates_into_schedule_occurrences.php` is the single place to
+change.
+
 ## Open items
 
-- Timezone is not explicitly configured; pin it before storing dates (Phase 1).
+- ~~Timezone is not explicitly configured~~ — pinned in Phase 1 via `config/cas.php`
+  (`venue_timezone`, default `Asia/Riyadh`) and `App\Support\VenueTime`. `app.timezone` stays UTC so
+  existing rows are not reinterpreted.
+- **Phase 3 must constrain calendar queries through the schedulable relation.** Soft-deleting a
+  record deliberately keeps its dates so a restore works, which means a query starting from
+  `ScheduleOccurrence` would otherwise surface dates for trashed records.
+- **Phase 3 month-range queries must use venue-offset bounds.** A 00:30 venue-local date is stored
+  as 21:30 UTC the previous day, so raw UTC month boundaries file it under the wrong month.
+- **Phase 2 must validate** `interval >= 1` and `until_date >= start` explicitly. The generator
+  floors the interval and guarantees at least the first date, but silently — the admin should be
+  told rather than quietly corrected.
+- A weekly rule drops the record's own start date when that weekday is not selected. Correct per
+  the rule, but the Phase 2 UI must show the generated dates so it is never a surprise.
 - The 5-minute public API cache will delay newly added dates by up to 5 minutes.
 - `duration` free text on courses will coexist with real dates and could contradict them (Phase 4).
 - On-site booking still captures no date. If the client later wants that, it is ~2 days on top.

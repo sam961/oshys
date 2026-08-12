@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Schedulable;
 use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Trip extends Model
 {
-    use SoftDeletes, Translatable;
+    use SoftDeletes, Translatable, Schedulable;
 
     protected $fillable = [
         'name',
