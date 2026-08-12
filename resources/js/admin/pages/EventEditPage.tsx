@@ -6,7 +6,8 @@ import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { ScheduleEditor } from '../components/ScheduleEditor';
-import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation } from '../../services/api';
+import type { DraftRule } from '../components/ScheduleEditor';
+import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation, useSaveScheduleMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
@@ -47,10 +48,13 @@ export const EventEditPage: React.FC = () => {
   const { data: event, isLoading: isLoadingEvent, error: eventError } = useGetEventQuery(Number(id), { skip: !isEditMode });
   const [createEvent, { isLoading: isCreating }] = useCreateEventMutation();
   const [updateEvent, { isLoading: isUpdating }] = useUpdateEventMutation();
+  const [saveSchedule] = useSaveScheduleMutation();
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
+  // Repeat rule collected while creating; applied once the event has an id.
+  const [draftRule, setDraftRule] = useState<DraftRule>({ frequency: 'none', interval: 1, weekdays: [], until_date: null });
 
   useEffect(() => {
     if (event && isEditMode) {
@@ -101,8 +105,40 @@ export const EventEditPage: React.FC = () => {
         await updateEvent({ id: Number(id), data: withoutDates }).unwrap();
         toast.success('Event updated successfully');
       } else {
-        await createEvent(formData).unwrap();
+        const created = await createEvent(formData).unwrap();
         toast.success('Event created successfully');
+
+        // Give the new event its dates straight away. Even without a repeat
+        // rule this matters: it creates the first occurrence, so the event has
+        // a real date rather than only the legacy column.
+        if (created?.id && formData.start_date) {
+          try {
+            const result = await saveSchedule({
+              type: 'events',
+              id: created.id,
+              data: {
+                start_at: formData.start_date,
+                end_at: formData.end_date || null,
+                frequency: draftRule.frequency,
+                interval: draftRule.interval,
+                weekdays: draftRule.weekdays,
+                until_date: draftRule.until_date,
+              },
+            }).unwrap();
+
+            const generated = result.occurrences.length;
+            if (generated > 1) toast.success(`${generated} dates generated`);
+          } catch {
+            // The event exists; only its dates failed. Say so rather than
+            // implying the whole save went wrong.
+            toast.error('Event saved, but its dates could not be generated. Open it to set them.');
+          }
+        }
+
+        // Land on the event itself so the generated dates are visible, rather
+        // than back on a list that does not show them.
+        navigate(created?.id ? `/admin/events/${created.id}/edit` : '/admin/events');
+        return;
       }
       navigate('/admin/events');
     } catch (error: any) {
@@ -177,9 +213,15 @@ export const EventEditPage: React.FC = () => {
         <div className="mt-6">
           <FormSection
             title="Dates & Capacity"
-            description="When this event runs. Saved as you edit, separately from the fields above."
+            description={isEditMode
+              ? 'When this event runs. Saved as you edit, separately from the fields above.'
+              : 'Set a repeat rule now if this event runs more than once. Dates are generated when you save.'}
           >
-            <ScheduleEditor type="events" id={isEditMode ? Number(id) : null} />
+            <ScheduleEditor
+              type="events"
+              id={isEditMode ? Number(id) : null}
+              onDraftChange={isEditMode ? undefined : setDraftRule}
+            />
           </FormSection>
         </div>
 

@@ -369,7 +369,7 @@
     ]
   },
   "resources/js/admin-main.tsx": {
-    "file": "assets/admin-main-D5q6Yp5G.js",
+    "file": "assets/admin-main-hTH6jicD.js",
     "name": "admin-main",
     "src": "resources/js/admin-main.tsx",
     "isEntry": true,
@@ -410,7 +410,7 @@
     ]
   },
   "resources/js/admin/layouts/AdminLayout.tsx": {
-    "file": "assets/AdminLayout-eVPgv69b.js",
+    "file": "assets/AdminLayout-CsPRR8P-.js",
     "name": "AdminLayout",
     "src": "resources/js/admin/layouts/AdminLayout.tsx",
     "isDynamicEntry": true,
@@ -568,7 +568,7 @@
     ]
   },
   "resources/js/admin/pages/EventEditPage.tsx": {
-    "file": "assets/EventEditPage-C2uOL3LA.js",
+    "file": "assets/EventEditPage-B-MT3YSJ.js",
     "name": "EventEditPage",
     "src": "resources/js/admin/pages/EventEditPage.tsx",
     "isDynamicEntry": true,
@@ -673,7 +673,7 @@
     ]
   },
   "resources/js/admin/pages/LoginPage.tsx": {
-    "file": "assets/LoginPage-cQp-YY2I.js",
+    "file": "assets/LoginPage-C5AHi-bi.js",
     "name": "LoginPage",
     "src": "resources/js/admin/pages/LoginPage.tsx",
     "isDynamicEntry": true,

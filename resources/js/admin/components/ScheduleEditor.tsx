@@ -11,11 +11,26 @@ import {
 } from '../../services/api';
 import type { ScheduleFrequency, SchedulableType } from '../../types';
 
+/** The repeat rule alone, without the first date — used while creating. */
+export interface DraftRule {
+  frequency: ScheduleFrequency;
+  interval: number;
+  weekdays: number[];
+  until_date: string | null;
+}
+
 interface ScheduleEditorProps {
   /** Which content type this belongs to. */
   type: SchedulableType;
   /** Parent record id. Null while the record is still being created. */
   id: number | null;
+  /**
+   * Creation mode: the record has no id yet, so there is nothing to attach
+   * dates to. The rule is collected here and handed to the parent, which
+   * applies it once the record exists. The first date comes from the parent's
+   * own Start Date field, so it is not repeated here.
+   */
+  onDraftChange?: (rule: DraftRule) => void;
 }
 
 const WEEKDAYS = [
@@ -61,8 +76,9 @@ const formatDate = (value: string): string => {
  * Capacity is optional per date and displayed only — nothing counts against it
  * and the site never blocks an inquiry.
  */
-export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id }) => {
+export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraftChange }) => {
   const skip = id === null;
+  const isDraft = skip && typeof onDraftChange === 'function';
   const { data, isLoading, isFetching } = useGetScheduleQuery({ type, id: id ?? 0 }, { skip });
 
   const [saveSchedule, { isLoading: isSaving }] = useSaveScheduleMutation();
@@ -113,7 +129,18 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id }) => {
     [occurrences],
   );
 
-  if (skip) {
+  // Keep the parent's copy of the rule current while creating.
+  useEffect(() => {
+    if (!isDraft) return;
+    onDraftChange?.({
+      frequency,
+      interval,
+      weekdays: frequency === 'weekly' ? weekdays : [],
+      until_date: untilDate || null,
+    });
+  }, [isDraft, onDraftChange, frequency, interval, weekdays, untilDate]);
+
+  if (skip && !isDraft) {
     return (
       <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
         <CalendarPlus className="mx-auto mb-2 h-6 w-6 text-gray-400" />
@@ -247,7 +274,9 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id }) => {
     <div className="space-y-6">
       {/* Repeat rule */}
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* While creating, the first date comes from the form's own Start Date
+            field — showing a second one here would be two sources of truth. */}
+        <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${isDraft ? 'hidden' : ''}`}>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">First date &amp; time *</label>
             <input
@@ -344,7 +373,14 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id }) => {
           </div>
         )}
 
-        <div className="flex flex-wrap items-center gap-3">
+        {isDraft && (
+          <p className="rounded-lg border border-primary-100 bg-primary-50 px-4 py-3 text-sm text-primary-800">
+            Dates will be generated from the <span className="font-medium">Start Date &amp; Time</span> above
+            when you save. You can adjust individual dates and seat limits afterwards.
+          </p>
+        )}
+
+        <div className={`flex flex-wrap items-center gap-3 ${isDraft ? 'hidden' : ''}`}>
           <button
             type="button"
             onClick={handleSaveRule}
@@ -369,8 +405,8 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id }) => {
         </div>
       </div>
 
-      {/* Generated dates */}
-      <div>
+      {/* Generated dates — nothing exists until the record is saved. */}
+      <div className={isDraft ? 'hidden' : ''}>
         <div className="mb-3 flex items-center justify-between">
           <h4 className="text-sm font-semibold text-gray-900">
             Dates {occurrences.length > 0 && <span className="font-normal text-gray-500">({upcomingCount} upcoming)</span>}
@@ -452,7 +488,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id }) => {
       </div>
 
       {/* One-off date outside the rule */}
-      <div className="border-t border-gray-100 pt-4">
+      <div className={`border-t border-gray-100 pt-4 ${isDraft ? 'hidden' : ''}`}>
         <label className="mb-2 block text-sm font-medium text-gray-700">Add a single date</label>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
