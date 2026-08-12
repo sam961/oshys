@@ -4,11 +4,12 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import { ScheduleEditor } from '../components/ScheduleEditor';
+import type { DraftRule } from '../components/ScheduleEditor';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { MultiImageGallery } from '../components/MultiImageGallery';
-import { useGetCourseQuery, useCreateCourseMutation, useUpdateCourseMutation, useUploadCourseImagesMutation, useDeleteCourseImageMutation, useSetCourseMainImageMutation, useReorderCourseImagesMutation } from '../../services/api';
+import { useGetCourseQuery, useCreateCourseMutation, useUpdateCourseMutation, useUploadCourseImagesMutation, useDeleteCourseImageMutation, useSetCourseMainImageMutation, useReorderCourseImagesMutation, useSaveScheduleMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
@@ -53,10 +54,13 @@ export const CourseEditPage: React.FC = () => {
   const [deleteCourseImage] = useDeleteCourseImageMutation();
   const [setCourseMainImage] = useSetCourseMainImageMutation();
   const [reorderCourseImages] = useReorderCourseImagesMutation();
+  const [saveSchedule] = useSaveScheduleMutation();
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
+  // Schedule collected while creating; applied once the record has an id.
+  const [draftRule, setDraftRule] = useState<DraftRule>({ start_at: null, end_at: null, frequency: 'none', interval: 1, weekdays: [], until_date: null });
 
   useEffect(() => {
     if (course && isEditMode) {
@@ -104,6 +108,33 @@ export const CourseEditPage: React.FC = () => {
     }
   }, [isDirty, navigate]);
 
+  /**
+   * Apply the schedule collected on the create form, now that the record
+   * exists. Skipped when no first date was set — dates are optional here.
+   * A failure is reported on its own: the record itself did save.
+   */
+  const applyDraftSchedule = async (type: 'courses' | 'trips', newId: number) => {
+    if (!draftRule.start_at) return;
+    try {
+      const result = await saveSchedule({
+        type,
+        id: newId,
+        data: {
+          start_at: draftRule.start_at,
+          end_at: draftRule.end_at,
+          frequency: draftRule.frequency,
+          interval: draftRule.interval,
+          weekdays: draftRule.weekdays,
+          until_date: draftRule.until_date,
+        },
+      }).unwrap();
+      const count = result.occurrences.length;
+      toast.success(count === 1 ? '1 date added' : `${count} dates generated`);
+    } catch {
+      toast.error('Saved, but the dates could not be generated. Add them below.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -139,6 +170,7 @@ export const CourseEditPage: React.FC = () => {
       } else {
         const newCourse = await createCourse(submitData).unwrap();
         toast.success('Course created! You can now add images.');
+        await applyDraftSchedule('courses', newCourse.id);
         navigate(`/admin/courses/${newCourse.id}/edit`);
       }
     } catch (error: any) {
@@ -302,7 +334,12 @@ export const CourseEditPage: React.FC = () => {
             title="Dates & Capacity"
             description="Optional. When this course runs — add a session date, or a repeat rule for a course that runs regularly."
           >
-            <ScheduleEditor type="courses" id={isEditMode ? Number(id) : null} />
+            <ScheduleEditor
+              type="courses"
+              id={isEditMode ? Number(id) : null}
+              onDraftChange={isEditMode ? undefined : setDraftRule}
+              draftProvidesFirstDate
+            />
           </FormSection>
         </div>
 

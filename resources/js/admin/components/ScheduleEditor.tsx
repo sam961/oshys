@@ -11,8 +11,17 @@ import {
 } from '../../services/api';
 import type { ScheduleFrequency, SchedulableType } from '../../types';
 
-/** The repeat rule alone, without the first date — used while creating. */
+/**
+ * What the editor collects before the record exists.
+ *
+ * `start_at` is null when the parent form owns the first date — events have
+ * their own Start Date field, and showing a second one here would be two
+ * sources of truth. Courses and trips have no date field at all, so the editor
+ * supplies it and this carries the value.
+ */
 export interface DraftRule {
+  start_at: string | null;
+  end_at: string | null;
   frequency: ScheduleFrequency;
   interval: number;
   weekdays: number[];
@@ -27,10 +36,14 @@ interface ScheduleEditorProps {
   /**
    * Creation mode: the record has no id yet, so there is nothing to attach
    * dates to. The rule is collected here and handed to the parent, which
-   * applies it once the record exists. The first date comes from the parent's
-   * own Start Date field, so it is not repeated here.
+   * applies it once the record exists.
    */
   onDraftChange?: (rule: DraftRule) => void;
+  /**
+   * Whether the editor should ask for the first date while creating. True for
+   * courses and trips, whose forms have no date field of their own.
+   */
+  draftProvidesFirstDate?: boolean;
 }
 
 const WEEKDAYS = [
@@ -76,9 +89,17 @@ const formatDate = (value: string): string => {
  * Capacity is optional per date and displayed only — nothing counts against it
  * and the site never blocks an inquiry.
  */
-export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraftChange }) => {
+export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
+  type,
+  id,
+  onDraftChange,
+  draftProvidesFirstDate = false,
+}) => {
   const skip = id === null;
   const isDraft = skip && typeof onDraftChange === 'function';
+  // While creating, the first-date fields are shown only when this editor is
+  // the one that owns them.
+  const hideFirstDate = isDraft && !draftProvidesFirstDate;
   const { data, isLoading, isFetching } = useGetScheduleQuery({ type, id: id ?? 0 }, { skip });
 
   const [saveSchedule, { isLoading: isSaving }] = useSaveScheduleMutation();
@@ -87,7 +108,11 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraf
   const [updateOccurrence] = useUpdateOccurrenceMutation();
   const [deleteOccurrence] = useDeleteOccurrenceMutation();
 
-  const [startAt, setStartAt] = useState(defaultStart);
+  // Blank while creating a course or trip: dates are optional there, and a
+  // prefilled default would silently give every new record a date nobody
+  // asked for. Elsewhere a sensible starting point is more useful.
+  const [startAt, setStartAt] = useState(() =>
+    (id === null && draftProvidesFirstDate ? '' : defaultStart()));
   const [endAt, setEndAt] = useState('');
   const [frequency, setFrequency] = useState<ScheduleFrequency>('none');
   const [interval, setIntervalValue] = useState(1);
@@ -133,12 +158,14 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraf
   useEffect(() => {
     if (!isDraft) return;
     onDraftChange?.({
+      start_at: draftProvidesFirstDate ? startAt : null,
+      end_at: draftProvidesFirstDate ? (endAt || null) : null,
       frequency,
       interval,
       weekdays: frequency === 'weekly' ? weekdays : [],
       until_date: untilDate || null,
     });
-  }, [isDraft, onDraftChange, frequency, interval, weekdays, untilDate]);
+  }, [isDraft, draftProvidesFirstDate, onDraftChange, startAt, endAt, frequency, interval, weekdays, untilDate]);
 
   if (skip && !isDraft) {
     return (
@@ -276,9 +303,13 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraf
       <div className="space-y-4">
         {/* While creating, the first date comes from the form's own Start Date
             field — showing a second one here would be two sources of truth. */}
-        <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${isDraft ? 'hidden' : ''}`}>
+        <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${hideFirstDate ? 'hidden' : ''}`}>
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">First date &amp; time *</label>
+            {/* Optional while creating a course or trip — leaving it blank
+                simply means no dates. Required once you are generating. */}
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              First date &amp; time{draftProvidesFirstDate && isDraft ? '' : ' *'}
+            </label>
             <input
               type="datetime-local"
               value={startAt}
@@ -375,8 +406,10 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraf
 
         {isDraft && (
           <p className="rounded-lg border border-primary-100 bg-primary-50 px-4 py-3 text-sm text-primary-800">
-            Dates will be generated from the <span className="font-medium">Start Date &amp; Time</span> above
-            when you save. You can adjust individual dates and seat limits afterwards.
+            {draftProvidesFirstDate
+              ? 'Optional. Set a first date to give this a schedule — dates are generated when you save. Leave it blank and no dates are added.'
+              : 'Dates will be generated from the Start Date & Time above when you save.'}
+            {' '}You can adjust individual dates and seat limits afterwards.
           </p>
         )}
 

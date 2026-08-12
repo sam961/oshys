@@ -4,11 +4,12 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import { ScheduleEditor } from '../components/ScheduleEditor';
+import type { DraftRule } from '../components/ScheduleEditor';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { MultiImageGallery } from '../components/MultiImageGallery';
-import { useGetTripQuery, useCreateTripMutation, useUpdateTripMutation, useUploadTripImagesMutation, useDeleteTripImageMutation, useSetTripMainImageMutation, useReorderTripImagesMutation } from '../../services/api';
+import { useGetTripQuery, useCreateTripMutation, useUpdateTripMutation, useUploadTripImagesMutation, useDeleteTripImageMutation, useSetTripMainImageMutation, useReorderTripImagesMutation, useSaveScheduleMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
@@ -43,10 +44,13 @@ export const TripEditPage: React.FC = () => {
   const [deleteTripImage] = useDeleteTripImageMutation();
   const [setTripMainImage] = useSetTripMainImageMutation();
   const [reorderTripImages] = useReorderTripImagesMutation();
+  const [saveSchedule] = useSaveScheduleMutation();
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
+  // Schedule collected while creating; applied once the record has an id.
+  const [draftRule, setDraftRule] = useState<DraftRule>({ start_at: null, end_at: null, frequency: 'none', interval: 1, weekdays: [], until_date: null });
 
   useEffect(() => {
     if (trip && isEditMode) {
@@ -79,6 +83,33 @@ export const TripEditPage: React.FC = () => {
     navigate('/admin/trips');
   }, [isDirty, navigate]);
 
+  /**
+   * Apply the schedule collected on the create form, now that the record
+   * exists. Skipped when no first date was set — dates are optional here.
+   * A failure is reported on its own: the record itself did save.
+   */
+  const applyDraftSchedule = async (type: 'courses' | 'trips', newId: number) => {
+    if (!draftRule.start_at) return;
+    try {
+      const result = await saveSchedule({
+        type,
+        id: newId,
+        data: {
+          start_at: draftRule.start_at,
+          end_at: draftRule.end_at,
+          frequency: draftRule.frequency,
+          interval: draftRule.interval,
+          weekdays: draftRule.weekdays,
+          until_date: draftRule.until_date,
+        },
+      }).unwrap();
+      const count = result.occurrences.length;
+      toast.success(count === 1 ? '1 date added' : `${count} dates generated`);
+    } catch {
+      toast.error('Saved, but the dates could not be generated. Add them below.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -99,6 +130,7 @@ export const TripEditPage: React.FC = () => {
       } else {
         const newTrip = await createTrip(submitData).unwrap();
         toast.success('Trip created! You can now add images.');
+        await applyDraftSchedule('trips', newTrip.id);
         navigate(`/admin/trips/${newTrip.id}/edit`);
       }
     } catch (error: any) {
@@ -179,7 +211,12 @@ export const TripEditPage: React.FC = () => {
             title="Dates & Capacity"
             description="Optional. When this trip departs — add a date, or a repeat rule for a trip that runs regularly."
           >
-            <ScheduleEditor type="trips" id={isEditMode ? Number(id) : null} />
+            <ScheduleEditor
+              type="trips"
+              id={isEditMode ? Number(id) : null}
+              onDraftChange={isEditMode ? undefined : setDraftRule}
+              draftProvidesFirstDate
+            />
           </FormSection>
         </div>
 
