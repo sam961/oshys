@@ -1,5 +1,6 @@
 import React from 'react';
 import { sanitizeRichText } from '../utils/sanitizeHtml';
+import { UpcomingDates } from '../components/features/UpcomingDates';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -170,6 +171,20 @@ export const EventDetailPage: React.FC = () => {
                 </h2>
                 <div className="prose prose-lg max-w-none text-gray-600" dangerouslySetInnerHTML={{ __html: sanitizeRichText(event.description) }} />
               </motion.div>
+
+              {/* Every date this runs on. The block below still shows the
+                  single start/end pair, which for a repeating event is only
+                  the first — this is what makes the rest visible. */}
+              {event.upcoming_dates && event.upcoming_dates.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                  className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm"
+                >
+                  <UpcomingDates dates={event.upcoming_dates} />
+                </motion.div>
+              )}
 
               {/* Event Timeline */}
               <motion.div

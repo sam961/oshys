@@ -30,7 +30,7 @@ class Trip extends Model
         'included_items' => 'array',
     ];
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'upcoming_dates'];
 
     /**
      * Fields that should be translatable

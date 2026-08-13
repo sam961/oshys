@@ -22,11 +22,16 @@ trait Translatable
     {
         $locale = $locale ?? app()->getLocale();
 
-        // Try to get translation from database
-        $translation = $this->translations()
-            ->where('field', $field)
-            ->where('locale', $locale)
-            ->value('value');
+        // Read from the eager-loaded relation when there is one. Querying here
+        // instead costs one round trip per field per row, which on a listing
+        // page is dozens of queries for data already in memory.
+        $translation = $this->relationLoaded('translations')
+            ? $this->getRelation('translations')
+                ->first(fn ($t) => $t->field === $field && $t->locale === $locale)?->value
+            : $this->translations()
+                ->where('field', $field)
+                ->where('locale', $locale)
+                ->value('value');
 
         // If translation exists, return it
         if ($translation !== null) {
@@ -58,9 +63,11 @@ trait Translatable
      */
     public function getTranslations(string $field): array
     {
-        $translations = $this->translations()
-            ->where('field', $field)
-            ->get()
+        // Same reasoning as getTranslation(): prefer the loaded relation, or a
+        // listing page pays a query per translatable field per row.
+        $translations = ($this->relationLoaded('translations')
+                ? $this->getRelation('translations')->where('field', $field)
+                : $this->translations()->where('field', $field)->get())
             ->pluck('value', 'locale')
             ->toArray();
 

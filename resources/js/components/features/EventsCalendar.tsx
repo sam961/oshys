@@ -6,9 +6,14 @@ import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Loader2, ArrowRigh
 import { Button } from '../ui';
 import { useGetEventsQuery } from '../../services/api';
 import { useTranslation } from 'react-i18next';
-import type { Event } from '../../types';
+import type { Course, Event, Trip } from '../../types';
+import { buildCalendarEntries, groupByDay, type CalendarEntry, type CalendarKind } from './calendarEntries';
+import { formatVenueTime } from './UpcomingDates';
 
 interface EventsCalendarProps {
+  /** Courses and trips now appear alongside events; both are optional. */
+  courses?: Course[];
+  trips?: Trip[];
   /**
    * Optional pre-fetched events. When provided, the internal fetch is skipped.
    * Used by HomePage which loads events via the aggregated `/home-data` endpoint.
@@ -17,11 +22,12 @@ interface EventsCalendarProps {
   events?: Event[];
 }
 
-export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsProp }) => {
+export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsProp, courses: coursesProp, trips: tripsProp }) => {
   const { t, i18n } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [mobilePopup, setMobilePopup] = useState<{ date: Date; events: Event[] } | null>(null);
+  const [mobilePopup, setMobilePopup] = useState<{ date: Date; events: CalendarEntry[] } | null>(null);
+  const [kindFilter, setKindFilter] = useState<CalendarKind | 'all'>('all');
   const navigate = useNavigate();
 
   const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
@@ -44,20 +50,15 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
   };
 
-  // Filter upcoming events (future events only)
-  const now = new Date();
-  const upcomingEvents = eventsData
-    .filter(event => new Date(event.start_date) >= now)
-    .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
-    .slice(0, 5); // Show only 5 upcoming events
+  // One entry per date, across all three types — a weekly course contributes
+  // an entry to every week it runs, rather than appearing once.
+  const allEntries = buildCalendarEntries(eventsData, coursesProp ?? [], tripsProp ?? []);
+  const availableKinds = Array.from(new Set(allEntries.map((e) => e.kind)));
+  const entries = kindFilter === 'all' ? allEntries : allEntries.filter((e) => e.kind === kindFilter);
 
-  // Format events by date for easy lookup
-  const eventsByDate = eventsData.reduce((acc, event) => {
-    const dateKey = new Date(event.start_date).toDateString();
-    if (!acc[dateKey]) acc[dateKey] = [];
-    acc[dateKey].push(event);
-    return acc;
-  }, {} as Record<string, typeof eventsData>);
+  const now = new Date();
+  const upcomingEvents = entries.filter((e) => e.date >= now).slice(0, 5);
+  const eventsByDate = groupByDay(entries);
 
   // Get month name from translations
   const monthNames = t('calendar.months', { returnObjects: true }) as string[];
@@ -165,6 +166,30 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
             </button>
           </div>
         </div>
+
+        {/* Type filter. Only worth showing when more than one kind of thing is
+            actually scheduled — otherwise it is a control with nothing to do. */}
+        {availableKinds.length > 1 && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {(['all', ...availableKinds] as const).map((kind) => (
+              <button
+                key={kind}
+                type="button"
+                onClick={() => setKindFilter(kind as CalendarKind | 'all')}
+                aria-pressed={kindFilter === kind}
+                className={`rounded-full border px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+                  kindFilter === kind
+                    ? 'border-primary-600 bg-primary-50 text-primary-700'
+                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                {kind === 'all'
+                  ? t('schedule.filterAll')
+                  : t(`schedule.filter${kind.charAt(0).toUpperCase()}${kind.slice(1)}s`)}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Weekday headers */}
         <div className="grid grid-cols-7 gap-1 lg:gap-2 mb-2">
@@ -302,22 +327,17 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
               <div className="p-4 space-y-3 overflow-y-auto max-h-[60vh]">
                 {mobilePopup.events.map((event) => (
                   <Link
-                    key={event.id}
-                    to={`/events/${event.id}`}
+                    key={event.key}
+                    to={event.href}
                     className="block bg-primary-50 rounded-xl p-4 hover:bg-primary-100 transition-colors"
                     onClick={() => setMobilePopup(null)}
                   >
                     <h4 className="font-semibold text-gray-900 mb-1">{event.title}</h4>
                     <div className="text-sm text-gray-600 line-clamp-2 mb-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
                     <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span>
-                        {new Date(event.start_date).toLocaleTimeString(dateLocale, {
-                          hour: 'numeric',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                      <span className="px-2 py-0.5 bg-primary-200 text-primary-700 rounded-full capitalize">
-                        {t(`events.${event.type}`, event.type)}
+                      <span dir="ltr">{formatVenueTime(event.startAt)}</span>
+                      <span className="px-2 py-0.5 bg-primary-200 text-primary-700 rounded-full">
+                        {t(`schedule.filter${event.kind.charAt(0).toUpperCase()}${event.kind.slice(1)}s`)}
                       </span>
                     </div>
                   </Link>
@@ -372,7 +392,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
           ) : (
             <div className="space-y-4">
               {selectedDateEvents.map((event) => (
-                <Link key={event.id} to={`/events/${event.id}`} className="block">
+                <Link key={event.key} to={event.href} className="block">
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -387,14 +407,9 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
                         <h4 className="font-bold text-lg mb-1 hover:text-primary-600 transition-colors">{event.title}</h4>
                         <div className="text-sm text-gray-600 mb-2 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
                         <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
-                          <span>
-                            {new Date(event.start_date).toLocaleTimeString(dateLocale, {
-                              hour: 'numeric',
-                              minute: '2-digit',
-                            })}
-                          </span>
-                          <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold capitalize">
-                            {t(`events.${event.type}`, event.type)}
+                          <span dir="ltr">{formatVenueTime(event.startAt)}</span>
+                          <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold">
+                            {t(`schedule.filter${event.kind.charAt(0).toUpperCase()}${event.kind.slice(1)}s`)}
                           </span>
                           {event.location && (
                             <span className="text-gray-600">{event.location}</span>
@@ -433,7 +448,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
         ) : (
           <div className="space-y-4">
             {upcomingEvents.map((event) => (
-              <Link key={event.id} to={`/events/${event.id}`} className="block">
+              <Link key={event.key} to={event.href} className="block">
                 <motion.div
                   whileHover={{ x: 5 }}
                   className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-primary-600 cursor-pointer hover:shadow-xl transition-shadow"
@@ -447,20 +462,13 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
                       <div className="text-sm text-gray-600 mb-2 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
                       <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                         <span>
-                          {new Date(event.start_date).toLocaleDateString(dateLocale, {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
+                          {event.date.toLocaleDateString(dateLocale, {
+                            month: 'long', day: 'numeric', year: 'numeric',
                           })}
                         </span>
-                        <span>
-                          {new Date(event.start_date).toLocaleTimeString(dateLocale, {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                        <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold capitalize">
-                          {t(`events.${event.type}`, event.type)}
+                        <span dir="ltr">{formatVenueTime(event.startAt)}</span>
+                        <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold">
+                          {t(`schedule.filter${event.kind.charAt(0).toUpperCase()}${event.kind.slice(1)}s`)}
                         </span>
                         {event.location && (
                           <span className="text-gray-600">{event.location}</span>

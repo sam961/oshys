@@ -170,6 +170,19 @@
     "ctaContact": "تحدث إلى فريقنا",
     "ctaPrograms": "استكشف البرامج"
   },
+  "schedule": {
+    "dateSingle": "الموعد",
+    "dateCount": "المواعيد ({{count}})",
+    "next": "التالي",
+    "plusMore": "+{{count}} أخرى",
+    "showAll": "عرض {{count}} أخرى",
+    "seats": "{{count}} مقعد",
+    "noDates": "سيتم الإعلان عن المواعيد",
+    "filterAll": "الكل",
+    "filterEvents": "الفعاليات",
+    "filterCourses": "الدورات",
+    "filterTrips": "الرحلات"
+  },
   "shop": {
     "title": "متجر الغوص",
     "subtitle": "معدات غوص عالية الجودة",

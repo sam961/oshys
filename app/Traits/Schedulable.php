@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\ScheduleOccurrence;
 use App\Models\ScheduleSeries;
+use App\Support\VenueTime;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
@@ -56,6 +57,39 @@ trait Schedulable
         }
 
         return $this->upcomingOccurrences()->first();
+    }
+
+    /**
+     * The dates a visitor should see, ready for JSON.
+     *
+     * Emitted as venue-local wall clocks ("2026-11-01T17:00") with no offset,
+     * deliberately: a dive in Al Khobar happens at 17:00 Khobar time whoever is
+     * reading the page, and an instant would be re-rendered in the reader's own
+     * timezone. The front end formats these from their parts for the same
+     * reason.
+     *
+     * Appended to every serialization, so listing queries must eager-load
+     * `upcomingOccurrences` or this fires once per row.
+     */
+    public function getUpcomingDatesAttribute(): array
+    {
+        $occurrences = $this->relationLoaded('upcomingOccurrences')
+            ? $this->getRelation('upcomingOccurrences')
+            : ($this->relationLoaded('occurrences')
+                ? $this->getRelation('occurrences')
+                    ->filter(fn (ScheduleOccurrence $o) => ! $o->isCancelled() && $o->start_at >= now())
+                : $this->upcomingOccurrences()->get());
+
+        return $occurrences
+            ->sortBy('start_at')
+            ->map(fn (ScheduleOccurrence $o) => [
+                'id' => $o->id,
+                'start_at' => VenueTime::toVenue($o->start_at)->format('Y-m-d\TH:i'),
+                'end_at' => $o->end_at ? VenueTime::toVenue($o->end_at)->format('Y-m-d\TH:i') : null,
+                'capacity' => $o->capacity,
+            ])
+            ->values()
+            ->all();
     }
 
     public function hasSchedule(): bool

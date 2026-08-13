@@ -10,6 +10,7 @@ import { useGetCoursesQuery } from '../services/api';
 import type { Course } from '../types';
 import { useTranslation } from 'react-i18next';
 import { sanitizeExcerpt } from '../utils/sanitizeHtml';
+import { NextDateBadge } from '../components/features/UpcomingDates';
 
 export const CoursesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -260,6 +261,7 @@ export const CoursesPage: React.FC = () => {
                       {course.name}
                     </h3>
                     <div className="text-gray-600 text-sm line-clamp-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(course.description) }} />
+                    <NextDateBadge dates={course.upcoming_dates} className="mb-3" />
 
                     {course.duration && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -319,6 +321,7 @@ export const CoursesPage: React.FC = () => {
                           </h3>
                         </div>
                         <div className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(course.description) }} />
+                    <NextDateBadge dates={course.upcoming_dates} className="mb-3" />
 
                         {course.duration && (
                           <div className="flex flex-wrap gap-4 mb-4">

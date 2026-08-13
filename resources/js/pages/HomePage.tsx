@@ -448,7 +448,13 @@ export const HomePage: React.FC = () => {
         </motion.div>
 
         <div className="relative z-10">
-          <EventsCalendar events={events} />
+          {/* Courses and trips now carry dates too, so the calendar shows all
+              three rather than events alone. */}
+          <EventsCalendar
+            events={events}
+            courses={homeData?.calendar?.courses ?? []}
+            trips={homeData?.calendar?.trips ?? []}
+          />
         </div>
       </Section>
 

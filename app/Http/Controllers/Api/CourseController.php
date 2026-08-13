@@ -17,7 +17,7 @@ class CourseController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Course::with(['translations', 'images']);
+        $query = Course::with(['translations', 'images', 'upcomingOccurrences']);
 
         // Filter by active status
         if ($request->has('active')) {
@@ -121,7 +121,7 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::with(['translations', 'images'])->findOrFail($id);
+        $course = Course::with(['translations', 'images', 'upcomingOccurrences'])->findOrFail($id);
         return response()->json($course->toArrayWithTranslations());
     }
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { sanitizeRichText } from '../utils/sanitizeHtml';
+import { UpcomingDates } from '../components/features/UpcomingDates';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -203,6 +204,20 @@ export const CourseDetailPage: React.FC = () => {
                 dangerouslySetInnerHTML={{ __html: sanitizeRichText(course.description) }}
               />
             </motion.div>
+
+            {/* When it runs. Absent entirely for a course with no schedule,
+                which is most of them — "Duration" describes how long a course
+                lasts, not when it takes place. */}
+            {course.upcoming_dates && course.upcoming_dates.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100"
+              >
+                <UpcomingDates dates={course.upcoming_dates} />
+              </motion.div>
+            )}
 
             {/* Requirements Card */}
             {course.requirements && course.requirements.length > 0 && (

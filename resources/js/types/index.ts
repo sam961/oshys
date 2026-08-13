@@ -18,6 +18,8 @@ export interface Course {
   created_at: string;
   updated_at: string;
   deleted_at?: string;
+  /** Dates still ahead, soonest first. Empty when nothing is scheduled. */
+  upcoming_dates?: UpcomingDate[];
 }
 
 // Trip Types
@@ -40,6 +42,8 @@ export interface Trip {
   created_at: string;
   updated_at: string;
   deleted_at?: string;
+  /** Dates still ahead, soonest first. Empty when nothing is scheduled. */
+  upcoming_dates?: UpcomingDate[];
 }
 
 // Product Types
@@ -117,6 +121,8 @@ export interface Event {
   created_at: string;
   updated_at: string;
   deleted_at?: string;
+  /** Dates still ahead, soonest first. Empty when nothing is scheduled. */
+  upcoming_dates?: UpcomingDate[];
 }
 
 // Team Member Types
@@ -270,6 +276,18 @@ export interface ScheduleOccurrence {
   capacity: number | null;   // optional; displayed only, never enforced
   status: 'scheduled' | 'cancelled';
   is_past: boolean;
+}
+
+/**
+ * A date as the public API emits it: a venue-local wall clock with no offset,
+ * so it renders as Al Khobar time for every visitor rather than being shifted
+ * into their own timezone.
+ */
+export interface UpcomingDate {
+  id: number;
+  start_at: string;
+  end_at: string | null;
+  capacity: number | null;
 }
 
 export interface Schedule {

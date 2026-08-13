@@ -38,7 +38,7 @@ class HomeDataController extends Controller
         $banners = $this->transformWithTranslations($banners);
 
         // Courses — active + featured (mirrors CourseController::index)
-        $courses = Course::with(['translations', 'images'])
+        $courses = Course::with(['translations', 'images', 'upcomingOccurrences'])
             ->where('is_active', true)
             ->where('is_featured', true)
             ->orderBy('created_at', 'desc')
@@ -46,7 +46,7 @@ class HomeDataController extends Controller
         $courses = $this->transformWithTranslations($courses);
 
         // Trips — active + featured (mirrors TripController::index)
-        $trips = Trip::with(['images', 'translations'])
+        $trips = Trip::with(['images', 'translations', 'upcomingOccurrences'])
             ->where('is_active', true)
             ->where('is_featured', true)
             ->orderBy('created_at', 'desc')
@@ -70,7 +70,7 @@ class HomeDataController extends Controller
         $blogPosts = $this->transformWithTranslations($blogPosts);
 
         // Events — active + upcoming (mirrors EventController::index ordering)
-        $events = Event::with(['images', 'translations'])
+        $events = Event::with(['images', 'translations', 'upcomingOccurrences'])
             ->where('is_active', true)
             ->where('start_date', '>=', now())
             ->orderBy('start_date', 'asc')
@@ -112,10 +112,35 @@ class HomeDataController extends Controller
             ->get();
         $footerLinks = $this->transformWithTranslations($footerLinks);
 
+        // Everything the calendar should show.
+        //
+        // The `courses` and `trips` above are the *featured* subsets the
+        // homepage carousels use. The calendar needs every scheduled record,
+        // featured or not — otherwise a trip an admin has just given dates to
+        // is missing from the calendar for no reason the admin can see.
+        //
+        // Only the fields the calendar renders, since this rides along on a
+        // request the homepage already makes.
+        $calendar = [
+            'courses' => $this->transformWithTranslations(
+                Course::with(['translations', 'upcomingOccurrences'])
+                    ->where('is_active', true)
+                    ->whereHas('occurrences', fn ($q) => $q->scheduled()->upcoming())
+                    ->get()
+            ),
+            'trips' => $this->transformWithTranslations(
+                Trip::with(['translations', 'upcomingOccurrences'])
+                    ->where('is_active', true)
+                    ->whereHas('occurrences', fn ($q) => $q->scheduled()->upcoming())
+                    ->get()
+            ),
+        ];
+
         return response()->json([
             'banners' => $banners,
             'courses' => $courses,
             'trips' => $trips,
+            'calendar' => $calendar,
             'products' => $products,
             'blog_posts' => $blogPosts,
             'events' => $events,

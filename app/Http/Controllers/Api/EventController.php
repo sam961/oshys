@@ -15,7 +15,7 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Event::with(['images', 'translations']);
+        $query = Event::with(['images', 'translations', 'upcomingOccurrences']);
 
         // Filter by active status
         if ($request->has('active')) {
@@ -28,9 +28,20 @@ class EventController extends Controller
             $query->where('type', $request->type);
         }
 
-        // Filter by upcoming events
+        // Filter by upcoming events.
+        //
+        // Read from the schedule rather than the legacy column: a repeating
+        // event is upcoming while any of its dates is still ahead, and
+        // cancelled dates must not keep it alive. The legacy fallback covers
+        // an event that somehow has no occurrences at all, so nothing
+        // disappears from the site.
         if ($request->has('upcoming') && $request->upcoming) {
-            $query->where('start_date', '>=', now());
+            $query->where(function ($q) {
+                $q->whereHas('occurrences', fn ($o) => $o->scheduled()->upcoming())
+                  ->orWhere(fn ($legacy) => $legacy
+                      ->whereDoesntHave('occurrences')
+                      ->where('start_date', '>=', now()));
+            });
         }
 
         // Filter by date range
@@ -97,7 +108,7 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        $event = Event::with(['images', 'translations'])->findOrFail($id);
+        $event = Event::with(['images', 'translations', 'upcomingOccurrences'])->findOrFail($id);
         return response()->json($event->toArrayWithTranslations());
     }
 

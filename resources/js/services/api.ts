@@ -598,6 +598,8 @@ export const api = createApi({
       products: Product[];
       blog_posts: BlogPost[];
       events: Event[];
+      /** Everything scheduled, featured or not — see HomeDataController. */
+      calendar: { courses: Course[]; trips: Trip[] };
       team_featured: TeamMember | null;
       settings: Setting[];
       social_initiatives: SocialInitiative[];

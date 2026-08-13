@@ -17,7 +17,7 @@ class TripController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Trip::with(['images', 'translations']);
+        $query = Trip::with(['images', 'translations', 'upcomingOccurrences']);
 
         if ($request->has('active')) {
             $query->where('is_active', filter_var($request->active, FILTER_VALIDATE_BOOLEAN));
@@ -98,7 +98,7 @@ class TripController extends Controller
      */
     public function show($id)
     {
-        $trip = Trip::with(['images', 'translations'])->findOrFail($id);
+        $trip = Trip::with(['images', 'translations', 'upcomingOccurrences'])->findOrFail($id);
         return response()->json($trip->toArrayWithTranslations());
     }
 

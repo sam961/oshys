@@ -170,6 +170,19 @@
     "ctaContact": "Talk to Our Team",
     "ctaPrograms": "Explore Programs"
   },
+  "schedule": {
+    "dateSingle": "Date",
+    "dateCount": "Dates ({{count}})",
+    "next": "Next",
+    "plusMore": "+{{count}} more",
+    "showAll": "Show {{count}} more",
+    "seats": "{{count}} seats",
+    "noDates": "Dates to be announced",
+    "filterAll": "All",
+    "filterEvents": "Events",
+    "filterCourses": "Courses",
+    "filterTrips": "Trips"
+  },
   "shop": {
     "title": "Dive Shop",
     "subtitle": "Quality diving equipment",

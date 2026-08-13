@@ -23,6 +23,9 @@ class Event extends Model
         'price',
     ];
 
+    /** Dates a visitor should see; see the Schedulable trait. */
+    protected $appends = ['upcoming_dates'];
+
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',

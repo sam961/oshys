@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { sanitizeRichText } from '../utils/sanitizeHtml';
+import { UpcomingDates } from '../components/features/UpcomingDates';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -177,6 +178,19 @@ export const TripDetailPage: React.FC = () => {
                 dangerouslySetInnerHTML={{ __html: sanitizeRichText(trip.description) }}
               />
             </motion.div>
+
+            {/* Departure dates. A trip with none reads exactly as it did
+                before — most have no schedule set. */}
+            {trip.upcoming_dates && trip.upcoming_dates.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100"
+              >
+                <UpcomingDates dates={trip.upcoming_dates} />
+              </motion.div>
+            )}
 
             {/* Included Items Card */}
             {trip.included_items && trip.included_items.length > 0 && (
