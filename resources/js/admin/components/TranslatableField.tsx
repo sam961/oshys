@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { sanitizeRichText } from '../../utils/sanitizeHtml';
 
 interface TranslatableFieldProps {
   label: string;
@@ -96,7 +97,18 @@ const TranslatableField: React.FC<TranslatableFieldProps> = ({
 
       {/* Input Field */}
       <div className="relative">
-        {type === 'textarea' ? (
+        {/* A disabled textarea holding rich text shows its source: an admin
+            opening a preview sees "<p>test</p>" rather than the words. Nothing
+            is editable in that state anyway, so render it instead. Only when
+            the value actually contains markup — plain text keeps the textarea
+            it has always had. */}
+        {type === 'textarea' && disabled && /<[a-z][\s\S]*>/i.test(currentValue || '') ? (
+          <div
+            dir={activeLocale === 'ar' ? 'rtl' : 'ltr'}
+            className="prose prose-sm max-w-none rounded-lg border border-gray-300 bg-gray-100 p-4 text-gray-700"
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(currentValue) }}
+          />
+        ) : type === 'textarea' ? (
           <textarea
             id={`${name}-${activeLocale}`}
             name={`${name}-${activeLocale}`}

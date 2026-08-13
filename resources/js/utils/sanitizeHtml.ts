@@ -67,3 +67,27 @@ export const sanitizeExcerpt = (html?: string | null): string => {
   registerHooks();
   return DOMPurify.sanitize(html ?? '', EXCERPT_CONFIG);
 };
+
+/**
+ * CMS HTML as readable plain text, for table cells and previews.
+ *
+ * Admin listings show a one-line excerpt of a rich-text field. Printing the
+ * stored value directly puts "<p>test</p>" on screen; rendering it as HTML in a
+ * table cell is worse. Parsing and taking the text is the only version that
+ * reads correctly.
+ */
+export const htmlToText = (html?: string | null): string => {
+  if (!html) return '';
+
+  // Sanitize first: this parses attacker-influenced markup, and the result is
+  // discarded anyway, so there is no reason to hand raw input to the parser.
+  const clean = sanitizeExcerpt(html);
+
+  // Block boundaries carry no whitespace of their own, so textContent alone
+  // would run "<p>one</p><p>two</p>" together as "onetwo". Insert a separator
+  // where the markup implies one.
+  const spaced = clean.replace(/<\/(p|div|li|h[1-6]|blockquote|tr)>|<br\s*\/?>/gi, ' ');
+  const parsed = new DOMParser().parseFromString(spaced, 'text/html');
+
+  return (parsed.body.textContent || '').replace(/\s+/g, ' ').trim();
+};

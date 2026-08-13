@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { DataTable } from '../components/DataTable';
-import { EventModal } from '../components/EventModal';
+import { EventPreviewModal } from '../components/EventPreviewModal';
 import { useGetEventsQuery, useDeleteEventMutation } from '../../services/api';
 import type { Event } from '../../types';
 import toast from 'react-hot-toast';
+import { htmlToText } from '../../utils/sanitizeHtml';
 import { formatDayTime } from '../../utils/dates';
 import { useTranslation } from 'react-i18next';
 
@@ -26,8 +27,9 @@ export const EventsManagement: React.FC = () => {
     {
       header: t('events.description'),
       accessor: 'description',
+      // Rich-text fields are stored as HTML; a table cell wants the words.
       render: (value: string) => (
-        <div className="max-w-xs truncate">{value}</div>
+        <div className="max-w-xs truncate" title={htmlToText(value)}>{htmlToText(value)}</div>
       ),
     },
     {
@@ -139,11 +141,10 @@ export const EventsManagement: React.FC = () => {
         onView={handleView}
       />
 
-      <EventModal
+      <EventPreviewModal
         isOpen={modalOpen}
         onClose={handleCloseModal}
         event={selectedEvent}
-        mode="view"
       />
     </div>
   );

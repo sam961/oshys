@@ -6,6 +6,7 @@ import { ProductModal } from '../components/ProductModal';
 import { useGetProductsQuery, useDeleteProductMutation } from '../../services/api';
 import type { Product } from '../../types';
 import toast from 'react-hot-toast';
+import { htmlToText } from '../../utils/sanitizeHtml';
 import { useTranslation } from 'react-i18next';
 
 export const ProductsManagement: React.FC = () => {
@@ -38,8 +39,9 @@ export const ProductsManagement: React.FC = () => {
     {
       header: 'Description',
       accessor: 'description',
+      // Rich-text fields are stored as HTML; a table cell wants the words.
       render: (value: string) => (
-        <div className="max-w-xs truncate">{value}</div>
+        <div className="max-w-xs truncate" title={htmlToText(value)}>{htmlToText(value)}</div>
       ),
     },
     {
