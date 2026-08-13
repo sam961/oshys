@@ -86,7 +86,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
   };
 
   // Get events for a specific day
-  const getEventsForDay = (day: number | null): Event[] => {
+  const getEventsForDay = (day: number | null): CalendarEntry[] => {
     if (!day) return [];
     const date = new Date(year, currentMonth.getMonth(), day);
     return eventsByDate[date.toDateString()] || [];
@@ -102,7 +102,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
     if (window.innerWidth < 1024 && dayEvents.length > 0) {
       if (dayEvents.length === 1) {
         // If only one event, navigate directly to it
-        navigate(`/events/${dayEvents[0].id}`);
+        navigate(dayEvents[0].href);
       } else {
         // If multiple events, show popup
         setMobilePopup({ date: clickedDate, events: dayEvents });

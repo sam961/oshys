@@ -98,7 +98,9 @@ const AppRoutes: React.FC = () => {
               <Route path="/blog/:id" element={<BlogDetailPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/events" element={<EventsPage />} />
-              <Route path="/events/:id" element={<EventDetailPage />} />
+              {/* Accepts a slug or a numeric id; the API resolves either, so
+                  links shared before slugs existed still work. */}
+              <Route path="/events/:slug" element={<EventDetailPage />} />
               <Route path="/initiatives" element={<InitiativesPage />} />
               <Route path="/initiatives/:id" element={<InitiativeDetailPage />} />
               <Route path="/store" element={<StorePage />} />

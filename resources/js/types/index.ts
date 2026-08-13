@@ -108,6 +108,8 @@ export interface SocialInitiative {
 // Event Types
 export interface Event {
   id: number;
+  /** Readable address; numeric ids still resolve for older links. */
+  slug?: string | null;
   title: string;
   description: string;
   type: 'workshop' | 'course' | 'trip' | 'other';

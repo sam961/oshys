@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class EventController extends Controller
 {
     use TranslatableController;
+    use ResolvesMediaPath;
 
     /**
      * Display a listing of the resource.
@@ -95,6 +96,8 @@ class EventController extends Controller
         // Remove translation fields from validated data
         unset($validated['title_translations'], $validated['description_translations'], $validated['location_translations']);
 
+        $validated['slug'] = $this->uniqueSlug(Event::class, $validated['title']);
+
         $event = Event::create($validated);
 
         // Save translations
@@ -108,8 +111,38 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        $event = Event::with(['images', 'translations', 'upcomingOccurrences'])->findOrFail($id);
+        $event = $this->resolveEvent($id, ['images', 'translations', 'upcomingOccurrences']);
+
         return response()->json($event->toArrayWithTranslations());
+    }
+
+    /**
+     * Find an event by slug or by numeric id.
+     *
+     * Both are supported on purpose. Slugs are the address the site links to
+     * now, but ids were the only address until this change, so anything already
+     * shared, bookmarked or indexed still resolves instead of 404ing.
+     *
+     * A purely numeric slug would be ambiguous, so ids are only tried when the
+     * value is numeric AND no event owns it as a slug.
+     */
+    private function resolveEvent($idOrSlug, array $with = []): Event
+    {
+        $query = Event::with($with);
+
+        $bySlug = (clone $query)->where('slug', $idOrSlug)->first();
+        if ($bySlug) {
+            return $bySlug;
+        }
+
+        // Only fall back to an id for a numeric value. Passing a slug to
+        // findOrFail would have MySQL cast it to 0 and potentially match the
+        // wrong row rather than simply missing.
+        if (! is_numeric($idOrSlug)) {
+            abort(404);
+        }
+
+        return $query->findOrFail($idOrSlug);
     }
 
     /**
@@ -137,6 +170,13 @@ class EventController extends Controller
 
         // Remove translation fields from validated data
         unset($validated['title_translations'], $validated['description_translations'], $validated['location_translations']);
+
+        // Keep the address in step with a renamed event, and give one to an
+        // event that predates slugs. An unchanged title leaves the slug alone,
+        // so saving an event does not quietly move its page.
+        if (isset($validated['title']) && ($validated['title'] !== $event->title || ! $event->slug)) {
+            $validated['slug'] = $this->uniqueSlug(Event::class, $validated['title'], $event->id);
+        }
 
         $event->update($validated);
 

@@ -430,6 +430,76 @@ class ScheduleApiTest extends TestCase
         $this->assertTrue($last->lessThanOrEqualTo(VenueTime::toUtc('2027-04-06T23:59')));
     }
 
+    // ------------------------------------------------------------------ slugs
+
+    public function test_an_event_gets_a_readable_slug_when_created(): void
+    {
+        $created = $this->postJson('/api/events', [
+            'title' => 'Beach Cleanup 2026',
+            'description' => 'd', 'type' => 'workshop',
+            'start_date' => '2026-10-06T18:00', 'end_date' => '2026-10-06T20:00',
+        ])->assertCreated()->json();
+
+        $this->assertSame('beach-cleanup-2026', $created['slug']);
+    }
+
+    public function test_a_second_event_with_the_same_title_gets_a_distinct_slug(): void
+    {
+        $payload = [
+            'title' => 'Beach Cleanup', 'description' => 'd', 'type' => 'workshop',
+            'start_date' => '2026-10-06T18:00', 'end_date' => '2026-10-06T20:00',
+        ];
+
+        $first = $this->postJson('/api/events', $payload)->json();
+        $second = $this->postJson('/api/events', $payload)->json();
+
+        $this->assertSame('beach-cleanup', $first['slug']);
+        $this->assertSame('beach-cleanup-2', $second['slug']);
+    }
+
+    public function test_an_arabic_title_is_transliterated_rather_than_dropped(): void
+    {
+        $created = $this->postJson('/api/events', [
+            'title' => 'تنظيف الشاطئ', 'description' => 'd', 'type' => 'workshop',
+            'start_date' => '2026-10-06T18:00', 'end_date' => '2026-10-06T20:00',
+        ])->assertCreated()->json();
+
+        $this->assertNotEmpty($created['slug']);
+        $this->assertMatchesRegularExpression('/^[a-z0-9-]+$/', $created['slug']);
+    }
+
+    public function test_an_event_can_be_fetched_by_slug_or_by_id(): void
+    {
+        $event = $this->event();
+        $event->update(['slug' => 'beach-cleanup']);
+
+        $this->getJson('/api/events/beach-cleanup')->assertOk()->assertJsonPath('id', $event->id);
+        // The old address must keep working — links are already out there.
+        $this->getJson("/api/events/{$event->id}")->assertOk()->assertJsonPath('id', $event->id);
+    }
+
+    public function test_an_unknown_slug_is_a_404_rather_than_a_wrong_record(): void
+    {
+        $this->event();
+
+        $this->getJson('/api/events/no-such-event')->assertNotFound();
+    }
+
+    public function test_renaming_an_event_moves_its_slug_but_saving_it_unchanged_does_not(): void
+    {
+        $event = $this->event();
+        $event->update(['slug' => 'beach-cleanup']);
+
+        // An unrelated edit leaves the address alone.
+        $this->putJson("/api/events/{$event->id}", ['title' => 'Beach Cleanup', 'location' => 'Half Moon'])->assertOk();
+        $event->refresh();
+        $this->assertSame('beach-cleanup', $event->slug);
+
+        // A real rename moves it.
+        $this->putJson("/api/events/{$event->id}", ['title' => 'Reef Cleanup'])->assertOk();
+        $this->assertSame('reef-cleanup', $event->fresh()->slug);
+    }
+
     // ------------------------------------------------------ courses and trips
 
     public function test_courses_can_be_scheduled(): void

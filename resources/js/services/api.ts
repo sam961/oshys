@@ -376,8 +376,9 @@ export const api = createApi({
       }),
       providesTags: ['Event'],
     }),
-    getEvent: builder.query<Event, number>({
-      query: (id) => `/events/${id}`,
+    /** Accepts a slug or a numeric id — the API resolves either. */
+    getEvent: builder.query<Event, string | number>({
+      query: (idOrSlug) => `/events/${idOrSlug}`,
       providesTags: ['Event'],
     }),
     createEvent: builder.mutation<Event, Partial<Event>>({

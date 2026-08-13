@@ -252,7 +252,7 @@ export const EventsPage: React.FC = () => {
               >
                 {sortedEvents.map((event) => (
                   viewMode === 'grid' ? (
-                    <Link key={event.id} to={`/events/${event.id}`}>
+                    <Link key={event.id} to={`/events/${event.slug || event.id}`}>
                       <Card className="h-full group cursor-pointer overflow-hidden relative hover:shadow-xl transition-shadow">
                         {/* Date Badge */}
                         <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-lg p-3 text-center">
@@ -336,7 +336,7 @@ export const EventsPage: React.FC = () => {
                       </Card>
                     </Link>
                   ) : (
-                    <Link key={event.id} to={`/events/${event.id}`}>
+                    <Link key={event.id} to={`/events/${event.slug || event.id}`}>
                       <Card className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow">
                         <div className="flex gap-6">
                           {/* Date Block */}

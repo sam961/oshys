@@ -24,8 +24,9 @@ export const EventDetailPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   // Which date the visitor picked, so the WhatsApp message can name it.
   const [selectedDate, setSelectedDate] = useState<UpcomingDate | null>(null);
-  const { id } = useParams<{ id: string }>();
-  const { data: event, isLoading, error } = useGetEventQuery(Number(id));
+  // Either form works: the API looks up a slug first, then an id.
+  const { slug } = useParams<{ slug: string }>();
+  const { data: event, isLoading, error } = useGetEventQuery(slug ?? '');
 
   const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
 
