@@ -6,6 +6,7 @@ import { BannerModal } from '../components/BannerModal';
 import { useGetBannersQuery, useDeleteBannerMutation } from '../../services/api';
 import type { Banner } from '../../types';
 import toast from 'react-hot-toast';
+import { formatDay } from '../../utils/dates';
 import { useTranslation } from 'react-i18next';
 
 export const BannerManagement: React.FC = () => {
@@ -71,8 +72,8 @@ export const BannerManagement: React.FC = () => {
         }
         return (
           <div className="text-sm">
-            {row.start_date && <div>From: {new Date(row.start_date).toLocaleDateString()}</div>}
-            {row.end_date && <div>To: {new Date(row.end_date).toLocaleDateString()}</div>}
+            {row.start_date && <div>From: {formatDay(new Date(row.start_date))}</div>}
+            {row.end_date && <div>To: {formatDay(new Date(row.end_date))}</div>}
           </div>
         );
       },

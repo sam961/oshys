@@ -10,6 +10,7 @@ import {
   useDeleteOccurrenceMutation,
 } from '../../services/api';
 import type { ScheduleFrequency, SchedulableType } from '../../types';
+import { formatDayTime, weekdayShort } from '../../utils/dates';
 
 /**
  * What the editor collects before the record exists.
@@ -86,15 +87,11 @@ const todayForInput = (): string => asLocalInput(new Date()).slice(0, 10);
 /** True for a naive venue-local string that has already passed. */
 const isPast = (value: string): boolean => !!value && value < nowForInput();
 
+/** "Sun 01/11/2026 · 17:00" — day/month/year, with the weekday kept because
+ *  it is the thing being checked when reviewing a weekly series. */
 const formatDate = (value: string): string => {
-  // Values are venue-local naive strings; parsing the date parts directly
-  // avoids the browser reinterpreting them in its own timezone.
-  const [datePart, timePart] = value.split('T');
-  const [y, m, d] = datePart.split('-').map(Number);
-  const label = new Date(y, m - 1, d).toLocaleDateString('en-GB', {
-    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
-  });
-  return `${label} · ${timePart}`;
+  const weekday = weekdayShort(value);
+  return weekday ? `${weekday} ${formatDayTime(value)}` : formatDayTime(value);
 };
 
 /**

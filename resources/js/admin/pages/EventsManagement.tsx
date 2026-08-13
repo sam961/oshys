@@ -6,6 +6,7 @@ import { EventModal } from '../components/EventModal';
 import { useGetEventsQuery, useDeleteEventMutation } from '../../services/api';
 import type { Event } from '../../types';
 import toast from 'react-hot-toast';
+import { formatDayTime } from '../../utils/dates';
 import { useTranslation } from 'react-i18next';
 
 export const EventsManagement: React.FC = () => {
@@ -32,7 +33,7 @@ export const EventsManagement: React.FC = () => {
     {
       header: t('events.startDate'),
       accessor: 'start_date',
-      render: (value: string) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      render: (value: string) => formatDayTime(new Date(value)),
     },
     {
       header: 'Type',
