@@ -3,12 +3,13 @@ import { Instagram, Twitter, Ghost, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useGetFooterLinksQuery } from '../../services/api';
 import { FastLink } from '../ui/FastLink';
+import { PHONE_HREF, whatsappLink } from '../../utils/whatsapp';
 
 const socialLinks = [
   { Icon: Instagram, href: 'https://www.instagram.com/OSHYS_OCEANS', label: 'Instagram' },
   { Icon: Twitter, href: 'https://twitter.com/OSHYS_OCEANS', label: 'Twitter' },
   { Icon: Ghost, href: 'https://www.snapchat.com/add/OSHYS_OCEANS', label: 'Snapchat' },
-  { Icon: MessageCircle, href: 'https://wa.me/966541000233', label: 'WhatsApp' },
+  { Icon: MessageCircle, href: whatsappLink(), label: 'WhatsApp' },
 ];
 
 export const Footer: React.FC = () => {
@@ -98,7 +99,7 @@ export const Footer: React.FC = () => {
 
         {/* Contact row */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 text-sm mb-8 sm:mb-10">
-          <a href="tel:+966541000233" className="hover:text-white transition-colors" dir="ltr">
+          <a href={PHONE_HREF} className="hover:text-white transition-colors" dir="ltr">
             +966 54 100 0233
           </a>
           <a href="mailto:hello@coralsandshells.com" className="hover:text-white transition-colors">

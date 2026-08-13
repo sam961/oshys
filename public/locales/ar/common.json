@@ -139,6 +139,11 @@
     "swipeToSeeMore": "اسحب لرؤية المزيد"
   },
   "whatsapp": {
+    "inquire": "استفسر عبر واتساب",
+    "inquireAboutDate": "استفسر عن هذا الموعد",
+    "inquiryIntro": "مرحباً! أود الاستفسار عن \"{{title}}\".",
+    "inquiryDate": "الموعد: {{date}}",
+    "selectDatePrompt": "اختر موعداً للاستفسار عنه",
     "defaultMessage": "مرحباً! أود الاستفسار عن خدمات الغوص لديكم.",
     "ariaLabel": "تواصل عبر واتساب"
   },

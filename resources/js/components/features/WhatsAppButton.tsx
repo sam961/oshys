@@ -1,15 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { whatsappLink } from '../../utils/whatsapp';
 
 export const WhatsAppButton: React.FC = () => {
   const { t } = useTranslation();
-  const whatsappNumber = '+966541000233';
-  const message = t('whatsapp.defaultMessage');
-
   const handleClick = () => {
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+    window.open(whatsappLink(t('whatsapp.defaultMessage')), '_blank');
   };
 
   return (

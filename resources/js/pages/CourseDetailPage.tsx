@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { sanitizeRichText } from '../utils/sanitizeHtml';
 import { UpcomingDates } from '../components/features/UpcomingDates';
+import { WhatsAppInquiry } from '../components/features/WhatsAppInquiry';
+import type { UpcomingDate } from '../types';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -25,6 +27,8 @@ import { useTranslation } from 'react-i18next';
 
 export const CourseDetailPage: React.FC = () => {
   const { t, i18n } = useTranslation();
+  // Which date the visitor picked, so the WhatsApp message can name it.
+  const [selectedDate, setSelectedDate] = useState<UpcomingDate | null>(null);
   const { id } = useParams<{ id: string }>();
   const { data: course, isLoading, error } = useGetCourseQuery(Number(id));
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -215,7 +219,17 @@ export const CourseDetailPage: React.FC = () => {
                 transition={{ delay: 0.25 }}
                 className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100"
               >
-                <UpcomingDates dates={course.upcoming_dates} />
+                <UpcomingDates
+                  dates={course.upcoming_dates}
+                  selectedId={selectedDate?.id ?? null}
+                  onSelect={setSelectedDate}
+                />
+                <WhatsAppInquiry
+                  title={course.name}
+                  date={selectedDate}
+                  url={typeof window !== 'undefined' ? window.location.href : undefined}
+                  className="mt-4"
+                />
               </motion.div>
             )}
 

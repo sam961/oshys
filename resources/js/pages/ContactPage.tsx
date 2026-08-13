@@ -4,6 +4,7 @@ import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Instagram, Twitter, Ghos
 import { Section, Card, Button } from '../components/ui';
 import { useSendContactMessageMutation } from '../services/api';
 import { useTranslation } from 'react-i18next';
+import { whatsappLink } from '../utils/whatsapp';
 
 export const ContactPage: React.FC = () => {
   const { t } = useTranslation();
@@ -267,7 +268,7 @@ export const ContactPage: React.FC = () => {
                     <Ghost className="w-6 h-6" />
                   </a>
                   <a
-                    href="https://wa.me/966541000233"
+                    href={whatsappLink()}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-gradient-to-br from-primary-500 to-accent-500 text-white p-3 rounded-full hover:scale-110 transition-transform"

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { sanitizeRichText } from '../utils/sanitizeHtml';
 import { UpcomingDates } from '../components/features/UpcomingDates';
+import { WhatsAppInquiry } from '../components/features/WhatsAppInquiry';
+import type { UpcomingDate } from '../types';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -20,6 +22,8 @@ import { useTranslation } from 'react-i18next';
 
 export const EventDetailPage: React.FC = () => {
   const { t, i18n } = useTranslation();
+  // Which date the visitor picked, so the WhatsApp message can name it.
+  const [selectedDate, setSelectedDate] = useState<UpcomingDate | null>(null);
   const { id } = useParams<{ id: string }>();
   const { data: event, isLoading, error } = useGetEventQuery(Number(id));
 
@@ -182,7 +186,17 @@ export const EventDetailPage: React.FC = () => {
                   transition={{ delay: 0.35 }}
                   className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm"
                 >
-                  <UpcomingDates dates={event.upcoming_dates} />
+                  <UpcomingDates
+                  dates={event.upcoming_dates}
+                  selectedId={selectedDate?.id ?? null}
+                  onSelect={setSelectedDate}
+                />
+                <WhatsAppInquiry
+                  title={event.title}
+                  date={selectedDate}
+                  url={typeof window !== 'undefined' ? window.location.href : undefined}
+                  className="mt-4"
+                />
                 </motion.div>
               )}
 

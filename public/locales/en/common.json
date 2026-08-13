@@ -139,6 +139,11 @@
     "swipeToSeeMore": "Swipe to see more"
   },
   "whatsapp": {
+    "inquire": "Inquire on WhatsApp",
+    "inquireAboutDate": "Inquire about this date",
+    "inquiryIntro": "Hello! I would like to inquire about \"{{title}}\".",
+    "inquiryDate": "Date: {{date}}",
+    "selectDatePrompt": "Select a date to inquire about it",
     "defaultMessage": "Hello! I would like to inquire about your diving services.",
     "ariaLabel": "Chat on WhatsApp"
   },

@@ -4,6 +4,7 @@ import { HelpCircle, Search, ChevronDown, MessageCircle, Phone, GraduationCap, U
 import { Section } from '../components/ui';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { whatsappLink } from '../utils/whatsapp';
 
 const categoryIcons: Record<string, React.ElementType> = {
   general: HelpCircle,
@@ -218,7 +219,7 @@ export const FAQPage: React.FC = () => {
               {t('faq.contactUs')}
             </Link>
             <a
-              href="https://wa.me/966541000233"
+              href={whatsappLink()}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-8 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition-colors"
