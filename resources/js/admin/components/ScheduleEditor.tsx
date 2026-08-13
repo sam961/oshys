@@ -11,6 +11,7 @@ import {
 } from '../../services/api';
 import type { ScheduleFrequency, SchedulableType } from '../../types';
 import { formatDayTime, weekdayShort } from '../../utils/dates';
+import { DateTimeField, DateField } from './DateTimeField';
 
 /**
  * What the editor collects before the record exists.
@@ -330,31 +331,25 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         {/* While creating, the first date comes from the form's own Start Date
             field — showing a second one here would be two sources of truth. */}
         <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${hideFirstDate ? 'hidden' : ''}`}>
-          <div>
-            {/* Optional while creating a course or trip — leaving it blank
-                simply means no dates. Required once you are generating. */}
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              First date &amp; time{draftProvidesFirstDate && isDraft ? '' : ' *'}
-            </label>
-            <input
-              type="datetime-local"
-              value={startAt}
-              min={nowForInput()}
-              onChange={(e) => setStartAt(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary-500"
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">Ends at</label>
-            <input
-              type="datetime-local"
-              value={endAt}
-              min={startAt || nowForInput()}
-              onChange={(e) => setEndAt(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary-500"
-            />
-            <p className="mt-1 text-xs text-gray-500">Applied to every date in the series.</p>
-          </div>
+          {/* Optional while creating a course or trip — leaving it blank
+              simply means no dates. Required once you are generating. */}
+          <DateTimeField
+            label="First date"
+            value={startAt}
+            onChange={setStartAt}
+            min={nowForInput()}
+            required={!(draftProvidesFirstDate && isDraft)}
+            clearable={draftProvidesFirstDate && isDraft}
+          />
+          <DateTimeField
+            label="Ends at"
+            value={endAt}
+            onChange={setEndAt}
+            min={startAt || nowForInput()}
+            clearable
+            durationsFrom={startAt}
+            help="Applied to every date in the series."
+          />
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -419,17 +414,14 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
         {frequency !== 'none' && (
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">Repeat until</label>
-            <input
-              type="date"
+            <DateField
+              label="Repeat until"
               value={untilDate}
+              onChange={setUntilDate}
               min={startAt ? startAt.slice(0, 10) : todayForInput()}
-              onChange={(e) => setUntilDate(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary-500 sm:w-64"
+              clearable
+              help="Dates are generated up to six months ahead, whichever comes first."
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Dates are generated up to six months ahead, whichever comes first.
-            </p>
           </div>
         )}
 
@@ -551,16 +543,16 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
       {/* One-off date outside the rule */}
       <div className={`border-t border-gray-100 pt-4 ${isDraft ? 'hidden' : ''}`}>
-        <label className="mb-2 block text-sm font-medium text-gray-700">Add a single date</label>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <input
-            type="datetime-local"
-            value={oneOffDate}
-            min={nowForInput()}
-            onChange={(e) => setOneOffDate(e.target.value)}
-            onKeyDown={(e) => blockEnterSubmit(e, handleAddOneOff)}
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-primary-500"
-          />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+          <div className="flex-1" onKeyDown={(e) => blockEnterSubmit(e, handleAddOneOff)}>
+            <DateTimeField
+              label="Add a single date"
+              value={oneOffDate}
+              onChange={setOneOffDate}
+              min={nowForInput()}
+              clearable
+            />
+          </div>
           <button
             type="button"
             onClick={handleAddOneOff}

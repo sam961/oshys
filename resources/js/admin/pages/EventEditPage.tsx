@@ -6,6 +6,7 @@ import { FormSection } from '../components/FormSection';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { ScheduleEditor } from '../components/ScheduleEditor';
+import { DateTimeField } from '../components/DateTimeField';
 import type { DraftRule } from '../components/ScheduleEditor';
 import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation, useSaveScheduleMutation } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -204,8 +205,22 @@ export const EventEditPage: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-2">Start Date & Time *</label><input type="datetime-local" value={formData.start_date} min={minDateTime()} onChange={(e) => setFormData(p => ({ ...p, start_date: e.target.value }))} required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /><p className="mt-1 text-xs text-gray-500">You can add more dates and a repeat rule after saving.</p></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-2">End Date & Time</label><input type="datetime-local" value={formData.end_date} min={formData.start_date || minDateTime()} onChange={(e) => setFormData(p => ({ ...p, end_date: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+                  <DateTimeField
+                    label="Start date"
+                    value={formData.start_date}
+                    onChange={(v) => setFormData(p => ({ ...p, start_date: v }))}
+                    min={minDateTime()}
+                    required
+                    help="You can add more dates and a repeat rule after saving."
+                  />
+                  <DateTimeField
+                    label="Ends at"
+                    value={formData.end_date}
+                    onChange={(v) => setFormData(p => ({ ...p, end_date: v }))}
+                    min={formData.start_date || minDateTime()}
+                    clearable
+                    durationsFrom={formData.start_date}
+                  />
                 </>
               )}
               <div className="grid grid-cols-2 gap-4">
