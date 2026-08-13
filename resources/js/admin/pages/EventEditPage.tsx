@@ -40,6 +40,13 @@ const initialFormData: FormData = {
   location_translations: { ar: '' },
 };
 
+/** Now, as an <input type="datetime-local"> value — new events cannot start in the past. */
+const minDateTime = (): string => {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
 export const EventEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -54,7 +61,9 @@ export const EventEditPage: React.FC = () => {
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
   // Repeat rule collected while creating; applied once the event has an id.
-  const [draftRule, setDraftRule] = useState<DraftRule>({ frequency: 'none', interval: 1, weekdays: [], until_date: null });
+  // start_at/end_at stay null here: this form owns the first date, so the
+  // editor contributes only the repeat rule.
+  const [draftRule, setDraftRule] = useState<DraftRule>({ start_at: null, end_at: null, frequency: 'none', interval: 1, weekdays: [], until_date: null });
 
   useEffect(() => {
     if (event && isEditMode) {
@@ -195,8 +204,8 @@ export const EventEditPage: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-2">Start Date & Time *</label><input type="datetime-local" value={formData.start_date} onChange={(e) => setFormData(p => ({ ...p, start_date: e.target.value }))} required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /><p className="mt-1 text-xs text-gray-500">You can add more dates and a repeat rule after saving.</p></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-2">End Date & Time</label><input type="datetime-local" value={formData.end_date} onChange={(e) => setFormData(p => ({ ...p, end_date: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-2">Start Date & Time *</label><input type="datetime-local" value={formData.start_date} min={minDateTime()} onChange={(e) => setFormData(p => ({ ...p, start_date: e.target.value }))} required className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /><p className="mt-1 text-xs text-gray-500">You can add more dates and a repeat rule after saving.</p></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-2">End Date & Time</label><input type="datetime-local" value={formData.end_date} min={formData.start_date || minDateTime()} onChange={(e) => setFormData(p => ({ ...p, end_date: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
                 </>
               )}
               <div className="grid grid-cols-2 gap-4">

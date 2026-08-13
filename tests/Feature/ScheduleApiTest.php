@@ -154,6 +154,74 @@ class ScheduleApiTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors('until_date');
     }
 
+    // ------------------------------------------------------- dates in the past
+
+    public function test_a_first_date_in_the_past_is_rejected(): void
+    {
+        $event = $this->event();
+
+        $this->postJson("/api/schedules/events/{$event->id}", [
+            'start_at' => VenueTime::toVenue(now()->subDay())->format('Y-m-d\TH:i'),
+            'frequency' => 'none', 'interval' => 1,
+        ])->assertStatus(422)->assertJsonValidationErrors('start_at');
+    }
+
+    public function test_an_existing_series_that_started_in_the_past_can_still_be_extended(): void
+    {
+        // A course that began two months ago and runs for months more: changing
+        // its until_date must not force the whole series forward.
+        $event = $this->event();
+        $started = VenueTime::toVenue(now()->subMonths(2))->format('Y-m-d\TH:i');
+
+        // Seed it directly, since the API would refuse to create it.
+        $series = ScheduleSeries::create([
+            'schedulable_type' => Event::class, 'schedulable_id' => $event->id,
+            'starts_at' => VenueTime::toUtc($started),
+            'frequency' => 'weekly', 'interval' => 1, 'weekdays' => [1],
+        ]);
+        app(\App\Services\OccurrenceGenerator::class)
+            ->generate($event, $series, VenueTime::toUtc($started));
+
+        $this->postJson("/api/schedules/events/{$event->id}", [
+            'start_at' => $started,
+            'frequency' => 'weekly', 'interval' => 1, 'weekdays' => [1],
+            'until_date' => now()->addMonth()->format('Y-m-d'),
+        ])->assertOk();
+    }
+
+    public function test_a_one_off_date_in_the_past_is_rejected(): void
+    {
+        $event = $this->event();
+
+        $this->postJson("/api/schedules/events/{$event->id}/occurrences", [
+            'start_at' => VenueTime::toVenue(now()->subHour())->format('Y-m-d\TH:i'),
+        ])->assertStatus(422)->assertJsonValidationErrors('start_at');
+    }
+
+    public function test_an_existing_date_cannot_be_moved_into_the_past(): void
+    {
+        $event = $this->event();
+        $occurrence = $event->occurrences()->create(['start_at' => now()->addWeek()]);
+
+        $this->putJson("/api/schedule-occurrences/{$occurrence->id}", [
+            'start_at' => VenueTime::toVenue(now()->subDay())->format('Y-m-d\TH:i'),
+        ])->assertStatus(422)->assertJsonValidationErrors('start_at');
+    }
+
+    public function test_a_past_date_can_still_have_its_capacity_and_status_edited(): void
+    {
+        // Editing a date that has already happened must stay possible — the
+        // guard is on moving a date, not on touching one.
+        $event = $this->event();
+        $past = $event->occurrences()->create(['start_at' => now()->subWeek()]);
+
+        $this->putJson("/api/schedule-occurrences/{$past->id}", ['capacity' => 4])
+            ->assertOk()->assertJsonPath('capacity', 4);
+
+        $this->putJson("/api/schedule-occurrences/{$past->id}", ['status' => 'cancelled'])
+            ->assertOk()->assertJsonPath('status', 'cancelled');
+    }
+
     public function test_weekdays_outside_one_to_seven_are_rejected(): void
     {
         $event = $this->event();

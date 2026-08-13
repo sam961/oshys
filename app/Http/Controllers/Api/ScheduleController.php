@@ -12,6 +12,7 @@ use App\Services\OccurrenceGenerator;
 use App\Support\VenueTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -78,6 +79,8 @@ class ScheduleController extends Controller
         $start = VenueTime::toUtc($validated['start_at']);
         $end = isset($validated['end_at']) ? VenueTime::toUtc($validated['end_at']) : null;
 
+        $this->rejectPastStart($model, $start);
+
         // Checked here rather than with `after_or_equal` because until_date is
         // a calendar day and start_at is an instant — comparing the raw strings
         // would reject a same-day rule.
@@ -97,6 +100,7 @@ class ScheduleController extends Controller
             $series = ScheduleSeries::updateOrCreate(
                 ['schedulable_type' => $model->getMorphClass(), 'schedulable_id' => $model->getKey()],
                 [
+                    'starts_at' => $start,
                     'frequency' => $validated['frequency'],
                     'interval' => $validated['interval'],
                     'weekdays' => $validated['frequency'] === ScheduleSeries::FREQUENCY_WEEKLY
@@ -124,9 +128,22 @@ class ScheduleController extends Controller
             'capacity' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        // Compared after conversion, not with `after_or_equal:now`: the
+        // incoming string is venue-local and Laravel would read it as UTC,
+        // putting the comparison three hours out.
+        $startAt = VenueTime::toUtc($validated['start_at']);
+
+        // A date added by hand is always new, so there is no unchanged-value
+        // case to allow through.
+        if ($startAt->lessThan(now())) {
+            throw ValidationException::withMessages([
+                'start_at' => 'The date cannot be in the past.',
+            ]);
+        }
+
         $model->occurrences()->create([
             'series_id' => null,
-            'start_at' => VenueTime::toUtc($validated['start_at']),
+            'start_at' => $startAt,
             'end_at' => isset($validated['end_at']) ? VenueTime::toUtc($validated['end_at']) : null,
             'capacity' => $validated['capacity'] ?? null,
         ]);
@@ -152,7 +169,18 @@ class ScheduleController extends Controller
         $changes = [];
 
         if (array_key_exists('start_at', $validated)) {
-            $changes['start_at'] = VenueTime::toUtc($validated['start_at']);
+            $moved = VenueTime::toUtc($validated['start_at']);
+
+            // Only a genuine move is blocked. A date that is already past stays
+            // editable — its capacity or cancelled state may still need
+            // changing, and that posts the same start_at back unchanged.
+            if ($moved->lessThan(now()) && ! $moved->equalTo($occurrence->start_at)) {
+                throw ValidationException::withMessages([
+                    'start_at' => 'A date cannot be moved into the past.',
+                ]);
+            }
+
+            $changes['start_at'] = $moved;
         }
         if (array_key_exists('end_at', $validated)) {
             $changes['end_at'] = $validated['end_at'] ? VenueTime::toUtc($validated['end_at']) : null;
@@ -197,6 +225,38 @@ class ScheduleController extends Controller
         $this->syncLegacyDates($model->fresh());
 
         return $this->show($type, $id);
+    }
+
+    /**
+     * Refuse a first date that has already passed.
+     *
+     * The one exception is an existing series whose first date is genuinely in
+     * the past — a course that started two months ago and still has months to
+     * run. Extending its until_date must not force the admin to move the whole
+     * series forward, so an unchanged past start is allowed through. Anything
+     * else — a new series, or a changed date — has to be in the future.
+     */
+    private function rejectPastStart(Model $model, Carbon $start): void
+    {
+        if ($start->greaterThanOrEqualTo(now())) {
+            return;
+        }
+
+        // The rule's own anchor, not its first generated date — a weekly
+        // Monday rule anchored on a Wednesday starts later than its anchor.
+        // Rules predating the anchor column fall back to their earliest date,
+        // which is the same value for every frequency except weekly.
+        $series = $model->series;
+        $anchor = $series?->starts_at
+            ?? $series?->occurrences()->orderBy('start_at')->first()?->start_at;
+
+        if ($anchor && $anchor->equalTo($start)) {
+            return;
+        }
+
+        throw ValidationException::withMessages([
+            'start_at' => 'The first date cannot be in the past.',
+        ]);
     }
 
     /**

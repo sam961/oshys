@@ -63,14 +63,28 @@ const FREQUENCIES: { value: ScheduleFrequency; label: string }[] = [
   { value: 'monthly', label: 'Monthly' },
 ];
 
+const pad = (n: number) => String(n).padStart(2, '0');
+const asLocalInput = (d: Date): string =>
+  `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
 /** Venue-local "now", rounded up to the next hour, for a sensible default. */
 const defaultStart = (): string => {
   const d = new Date();
   d.setMinutes(0, 0, 0);
   d.setHours(d.getHours() + 1);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return asLocalInput(d);
 };
+
+/**
+ * Earliest value the date pickers will offer. Stops the obvious mistake in the
+ * browser; the server enforces it regardless, since `min` is trivially bypassed
+ * and the admin's clock may not match the venue's.
+ */
+const nowForInput = (): string => asLocalInput(new Date());
+const todayForInput = (): string => asLocalInput(new Date()).slice(0, 10);
+
+/** True for a naive venue-local string that has already passed. */
+const isPast = (value: string): boolean => !!value && value < nowForInput();
 
 const formatDate = (value: string): string => {
   // Values are venue-local naive strings; parsing the date parts directly
@@ -188,6 +202,17 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       toast.error('Choose at least one weekday, or set the repeat to "Does not repeat".');
       return;
     }
+    // An existing series may legitimately have started in the past; only a
+    // change to a past date is refused. The server draws the same line.
+    const seededStart = data?.occurrences.find((o) => o.series_id !== null)?.start_at;
+    if (isPast(startAt) && startAt !== seededStart) {
+      toast.error('The first date cannot be in the past.');
+      return;
+    }
+    if (endAt && endAt <= startAt) {
+      toast.error('The end time must be after the start time.');
+      return;
+    }
     try {
       const result = await saveSchedule({
         type,
@@ -212,6 +237,10 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const handleAddOneOff = async () => {
     if (!oneOffDate) return;
+    if (isPast(oneOffDate)) {
+      toast.error('That date has already passed.');
+      return;
+    }
     try {
       await addOccurrence({ type, id: id as number, data: { start_at: oneOffDate } }).unwrap();
       setOneOffDate('');
@@ -313,6 +342,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <input
               type="datetime-local"
               value={startAt}
+              min={nowForInput()}
               onChange={(e) => setStartAt(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary-500"
             />
@@ -322,6 +352,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <input
               type="datetime-local"
               value={endAt}
+              min={startAt || nowForInput()}
               onChange={(e) => setEndAt(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary-500"
             />
@@ -395,6 +426,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <input
               type="date"
               value={untilDate}
+              min={startAt ? startAt.slice(0, 10) : todayForInput()}
               onChange={(e) => setUntilDate(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary-500 sm:w-64"
             />
@@ -527,6 +559,7 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           <input
             type="datetime-local"
             value={oneOffDate}
+            min={nowForInput()}
             onChange={(e) => setOneOffDate(e.target.value)}
             onKeyDown={(e) => blockEnterSubmit(e, handleAddOneOff)}
             className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-primary-500"

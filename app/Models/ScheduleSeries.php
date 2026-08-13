@@ -19,6 +19,7 @@ class ScheduleSeries extends Model
     protected $fillable = [
         'schedulable_type',
         'schedulable_id',
+        'starts_at',
         'frequency',
         'interval',
         'weekdays',
@@ -27,6 +28,7 @@ class ScheduleSeries extends Model
     ];
 
     protected $casts = [
+        'starts_at' => 'datetime',
         'weekdays' => 'array',
         'until_date' => 'date',
         'generated_through' => 'date',
