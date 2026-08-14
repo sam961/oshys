@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Package, GraduationCap, Compass, BookOpen, Calendar, Users, Loader2 } from 'lucide-react';
 import { StatCard } from '../components/StatCard';
@@ -168,30 +169,43 @@ export const Dashboard: React.FC = () => {
           className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
         >
           <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+          {/* These were buttons with no handler — decorative until now.
+              Class names are written out in full rather than composed from a
+              colour variable: Tailwind only generates classes it can see in the
+              source, so an interpolated `hover:border-${x}-500` produces no CSS. */}
           <div className="grid grid-cols-2 gap-4">
-            <button className="p-4 border-2 border-gray-200 rounded-xl hover:border-primary-500 hover:bg-primary-50 transition-all text-left group">
-              <Package className="w-6 h-6 text-primary-600 mb-2" />
-              <div className="font-semibold text-gray-900 group-hover:text-primary-600">Add Product</div>
-              <div className="text-xs text-gray-500">Create new item</div>
-            </button>
-
-            <button className="p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all text-left group">
-              <GraduationCap className="w-6 h-6 text-green-600 mb-2" />
-              <div className="font-semibold text-gray-900 group-hover:text-green-600">Add Course</div>
-              <div className="text-xs text-gray-500">Create new course</div>
-            </button>
-
-            <button className="p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all text-left group">
-              <Compass className="w-6 h-6 text-purple-600 mb-2" />
-              <div className="font-semibold text-gray-900 group-hover:text-purple-600">Add Trip</div>
-              <div className="text-xs text-gray-500">Create new trip</div>
-            </button>
-
-            <button className="p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all text-left group">
-              <BookOpen className="w-6 h-6 text-orange-600 mb-2" />
-              <div className="font-semibold text-gray-900 group-hover:text-orange-600">Add Blog Post</div>
-              <div className="text-xs text-gray-500">Write new post</div>
-            </button>
+            {[
+              {
+                to: '/admin/events/new', icon: Calendar, label: 'Add Event', hint: 'With dates & capacity',
+                card: 'hover:border-primary-500 hover:bg-primary-50', icon_: 'text-primary-600', text: 'group-hover:text-primary-600',
+              },
+              {
+                to: '/admin/courses/new', icon: GraduationCap, label: 'Add Course', hint: 'Create new course',
+                card: 'hover:border-green-500 hover:bg-green-50', icon_: 'text-green-600', text: 'group-hover:text-green-600',
+              },
+              {
+                to: '/admin/trips/new', icon: Compass, label: 'Add Trip', hint: 'Create new trip',
+                card: 'hover:border-purple-500 hover:bg-purple-50', icon_: 'text-purple-600', text: 'group-hover:text-purple-600',
+              },
+              {
+                to: '/admin/blog/new', icon: BookOpen, label: 'Add Blog Post', hint: 'Write new post',
+                card: 'hover:border-orange-500 hover:bg-orange-50', icon_: 'text-orange-600', text: 'group-hover:text-orange-600',
+              },
+              {
+                to: '/admin/products/new', icon: Package, label: 'Add Product', hint: 'Create new item',
+                card: 'hover:border-gray-400 hover:bg-gray-50', icon_: 'text-gray-600', text: 'group-hover:text-gray-700',
+              },
+            ].map(({ to, icon: Icon, label, hint, card, icon_, text }) => (
+              <Link
+                key={to}
+                to={to}
+                className={`group block rounded-xl border-2 border-gray-200 p-4 text-left transition-all ${card}`}
+              >
+                <Icon className={`mb-2 h-6 w-6 ${icon_}`} />
+                <div className={`font-semibold text-gray-900 ${text}`}>{label}</div>
+                <div className="text-xs text-gray-500">{hint}</div>
+              </Link>
+            ))}
           </div>
         </motion.div>
       </div>
