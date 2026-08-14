@@ -124,8 +124,14 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraf
     try {
       await deleteOccurrence({ occurrenceId: row.id, type, parentId: id as number }).unwrap();
       toast.success('Date removed');
-    } catch {
-      toast.error('Could not remove that date');
+    } catch (error: any) {
+      // Show what the server actually said. A bare "could not remove" hides
+      // the difference between a validation problem, a session that has
+      // expired, and a 500 — which is the information needed to fix it.
+      const detail = error?.data?.message
+        ?? (error?.status ? `Server error (${error.status})` : null);
+      toast.error(detail ? `Could not remove that date — ${detail}` : 'Could not remove that date');
+      console.error('Failed to delete occurrence', error);
     }
   };
 
