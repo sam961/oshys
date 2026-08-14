@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, ImagePlus } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
+import { DateInput } from '../components/DateInput';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { ImageUploadWithCrop, IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
@@ -154,7 +155,7 @@ export const BlogEditPage: React.FC = () => {
           <div className="space-y-6">
             <FormSection title="Settings" description="Publish date">
               <div className="space-y-5">
-                <div><label className="block text-sm font-medium text-gray-700 mb-2">Published Date</label><input type="date" value={formData.published_at} onChange={(e) => setFormData(p => ({ ...p, published_at: e.target.value }))} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-2">Published Date</label><DateInput value={formData.published_at} onChange={(v) => setFormData(p => ({ ...p, published_at: v }))} ariaLabel="Published date" /></div>
               </div>
             </FormSection>
 
