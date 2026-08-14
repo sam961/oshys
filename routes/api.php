@@ -68,14 +68,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('media', [MediaController::class, 'index']);
     Route::post('media', [MediaController::class, 'store']);
 
-    // Scheduling. {type} is one of events|courses|trips and is whitelisted in
-    // the controller. Datetimes on this boundary are venue-local naive strings.
+    // Dates for events, courses and trips. {type} is one of
+    // events|courses|trips and is whitelisted in the controller. Datetimes on
+    // this boundary are venue-local naive strings.
     Route::get('schedules/{type}/{id}', [ScheduleController::class, 'show']);
     Route::post('schedules/{type}/{id}', [ScheduleController::class, 'store']);
-    Route::delete('schedules/{type}/{id}', [ScheduleController::class, 'destroy']);
-    Route::post('schedules/{type}/{id}/occurrences', [ScheduleController::class, 'storeOccurrence']);
-    Route::put('schedule-occurrences/{occurrence}', [ScheduleController::class, 'updateOccurrence']);
-    Route::delete('schedule-occurrences/{occurrence}', [ScheduleController::class, 'destroyOccurrence']);
+    Route::put('schedule-occurrences/{occurrence}', [ScheduleController::class, 'update']);
+    Route::delete('schedule-occurrences/{occurrence}', [ScheduleController::class, 'destroy']);
 
     Route::apiResource('courses', CourseController::class)->except(['index', 'show']);
     Route::post('courses/{course}/images', [CourseImageController::class, 'store']);

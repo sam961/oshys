@@ -70,7 +70,6 @@ return new class extends Migration
                     $rows[] = [
                         'schedulable_type' => $type,
                         'schedulable_id' => $event->id,
-                        'series_id' => null,
                         'start_at' => $startAt,
                         'end_at' => $endAt,
                         // The old schema had a single per-event limit; it
@@ -91,11 +90,10 @@ return new class extends Migration
     /**
      * Intentionally does nothing.
      *
-     * The obvious implementation — delete event occurrences with a null
-     * series_id — would also delete every date an admin added by hand, since
-     * those are exactly the rows with no series. A `migrate:rollback --step=1`
-     * on production, the likely response to a bad deploy, would silently
-     * destroy real data.
+     * Every row in this table looks the same, so there is no way to tell a
+     * backfilled date from one an admin typed. Deleting "the ones this
+     * migration made" would take real data with it, and a
+     * `migrate:rollback --step=1` is the likely response to a bad deploy.
      *
      * A full rollback drops the whole table in the preceding migration, which
      * is the only case where undoing this actually matters.

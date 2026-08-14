@@ -17,9 +17,8 @@ import type {
   MediaItem,
   Image,
   Schedule,
-  ScheduleFrequency,
-  ScheduleOccurrence as ScheduleOccurrenceType,
   SchedulableType,
+  UpcomingDate,
 } from '../types';
 
 const rawBaseQuery = fetchBaseQuery({
@@ -253,46 +252,26 @@ export const api = createApi({
       invalidatesTags: ['Media'],
     }),
 
-    // Scheduling (events, courses, trips)
+    // Dates for events, courses and trips
     getSchedule: builder.query<Schedule, { type: SchedulableType; id: number }>({
       query: ({ type, id }) => `/schedules/${type}/${id}`,
       providesTags: (_r, _e, { type, id }) => [{ type: 'Schedule' as const, id: `${type}-${id}` }],
     }),
-    /** Save the repeat rule and regenerate the dates it produces. */
-    saveSchedule: builder.mutation<Schedule, {
-      type: SchedulableType;
-      id: number;
-      data: {
-        start_at: string;
-        end_at?: string | null;
-        frequency: ScheduleFrequency;
-        interval: number;
-        weekdays?: number[];
-        until_date?: string | null;
-      };
-    }>({
-      query: ({ type, id, data }) => ({ url: `/schedules/${type}/${id}`, method: 'POST', body: data }),
-      invalidatesTags: (_r, _e, { type, id }) => [{ type: 'Schedule' as const, id: `${type}-${id}` }, 'Event'],
-    }),
-    /** Remove the repeat rule and every date it generated. */
-    deleteSchedule: builder.mutation<Schedule, { type: SchedulableType; id: number }>({
-      query: ({ type, id }) => spoofedRequest(`/schedules/${type}/${id}`, 'DELETE'),
-      invalidatesTags: (_r, _e, { type, id }) => [{ type: 'Schedule' as const, id: `${type}-${id}` }, 'Event'],
-    }),
-    /** Add a one-off date outside the repeat rule. */
+    /** Add one date. */
     addOccurrence: builder.mutation<Schedule, {
       type: SchedulableType;
       id: number;
       data: { start_at: string; end_at?: string | null; capacity?: number | null };
     }>({
-      query: ({ type, id, data }) => ({ url: `/schedules/${type}/${id}/occurrences`, method: 'POST', body: data }),
+      query: ({ type, id, data }) => ({ url: `/schedules/${type}/${id}`, method: 'POST', body: data }),
       invalidatesTags: (_r, _e, { type, id }) => [{ type: 'Schedule' as const, id: `${type}-${id}` }, 'Event'],
     }),
-    updateOccurrence: builder.mutation<ScheduleOccurrenceType, {
+    /** Change one date's start, end or seat limit. */
+    updateOccurrence: builder.mutation<UpcomingDate, {
       occurrenceId: number;
       type: SchedulableType;
       parentId: number;
-      data: Partial<Pick<ScheduleOccurrenceType, 'start_at' | 'end_at' | 'capacity' | 'status'>>;
+      data: Partial<Pick<UpcomingDate, 'start_at' | 'end_at' | 'capacity'>>;
     }>({
       query: ({ occurrenceId, data }) => spoofedRequest(`/schedule-occurrences/${occurrenceId}`, 'PUT', data as Record<string, unknown>),
       invalidatesTags: (_r, _e, { type, parentId }) => [{ type: 'Schedule' as const, id: `${type}-${parentId}` }, 'Event'],
@@ -643,8 +622,6 @@ export const {
   useGetMediaQuery,
   useUploadMediaMutation,
   useGetScheduleQuery,
-  useSaveScheduleMutation,
-  useDeleteScheduleMutation,
   useAddOccurrenceMutation,
   useUpdateOccurrenceMutation,
   useDeleteOccurrenceMutation,

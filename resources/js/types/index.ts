@@ -257,42 +257,7 @@ export interface MediaItem {
 // All datetimes here are venue-local (Asia/Riyadh) naive strings in
 // "YYYY-MM-DDTHH:mm" form, the shape <input type="datetime-local"> uses.
 // The server converts to/from the UTC it stores.
-export type ScheduleFrequency = 'none' | 'daily' | 'weekly' | 'monthly';
-
-export type SchedulableType = 'events' | 'courses' | 'trips';
-
-export interface ScheduleSeries {
-  id: number;
-  frequency: ScheduleFrequency;
-  interval: number;
-  weekdays: number[];        // ISO: 1 = Monday … 7 = Sunday
-  until_date: string | null; // "YYYY-MM-DD"
-  generated_through: string | null;
-}
-
-export interface ScheduleOccurrence {
-  id: number;
-  series_id: number | null;  // null when added by hand rather than generated
-  start_at: string;
-  end_at: string | null;
-  capacity: number | null;   // optional; displayed only, never enforced
-  status: 'scheduled' | 'cancelled';
-  is_past: boolean;
-}
-
-/**
- * A date as the public API emits it: a venue-local wall clock with no offset,
- * so it renders as Al Khobar time for every visitor rather than being shifted
- * into their own timezone.
- */
-export interface UpcomingDate {
-  id: number;
-  start_at: string;
-  end_at: string | null;
-  capacity: number | null;
-}
-
+/** Every date on a record. There is no repeat rule — these are the dates. */
 export interface Schedule {
-  series: ScheduleSeries | null;
-  occurrences: ScheduleOccurrence[];
+  occurrences: UpcomingDate[];
 }

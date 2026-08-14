@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Support\VenueTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
@@ -19,7 +18,6 @@ class ScheduleOccurrence extends Model
      * mass-assignable would let a request re-point a date at another record.
      */
     protected $fillable = [
-        'series_id',
         'start_at',
         'end_at',
         'capacity',
@@ -38,11 +36,6 @@ class ScheduleOccurrence extends Model
     public function schedulable(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    public function series(): BelongsTo
-    {
-        return $this->belongsTo(ScheduleSeries::class, 'series_id');
     }
 
     /** Dates the public site should show: not cancelled. */

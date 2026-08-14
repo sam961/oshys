@@ -7,8 +7,8 @@ import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { ScheduleEditor } from '../components/ScheduleEditor';
 import { DateTimeField } from '../components/DateTimeField';
-import type { DraftRule } from '../components/ScheduleEditor';
-import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation, useSaveScheduleMutation } from '../../services/api';
+import type { DraftDate } from '../components/ScheduleEditor';
+import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation, useAddOccurrenceMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
@@ -56,15 +56,14 @@ export const EventEditPage: React.FC = () => {
   const { data: event, isLoading: isLoadingEvent, error: eventError } = useGetEventQuery(Number(id), { skip: !isEditMode });
   const [createEvent, { isLoading: isCreating }] = useCreateEventMutation();
   const [updateEvent, { isLoading: isUpdating }] = useUpdateEventMutation();
-  const [saveSchedule] = useSaveScheduleMutation();
+  const [addOccurrence] = useAddOccurrenceMutation();
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
-  // Repeat rule collected while creating; applied once the event has an id.
-  // start_at/end_at stay null here: this form owns the first date, so the
-  // editor contributes only the repeat rule.
-  const [draftRule, setDraftRule] = useState<DraftRule>({ start_at: null, end_at: null, frequency: 'none', interval: 1, weekdays: [], until_date: null });
+  // Extra dates entered while creating; saved once the event has an id. The
+  // form's own Start/End fields provide the first one.
+  const [draftDates, setDraftDates] = useState<DraftDate[]>([]);
 
   useEffect(() => {
     if (event && isEditMode) {
@@ -118,30 +117,26 @@ export const EventEditPage: React.FC = () => {
         const created = await createEvent(formData).unwrap();
         toast.success('Event created successfully');
 
-        // Give the new event its dates straight away. Even without a repeat
-        // rule this matters: it creates the first occurrence, so the event has
-        // a real date rather than only the legacy column.
-        if (created?.id && formData.start_date) {
-          try {
-            const result = await saveSchedule({
-              type: 'events',
-              id: created.id,
-              data: {
-                start_at: formData.start_date,
-                end_at: formData.end_date || null,
-                frequency: draftRule.frequency,
-                interval: draftRule.interval,
-                weekdays: draftRule.weekdays,
-                until_date: draftRule.until_date,
-              },
-            }).unwrap();
+        // The form's own Start/End become the first date, then any extras
+        // added below. Without this the event would carry only the legacy
+        // columns and show no dates on the public site.
+        if (created?.id) {
+          const dates = [
+            ...(formData.start_date
+              ? [{ start_at: formData.start_date, end_at: formData.end_date || null, capacity: formData.max_participants ?? null }]
+              : []),
+            ...draftDates,
+          ];
 
-            const generated = result.occurrences.length;
-            if (generated > 1) toast.success(`${generated} dates generated`);
+          try {
+            for (const date of dates) {
+              await addOccurrence({ type: 'events', id: created.id, data: date }).unwrap();
+            }
+            if (dates.length > 1) toast.success(`${dates.length} dates added`);
           } catch {
             // The event exists; only its dates failed. Say so rather than
             // implying the whole save went wrong.
-            toast.error('Event saved, but its dates could not be generated. Open it to set them.');
+            toast.error('Event saved, but its dates could not be added. Open it to set them.');
           }
         }
 
@@ -239,12 +234,12 @@ export const EventEditPage: React.FC = () => {
             title="Dates & Capacity"
             description={isEditMode
               ? 'When this event runs. Saved as you edit, separately from the fields above.'
-              : 'Set a repeat rule now if this event runs more than once. Dates are generated when you save.'}
+              : 'Add any extra dates here. The Start and End above become the first one.'}
           >
             <ScheduleEditor
               type="events"
               id={isEditMode ? Number(id) : null}
-              onDraftChange={isEditMode ? undefined : setDraftRule}
+              onDraftChange={isEditMode ? undefined : setDraftDates}
             />
           </FormSection>
         </div>

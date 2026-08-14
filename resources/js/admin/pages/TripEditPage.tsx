@@ -4,12 +4,12 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FormSection } from '../components/FormSection';
 import { ScheduleEditor } from '../components/ScheduleEditor';
-import type { DraftRule } from '../components/ScheduleEditor';
+import type { DraftDate } from '../components/ScheduleEditor';
 import TranslatableField from '../components/TranslatableField';
 import TranslatableRichText from '../components/TranslatableRichText';
 import { IMAGE_GUIDELINES } from '../components/ImageUploadWithCrop';
 import { MultiImageGallery } from '../components/MultiImageGallery';
-import { useGetTripQuery, useCreateTripMutation, useUpdateTripMutation, useUploadTripImagesMutation, useDeleteTripImageMutation, useSetTripMainImageMutation, useReorderTripImagesMutation, useSaveScheduleMutation } from '../../services/api';
+import { useGetTripQuery, useCreateTripMutation, useUpdateTripMutation, useUploadTripImagesMutation, useDeleteTripImageMutation, useSetTripMainImageMutation, useReorderTripImagesMutation, useAddOccurrenceMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface FormData {
@@ -44,13 +44,13 @@ export const TripEditPage: React.FC = () => {
   const [deleteTripImage] = useDeleteTripImageMutation();
   const [setTripMainImage] = useSetTripMainImageMutation();
   const [reorderTripImages] = useReorderTripImagesMutation();
-  const [saveSchedule] = useSaveScheduleMutation();
+  const [addOccurrence] = useAddOccurrenceMutation();
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isDirty, setIsDirty] = useState(false);
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
-  // Schedule collected while creating; applied once the record has an id.
-  const [draftRule, setDraftRule] = useState<DraftRule>({ start_at: null, end_at: null, frequency: 'none', interval: 1, weekdays: [], until_date: null });
+  // Dates entered while creating; saved once the record has an id.
+  const [draftDates, setDraftDates] = useState<DraftDate[]>([]);
 
   useEffect(() => {
     if (trip && isEditMode) {
@@ -84,29 +84,18 @@ export const TripEditPage: React.FC = () => {
   }, [isDirty, navigate]);
 
   /**
-   * Apply the schedule collected on the create form, now that the record
-   * exists. Skipped when no first date was set — dates are optional here.
-   * A failure is reported on its own: the record itself did save.
+   * Save the dates entered on the create form, now that the record exists.
+   * Reported separately on failure: the record itself did save.
    */
-  const applyDraftSchedule = async (type: 'courses' | 'trips', newId: number) => {
-    if (!draftRule.start_at) return;
+  const saveDraftDates = async (type: 'courses' | 'trips', newId: number) => {
+    if (draftDates.length === 0) return;
     try {
-      const result = await saveSchedule({
-        type,
-        id: newId,
-        data: {
-          start_at: draftRule.start_at,
-          end_at: draftRule.end_at,
-          frequency: draftRule.frequency,
-          interval: draftRule.interval,
-          weekdays: draftRule.weekdays,
-          until_date: draftRule.until_date,
-        },
-      }).unwrap();
-      const count = result.occurrences.length;
-      toast.success(count === 1 ? '1 date added' : `${count} dates generated`);
+      for (const date of draftDates) {
+        await addOccurrence({ type, id: newId, data: date }).unwrap();
+      }
+      toast.success(draftDates.length === 1 ? '1 date added' : `${draftDates.length} dates added`);
     } catch {
-      toast.error('Saved, but the dates could not be generated. Add them below.');
+      toast.error('Saved, but the dates could not be added. Add them below.');
     }
   };
 
@@ -130,7 +119,7 @@ export const TripEditPage: React.FC = () => {
       } else {
         const newTrip = await createTrip(submitData).unwrap();
         toast.success('Trip created! You can now add images.');
-        await applyDraftSchedule('trips', newTrip.id);
+        await saveDraftDates('trips', newTrip.id);
         navigate(`/admin/trips/${newTrip.id}/edit`);
       }
     } catch (error: any) {
@@ -214,8 +203,7 @@ export const TripEditPage: React.FC = () => {
             <ScheduleEditor
               type="trips"
               id={isEditMode ? Number(id) : null}
-              onDraftChange={isEditMode ? undefined : setDraftRule}
-              draftProvidesFirstDate
+              onDraftChange={isEditMode ? undefined : setDraftDates}
             />
           </FormSection>
         </div>

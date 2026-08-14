@@ -3,10 +3,8 @@
 namespace App\Traits;
 
 use App\Models\ScheduleOccurrence;
-use App\Models\ScheduleSeries;
 use App\Support\VenueTime;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * Gives a model dates.
@@ -32,11 +30,6 @@ trait Schedulable
     public function upcomingOccurrences(): MorphMany
     {
         return $this->occurrences()->scheduled()->upcoming();
-    }
-
-    public function series(): MorphOne
-    {
-        return $this->morphOne(ScheduleSeries::class, 'schedulable');
     }
 
     /**
@@ -115,7 +108,6 @@ trait Schedulable
     {
         static::forceDeleted(function ($model) {
             $model->occurrences()->delete();
-            $model->series()->delete();
         });
     }
 }
