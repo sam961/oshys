@@ -33,6 +33,10 @@ export const formatVenueDate = (value: string, locale: string): string =>
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
 
+/** True when a date finishes on a different day from the one it starts. */
+export const spansDays = (d: { start_at: string; end_at: string | null }): boolean =>
+  !!d.end_at && d.end_at.slice(0, 10) !== d.start_at.slice(0, 10);
+
 export const formatVenueTime = (value: string): string => {
   const { hh, mm } = partsOf(value);
   return `${hh}:${mm}`;
@@ -84,15 +88,36 @@ export const UpcomingDates: React.FC<UpcomingDatesProps> = ({
                     : `border-gray-200 bg-white ${selectable ? 'hover:border-primary-300 hover:bg-gray-50' : ''}`
                 }`}
               >
-                <span className="text-sm font-medium text-gray-900">
-                  {formatVenueDate(d.start_at, i18n.language)}
-                </span>
+                {/* A date that runs into another day has to show both, or the
+                    row reads as a single day with a nonsensical time range —
+                    "06:00 – 06:00" for something spanning two weeks. */}
+                {spansDays(d) ? (
+                  <span className="text-sm font-medium text-gray-900">
+                    <span className="block sm:inline">
+                      {formatVenueDate(d.start_at, i18n.language)}
+                      <span dir="ltr" className="text-gray-600"> · {formatVenueTime(d.start_at)}</span>
+                    </span>
+                    <span className="mx-1 hidden text-gray-400 sm:inline">→</span>
+                    <span className="block sm:inline">
+                      <span className="text-gray-400 sm:hidden">{t('schedule.until')} </span>
+                      {formatVenueDate(d.end_at as string, i18n.language)}
+                      <span dir="ltr" className="text-gray-600"> · {formatVenueTime(d.end_at as string)}</span>
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-sm font-medium text-gray-900">
+                    {formatVenueDate(d.start_at, i18n.language)}
+                  </span>
+                )}
 
                 <span className="flex items-center gap-3 text-xs sm:text-sm text-gray-600">
-                  <span dir="ltr">
-                    {formatVenueTime(d.start_at)}
-                    {d.end_at ? ` – ${formatVenueTime(d.end_at)}` : ''}
-                  </span>
+                  {/* Times already appear inline above for a multi-day date. */}
+                  {!spansDays(d) && (
+                    <span dir="ltr">
+                      {formatVenueTime(d.start_at)}
+                      {d.end_at ? ` – ${formatVenueTime(d.end_at)}` : ''}
+                    </span>
+                  )}
                   {/* Shown only when the admin set one. It is informational —
                       nothing counts against it and nobody is turned away. */}
                   {d.capacity !== null && (

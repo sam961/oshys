@@ -176,6 +176,7 @@
     "ctaPrograms": "Explore Programs"
   },
   "schedule": {
+    "until": "until",
     "dateSingle": "Date",
     "dateCount": "Dates ({{count}})",
     "next": "Next",

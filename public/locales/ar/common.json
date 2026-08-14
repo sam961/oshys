@@ -176,6 +176,7 @@
     "ctaPrograms": "استكشف البرامج"
   },
   "schedule": {
+    "until": "حتى",
     "dateSingle": "الموعد",
     "dateCount": "المواعيد ({{count}})",
     "next": "التالي",
