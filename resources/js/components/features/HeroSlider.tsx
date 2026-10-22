@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,17 @@ import { useTranslation } from 'react-i18next';
 import { useGetBannersQuery } from '../../services/api';
 import { UnderwaterOverlay } from '../animations/UnderwaterOverlay';
 import type { Banner } from '../../types';
+import { htmlToText } from '../../utils/sanitizeHtml';
+
+/** How long each slide stays up before the next one. */
+const SLIDE_MS = 8000;
+
+/**
+ * How long a touch holds the slider still. Phones have no hover to pause on,
+ * so without this a slide could change under a visitor's thumb just as they
+ * reached for its button.
+ */
+const TOUCH_PAUSE_MS = 15000;
 
 interface HeroSliderProps {
   /**
@@ -25,19 +36,39 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ banners: bannersProp }) 
   const banners = bannersProp ?? bannersFetched;
   const isLoading = bannersProp === undefined && isFetching;
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  // Held still while a mouse is over the slider, keyboard focus is inside it,
+  // or a finger touched it recently.
+  const [isHovered, setIsHovered] = useState(false);
+  const [hasFocus, setHasFocus] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
+  const touchTimer = useRef<number | undefined>(undefined);
+  const isPaused = isHovered || hasFocus || isTouched;
 
   // Use banners from API
   const slides = banners;
 
+  // A fresh timer per slide, so a slide reached with the arrows or dots gets
+  // its full time rather than whatever was left of the previous one.
   useEffect(() => {
     if (isPaused || slides.length === 0) return;
 
-    const timer = setInterval(() => {
+    const timer = window.setTimeout(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000); // 6 seconds per slide
-    return () => clearInterval(timer);
-  }, [slides.length, isPaused]);
+    }, SLIDE_MS);
+    return () => window.clearTimeout(timer);
+  }, [slides.length, isPaused, currentSlide]);
+
+  useEffect(() => () => window.clearTimeout(touchTimer.current), []);
+
+  const pauseForTouch = () => {
+    setIsTouched(true);
+    window.clearTimeout(touchTimer.current);
+    touchTimer.current = window.setTimeout(() => setIsTouched(false), TOUCH_PAUSE_MS);
+  };
+
+  // The banner text is a short tagline. Stored values can carry markup
+  // ("<p>…</p>"), which printed as-is showed the tags on the homepage.
+  const description = htmlToText(slides[currentSlide]?.description);
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
@@ -99,8 +130,14 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ banners: bannersProp }) 
   return (
     <div
       className="relative h-screen w-full overflow-hidden"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      // Pointer events, filtered to a real mouse: a tap also fires compatibility
+      // mouse events, which would otherwise pause the slider until the visitor
+      // happened to tap somewhere else.
+      onPointerEnter={(e) => { if (e.pointerType === 'mouse') setIsHovered(true); }}
+      onPointerLeave={(e) => { if (e.pointerType === 'mouse') setIsHovered(false); }}
+      onTouchStart={pauseForTouch}
+      onFocus={() => setHasFocus(true)}
+      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHasFocus(false); }}
     >
       <AnimatePresence initial={false} mode="wait">
         <motion.div
@@ -139,9 +176,9 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ banners: bannersProp }) 
               >
                 {slides[currentSlide].title}
               </h1>
-              {slides[currentSlide].description && (
+              {description && (
                 <p className="text-sm sm:text-base lg:text-xl text-white/90 mb-4 sm:mb-8 leading-relaxed max-w-2xl mx-auto">
-                  {slides[currentSlide].description}
+                  {description}
                 </p>
               )}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
