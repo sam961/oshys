@@ -6,10 +6,11 @@ import { Calendar, User, Share2, Loader2 } from 'lucide-react';
 import { Section } from '../components/ui';
 import { useGetBlogPostQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
+import { dateLocale as localeFor } from '../utils/locale';
 
 export const BlogDetailPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
+  const dateLocale = localeFor(i18n.language);
   const { id } = useParams<{ id: string }>();
   const { data: post, isLoading, error } = useGetBlogPostQuery(Number(id));
 

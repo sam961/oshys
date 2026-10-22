@@ -22,6 +22,9 @@ export interface CalendarEntry {
   startAt: string;
   /** The same moment as a local Date, for grouping by day only. */
   date: Date;
+  /** When it finishes, if that is on a later day: a trip that runs a week. */
+  endAt?: string;
+  endDate?: Date;
 }
 
 /**
@@ -38,7 +41,7 @@ const localDate = (value: string): Date => {
   return new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
 };
 
-const toEntries = <T extends { id: number; upcoming_dates?: { id: number; start_at: string }[] }>(
+const toEntries = <T extends { id: number; upcoming_dates?: { id: number; start_at: string; end_at?: string | null }[] }>(
   items: T[],
   kind: CalendarKind,
   title: (item: T) => string,
@@ -57,6 +60,11 @@ const toEntries = <T extends { id: number; upcoming_dates?: { id: number; start_
       href: href(item),
       startAt: d.start_at,
       date: localDate(d.start_at),
+      // Only an end on another day matters here; a same-day end changes
+      // nothing about which cells the entry sits in.
+      ...(d.end_at && d.end_at.slice(0, 10) !== d.start_at.slice(0, 10)
+        ? { endAt: d.end_at, endDate: localDate(d.end_at) }
+        : {}),
     })),
   );
 
@@ -104,10 +112,40 @@ export const buildCalendarEntries = (
   ].sort((a, b) => a.date.getTime() - b.date.getTime());
 };
 
-/** Group by calendar day, for the month grid. */
+/** True when an entry runs into a later day. */
+export const spansDays = (entry: CalendarEntry): boolean => !!entry.endDate;
+
+/**
+ * Group by calendar day, for the month grid.
+ *
+ * An entry is listed on every day it runs, not just the one it starts on: a
+ * trip from the 20th to the 25th has to show on the 22nd, or that day reads as
+ * free while the boat is out.
+ */
 export const groupByDay = (entries: CalendarEntry[]): Record<string, CalendarEntry[]> =>
   entries.reduce((acc, entry) => {
-    const key = entry.date.toDateString();
-    (acc[key] ||= []).push(entry);
+    const day = new Date(entry.date.getFullYear(), entry.date.getMonth(), entry.date.getDate());
+    const last = entry.endDate ?? entry.date;
+    // Bounded, so a mistyped end years away cannot stall the page.
+    for (let i = 0; i < 62 && day <= last; i++) {
+      (acc[day.toDateString()] ||= []).push(entry);
+      day.setDate(day.getDate() + 1);
+    }
     return acc;
   }, {} as Record<string, CalendarEntry[]>);
+
+/**
+ * The next date of each event, course and trip — one entry per record.
+ *
+ * For a short "what's coming up" list. Taken per date, a course with five
+ * sessions this week filled every slot and pushed everything else out.
+ */
+export const nextPerRecord = (entries: CalendarEntry[]): CalendarEntry[] => {
+  const seen = new Set<string>();
+  return entries.filter((entry) => {
+    const record = `${entry.kind}-${entry.id}`;
+    if (seen.has(record)) return false;
+    seen.add(record);
+    return true;
+  });
+};

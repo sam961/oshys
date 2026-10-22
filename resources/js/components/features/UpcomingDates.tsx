@@ -2,6 +2,7 @@ import React from 'react';
 import { Calendar, Users, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { UpcomingDate } from '../../types';
+import { dateLocale, rangeArrow } from '../../utils/locale';
 
 interface UpcomingDatesProps {
   dates: UpcomingDate[];
@@ -29,7 +30,7 @@ const partsOf = (value: string) => {
 };
 
 export const formatVenueDate = (value: string, locale: string): string =>
-  partsOf(value).date.toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-GB', {
+  partsOf(value).date.toLocaleDateString(dateLocale(locale, 'en-GB'), {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
 
@@ -91,17 +92,22 @@ export const UpcomingDates: React.FC<UpcomingDatesProps> = ({
                 {/* A date that runs into another day has to show both, or the
                     row reads as a single day with a nonsensical time range —
                     "06:00 – 06:00" for something spanning two weeks. */}
+                {/* Date and time are isolated from each other (<bdi>) with the
+                    separator between them. Inside one run, an Arabic date
+                    and a Western-digit time reordered into "نوفمبر 08:00 2026 ·". */}
                 {spansDays(d) ? (
                   <span className="text-sm font-medium text-gray-900">
                     <span className="block sm:inline">
-                      {formatVenueDate(d.start_at, i18n.language)}
-                      <span dir="ltr" className="text-gray-600"> · {formatVenueTime(d.start_at)}</span>
+                      <bdi>{formatVenueDate(d.start_at, i18n.language)}</bdi>
+                      <span className="mx-1 text-gray-400" aria-hidden="true">·</span>
+                      <bdi dir="ltr" className="text-gray-600">{formatVenueTime(d.start_at)}</bdi>
                     </span>
-                    <span className="mx-1 hidden text-gray-400 sm:inline">→</span>
+                    <span className="mx-1.5 hidden text-gray-400 sm:inline" aria-hidden="true">{rangeArrow(i18n.language)}</span>
                     <span className="block sm:inline">
                       <span className="text-gray-400 sm:hidden">{t('schedule.until')} </span>
-                      {formatVenueDate(d.end_at as string, i18n.language)}
-                      <span dir="ltr" className="text-gray-600"> · {formatVenueTime(d.end_at as string)}</span>
+                      <bdi>{formatVenueDate(d.end_at as string, i18n.language)}</bdi>
+                      <span className="mx-1 text-gray-400" aria-hidden="true">·</span>
+                      <bdi dir="ltr" className="text-gray-600">{formatVenueTime(d.end_at as string)}</bdi>
                     </span>
                   </span>
                 ) : (

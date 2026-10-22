@@ -6,10 +6,11 @@ import { Loader2, FileText } from 'lucide-react';
 import { Section } from '../components/ui';
 import { useGetFooterLinkBySlugQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
+import { dateLocale as localeFor } from '../utils/locale';
 
 export const FooterLinkPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
+  const dateLocale = localeFor(i18n.language);
   const { slug } = useParams<{ slug: string }>();
   const { data: page, isLoading, error } = useGetFooterLinkBySlugQuery(slug || '');
 

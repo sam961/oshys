@@ -20,6 +20,7 @@ import {
 import { Section, Button, SaudiRiyalPrice } from '../components/ui';
 import { useGetEventQuery } from '../services/api';
 import { useTranslation } from 'react-i18next';
+import { dateLocale as localeFor } from '../utils/locale';
 
 export const EventDetailPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -29,7 +30,7 @@ export const EventDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: event, isLoading, error } = useGetEventQuery(slug ?? '');
 
-  const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
+  const dateLocale = localeFor(i18n.language);
 
   const formatDate = (dateString: string) => {
     return wallClock(dateString).toLocaleDateString(dateLocale, {
