@@ -89,7 +89,8 @@ export const TripsPage: React.FC = () => {
       {/* Toolbar */}
       <div className="bg-white border-b border-gray-200 sticky top-20 z-40 shadow-sm">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-end gap-4">
+          {/* Wraps on phones — see CoursesPage. */}
+          <div className="flex flex-wrap lg:flex-nowrap items-center justify-end gap-3 sm:gap-4">
               {/* Currency Switcher */}
               <CurrencySwitcher />
 
@@ -98,7 +99,7 @@ export const TripsPage: React.FC = () => {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'default' | 'price-low' | 'price-high')}
                 aria-label={t('pages.trips.sortDefault')}
-                className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:border-transparent"
+                className="min-w-0 flex-1 sm:flex-none px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:border-transparent"
               >
                 <option value="default">{t('pages.trips.sortDefault')}</option>
                 <option value="price-low">{t('pages.trips.priceLowToHigh')}</option>

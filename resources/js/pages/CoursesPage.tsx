@@ -148,8 +148,11 @@ export const CoursesPage: React.FC = () => {
               ))}
             </div>
 
-            {/* View Controls */}
-            <div className="flex items-center gap-4">
+            {/* View Controls. Wraps on phones: side by side, the currency
+                switch, sort and view buttons are wider than a phone screen
+                (more so with the longer Arabic labels), which pushed the
+                whole page sideways and cut the course cards off. */}
+            <div className="flex flex-wrap lg:flex-nowrap items-center gap-3 sm:gap-4">
               {/* Currency Switcher */}
               <CurrencySwitcher />
 
@@ -158,7 +161,7 @@ export const CoursesPage: React.FC = () => {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'default' | 'price-low' | 'price-high' | 'duration')}
                 aria-label={t('pages.courses.sortDefault')}
-                className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="min-w-0 flex-1 sm:flex-none px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               >
                 <option value="default">{t('pages.courses.sortDefault')}</option>
                 <option value="price-low">{t('pages.courses.priceLowToHigh')}</option>
