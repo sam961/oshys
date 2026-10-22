@@ -117,6 +117,27 @@ export const Footer: React.FC = () => {
             {t('footer.tagline')}
           </p>
         </div>
+
+        {/* Studio credit. Centred: at either end the floating WhatsApp
+            button sits on top of it once the page is scrolled to the bottom. */}
+        <div className="mt-5 flex justify-center">
+          <a
+            href="https://quarter8.com/"
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-2 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            <span>{t('footer.poweredBy')}</span>
+            <img
+              src="/static/brands/quarter8-logo.svg"
+              alt="The Quarter8"
+              width={70}
+              height={14}
+              loading="lazy"
+              className="h-3.5 w-auto opacity-80 hover:opacity-100 transition-opacity"
+            />
+          </a>
+        </div>
       </div>
     </footer>
   );
