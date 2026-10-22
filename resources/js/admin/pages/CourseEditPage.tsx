@@ -61,6 +61,7 @@ export const CourseEditPage: React.FC = () => {
   const [initialData, setInitialData] = useState<FormData>(initialFormData);
   // Dates entered while creating; saved once the record has an id.
   const [draftDates, setDraftDates] = useState<DraftDate[]>([]);
+  const [hasPendingDate, setHasPendingDate] = useState(false);
 
   useEffect(() => {
     if (course && isEditMode) {
@@ -126,6 +127,11 @@ export const CourseEditPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // A date typed below but never added would be lost on save.
+    if (hasPendingDate) {
+      toast.error('A date is filled in under Dates but not added yet. Click "Add date", or clear it.');
+      return;
+    }
 
     try {
       const submitData = new FormData();
@@ -321,12 +327,13 @@ export const CourseEditPage: React.FC = () => {
         <div className="mt-6">
           <FormSection
             title="Dates & Capacity"
-            description="Optional. When this course runs — add a session date, or a repeat rule for a course that runs regularly."
+            description="Optional. When this course runs — add each session date."
           >
             <ScheduleEditor
               type="courses"
               id={isEditMode ? Number(id) : null}
               onDraftChange={isEditMode ? undefined : setDraftDates}
+              onPendingChange={setHasPendingDate}
             />
           </FormSection>
         </div>

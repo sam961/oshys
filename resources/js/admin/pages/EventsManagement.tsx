@@ -8,6 +8,7 @@ import type { Event } from '../../types';
 import toast from 'react-hot-toast';
 import { htmlToText } from '../../utils/sanitizeHtml';
 import { formatDayTime } from '../../utils/dates';
+import { eventWhen } from '../../utils/eventSchedule';
 import { useTranslation } from 'react-i18next';
 
 export const EventsManagement: React.FC = () => {
@@ -35,7 +36,9 @@ export const EventsManagement: React.FC = () => {
     {
       header: t('events.startDate'),
       accessor: 'start_date',
-      render: (value: string) => formatDayTime(new Date(value)),
+      // The next date, in Al Khobar time. start_date itself lags once a date
+      // passes, and `new Date()` would show it in the viewer's own timezone.
+      render: (_value: string, row: Event) => formatDayTime(eventWhen(row).start),
     },
     {
       header: 'Type',

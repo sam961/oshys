@@ -10,6 +10,7 @@ import {
 import type { SchedulableType, UpcomingDate } from '../../types';
 import { formatDayTime, weekdayShort } from '../../utils/dates';
 import { DateTimeField } from './DateTimeField';
+import { venueNow } from '../../utils/eventSchedule';
 
 /** A date the admin has entered but not yet saved — only while creating. */
 export interface DraftDate {
@@ -27,13 +28,16 @@ interface ScheduleEditorProps {
    * here and saved by the parent once it has an id.
    */
   onDraftChange?: (dates: DraftDate[]) => void;
+  /**
+   * Told whether the "add a date" row holds a start that has not been added.
+   * The parent's Save cannot see that row, so without this a date typed in
+   * full but never added was silently dropped.
+   */
+  onPendingChange?: (pending: boolean) => void;
 }
 
-const pad = (n: number) => String(n).padStart(2, '0');
-const nowForInput = (): string => {
-  const d = new Date();
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-};
+// Al Khobar's clock, not the browser's — the server judges "past" by it.
+const nowForInput = venueNow;
 const isPast = (value: string): boolean => !!value && value < nowForInput();
 
 const describe = (start: string, end: string | null): string => {
@@ -53,7 +57,7 @@ const describe = (start: string, end: string | null): string => {
  * not simply fix one. Each row here is exactly what it looks like — a date
  * someone typed — and editing one changes only that one.
  */
-export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraftChange }) => {
+export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraftChange, onPendingChange }) => {
   const isDraft = id === null && typeof onDraftChange === 'function';
   const skip = id === null;
 
@@ -72,6 +76,10 @@ export const ScheduleEditor: React.FC<ScheduleEditorProps> = ({ type, id, onDraf
   const notifyDraft = useRef(onDraftChange);
   notifyDraft.current = onDraftChange;
   useEffect(() => { notifyDraft.current?.(drafts); }, [drafts]);
+
+  const notifyPending = useRef(onPendingChange);
+  notifyPending.current = onPendingChange;
+  useEffect(() => { notifyPending.current?.(startAt !== ''); }, [startAt]);
 
   const saved = data?.occurrences ?? [];
   const rows = isDraft

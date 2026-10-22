@@ -8,6 +8,7 @@ import TranslatableRichText from '../components/TranslatableRichText';
 import { ScheduleEditor } from '../components/ScheduleEditor';
 import { DateTimeField } from '../components/DateTimeField';
 import type { DraftDate } from '../components/ScheduleEditor';
+import { venueNow } from '../../utils/eventSchedule';
 import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation, useAddOccurrenceMutation } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -42,11 +43,8 @@ const initialFormData: FormData = {
 };
 
 /** Now, as an <input type="datetime-local"> value — new events cannot start in the past. */
-const minDateTime = (): string => {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-};
+// Al Khobar's clock, not the browser's — the server judges "past" by it.
+const minDateTime = venueNow;
 
 export const EventEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -64,6 +62,7 @@ export const EventEditPage: React.FC = () => {
   // Extra dates entered while creating; saved once the event has an id. The
   // form's own Start/End fields provide the first one.
   const [draftDates, setDraftDates] = useState<DraftDate[]>([]);
+  const [hasPendingDate, setHasPendingDate] = useState(false);
 
   // Fill the form once per event. Adding or changing a date refetches the
   // event (so lists elsewhere stay current); refilling on that refetch would
@@ -109,6 +108,11 @@ export const EventEditPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // A date typed below but never added would be lost on save.
+    if (hasPendingDate) {
+      toast.error('A date is filled in under Dates but not added yet. Click "Add date", or clear it.');
+      return;
+    }
     try {
       if (isEditMode) {
         // Dates are owned by the schedule once the event exists. Posting the
@@ -129,7 +133,10 @@ export const EventEditPage: React.FC = () => {
         if (created?.id) {
           const dates = [
             ...(formData.start_date
-              ? [{ start_at: formData.start_date, end_at: formData.end_date || null, capacity: formData.max_participants ?? null }]
+              // No seat limit of its own: the event's Max Participants
+              // covers every date that does not set one. Copying it here
+              // froze this date at today's figure when the event's changed.
+              ? [{ start_at: formData.start_date, end_at: formData.end_date || null, capacity: null }]
               : []),
             ...draftDates,
           ];
@@ -212,7 +219,7 @@ export const EventEditPage: React.FC = () => {
                     onChange={(v) => setFormData(p => ({ ...p, start_date: v }))}
                     min={minDateTime()}
                     required
-                    help="You can add more dates and a repeat rule after saving."
+                    help="You can add more dates below."
                   />
                   <DateTimeField
                     label="Ends at"
@@ -246,6 +253,7 @@ export const EventEditPage: React.FC = () => {
               type="events"
               id={isEditMode ? Number(id) : null}
               onDraftChange={isEditMode ? undefined : setDraftDates}
+              onPendingChange={setHasPendingDate}
             />
           </FormSection>
         </div>
