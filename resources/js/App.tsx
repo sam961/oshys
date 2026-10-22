@@ -6,6 +6,7 @@ import { Footer } from './components/layout/Footer';
 import { WhatsAppButton } from './components/features/WhatsAppButton';
 import { PageLoader } from './components/ui/PageLoader';
 import { CurrencyProvider } from './context/CurrencyContext';
+import { loadCoursesPage } from './pages/loaders';
 
 // Public pages — lazy-loaded for route-level code splitting.
 // Each page ships as its own chunk and is only fetched when the user
@@ -17,8 +18,9 @@ const HomePage = React.lazy(() =>
 const AboutPage = React.lazy(() =>
   import('./pages/AboutPage').then((m) => ({ default: m.AboutPage }))
 );
+// Loaded through a shared loader so the homepage can fetch it ahead of time.
 const CoursesPage = React.lazy(() =>
-  import('./pages/CoursesPage').then((m) => ({ default: m.CoursesPage }))
+  loadCoursesPage().then((m) => ({ default: m.CoursesPage }))
 );
 const CourseDetailPage = React.lazy(() =>
   import('./pages/CourseDetailPage').then((m) => ({ default: m.CourseDetailPage }))
