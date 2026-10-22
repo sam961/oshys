@@ -5,7 +5,7 @@ import { Compass, GraduationCap, ArrowRight, ShoppingBag, Anchor, Users, Award, 
 import { useTranslation } from 'react-i18next';
 import { sanitizeExcerpt } from '../utils/sanitizeHtml';
 
-// Lottie is ~100 KB and the snorkeling animation JSON is ~600 KB.
+// Lottie is ~100 KB and the snorkeling animation is ~400 KB (~30 KB compressed).
 // Lazy-load the library so it only ships after the page is interactive,
 // gated on the animation JSON being fetched below.
 const Lottie = React.lazy(() => import('lottie-react'));
@@ -14,7 +14,8 @@ import { EventsCalendar } from '../components/features/EventsCalendar';
 import { BookingModal } from '../components/features/BookingModal';
 import { Section, Card, Button, GridSkeleton, HorizontalScroll, SaudiRiyalPrice } from '../components/ui';
 import { LiquidBackground, WaveBackground, UnderwaterOverlay, SeaLifeDecorations, DivingDecorations, OceanDecorations } from '../components/animations';
-import { useGetHomeDataQuery } from '../services/api';
+import { api, useGetHomeDataQuery } from '../services/api';
+import { loadCoursesPage } from './loaders';
 import type { Course, Trip } from '../types';
 
 export const HomePage: React.FC = () => {
@@ -50,26 +51,84 @@ export const HomePage: React.FC = () => {
     setSelectedTrip(null);
   };
 
-  // Lottie diver animation — fetch the 600 KB JSON only when the browser
-  // is idle, so it never competes with LCP or page-interactive work.
+  // The Start Diving buttons lead to the course list. Fetch its code and its
+  // courses while the visitor is still on this page, so a tap switches at once.
+  // Left until the tap, both downloads queued behind this page's images on a
+  // phone: the homepage stayed on screen for seconds — a button that seemed to
+  // do nothing — and then the list showed its header with no courses.
+  const prefetchCourses = api.usePrefetch('getCourses', { ifOlderThan: 300 });
+  useEffect(() => {
+    let warmed = false;
+    const warm = () => {
+      if (warmed) return;
+      warmed = true;
+      loadCoursesPage().catch(() => {});
+      prefetchCourses({ active: true });
+    };
+
+    // At once when a finger or pointer comes down on a link to the courses…
+    const onIntent = (e: Event) => {
+      if ((e.target as Element | null)?.closest?.('a[href^="/shop/courses"]')) warm();
+    };
+    document.addEventListener('pointerdown', onIntent, true);
+    document.addEventListener('touchstart', onIntent, { capture: true, passive: true });
+
+    // …and otherwise as soon as the browser has a quiet moment.
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const idleId = typeof win.requestIdleCallback === 'function'
+      ? win.requestIdleCallback(warm, { timeout: 2500 })
+      : window.setTimeout(warm, 1500);
+
+    return () => {
+      document.removeEventListener('pointerdown', onIntent, true);
+      document.removeEventListener('touchstart', onIntent, true);
+      if (typeof win.requestIdleCallback === 'function') win.cancelIdleCallback?.(idleId);
+      else window.clearTimeout(idleId);
+    };
+  }, [prefetchCourses]);
+
+  // Lottie diver animation. It is shown from the sm breakpoint up only, so a
+  // phone never fetches it — before, phones downloaded the JSON for an
+  // animation they hid. Elsewhere it waits for the page to finish loading and
+  // then for an idle moment, so it never competes with what the visitor sees
+  // or taps first.
   const [diverData, setDiverData] = useState<object | null>(null);
   useEffect(() => {
+    if (!window.matchMedia('(min-width: 640px)').matches) return;
+
+    let cancelled = false;
     const load = () => {
-      fetch('/animations/snorkeling.json')
-        .then((res) => res.json())
-        .then(setDiverData)
+      // Bundled as its own script chunk rather than fetched as a .json file:
+      // the host compresses scripts but serves .json files as-is, which sent
+      // this animation as 600 KB instead of about 30.
+      import('../assets/animations/snorkeling.json')
+        .then((module) => { if (!cancelled) setDiverData(module.default); })
         .catch(() => {});
     };
     const win = window as Window & {
       requestIdleCallback?: (cb: () => void) => number;
       cancelIdleCallback?: (id: number) => void;
     };
-    if (typeof win.requestIdleCallback === 'function') {
-      const id = win.requestIdleCallback(load);
-      return () => win.cancelIdleCallback?.(id);
-    }
-    const t = window.setTimeout(load, 1200);
-    return () => window.clearTimeout(t);
+    let idleId: number | undefined;
+    const whenIdle = () => {
+      idleId = typeof win.requestIdleCallback === 'function'
+        ? win.requestIdleCallback(load)
+        : window.setTimeout(load, 1200);
+    };
+    if (document.readyState === 'complete') whenIdle();
+    else window.addEventListener('load', whenIdle, { once: true });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('load', whenIdle);
+      if (idleId !== undefined) {
+        if (typeof win.requestIdleCallback === 'function') win.cancelIdleCallback?.(idleId);
+        else window.clearTimeout(idleId);
+      }
+    };
   }, []);
 
   // Fetch all homepage data in a single aggregated request
