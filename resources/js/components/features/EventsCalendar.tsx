@@ -7,8 +7,10 @@ import { Button } from '../ui';
 import { useGetEventsQuery } from '../../services/api';
 import { useTranslation } from 'react-i18next';
 import type { Course, Event, Trip } from '../../types';
-import { buildCalendarEntries, groupByDay, type CalendarEntry, type CalendarKind } from './calendarEntries';
+import { buildCalendarEntries, groupByDay, nextPerRecord, spansDays, type CalendarEntry, type CalendarKind } from './calendarEntries';
+import { rangeArrow } from '../../utils/locale';
 import { formatVenueTime } from './UpcomingDates';
+import { dateLocale as localeFor } from '../../utils/locale';
 
 interface EventsCalendarProps {
   /** Courses and trips now appear alongside events; both are optional. */
@@ -30,7 +32,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
   const [kindFilter, setKindFilter] = useState<CalendarKind | 'all'>('all');
   const navigate = useNavigate();
 
-  const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
+  const dateLocale = localeFor(i18n.language);
 
   // Fetch events from API only if not provided via prop
   const { data: eventsFetched = [], isLoading: isFetching, error: fetchError } = useGetEventsQuery(
@@ -57,7 +59,16 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
   const entries = kindFilter === 'all' ? allEntries : allEntries.filter((e) => e.kind === kindFilter);
 
   const now = new Date();
-  const upcomingEvents = entries.filter((e) => e.date >= now).slice(0, 5);
+  // One line per event, course or trip — its next date — so a busy course
+  // cannot take every slot.
+  const upcomingEvents = nextPerRecord(entries.filter((e) => e.date >= now)).slice(0, 5);
+
+  // A multi-day entry shows its span rather than a start time: listed on its
+  // third day, "08:00" alone would read as that day's start.
+  const shortDay = (d: Date) => d.toLocaleDateString(dateLocale, { day: 'numeric', month: 'short' });
+  const whenLabel = (entry: CalendarEntry) => (spansDays(entry)
+    ? `${shortDay(entry.date)} ${rangeArrow(i18n.language)} ${shortDay(entry.endDate as Date)}`
+    : formatVenueTime(entry.startAt));
   const eventsByDate = groupByDay(entries);
 
   // Get month name from translations
@@ -335,7 +346,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
                     <h4 className="font-semibold text-gray-900 mb-1">{event.title}</h4>
                     <div className="text-sm text-gray-600 line-clamp-2 mb-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
                     <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span dir="ltr">{formatVenueTime(event.startAt)}</span>
+                      <bdi>{whenLabel(event)}</bdi>
                       <span className="px-2 py-0.5 bg-primary-200 text-primary-700 rounded-full">
                         {t(`schedule.filter${event.kind.charAt(0).toUpperCase()}${event.kind.slice(1)}s`)}
                       </span>
@@ -407,7 +418,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
                         <h4 className="font-bold text-lg mb-1 hover:text-primary-600 transition-colors">{event.title}</h4>
                         <div className="text-sm text-gray-600 mb-2 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(event.description) }} />
                         <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
-                          <span dir="ltr">{formatVenueTime(event.startAt)}</span>
+                          <bdi>{whenLabel(event)}</bdi>
                           <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold">
                             {t(`schedule.filter${event.kind.charAt(0).toUpperCase()}${event.kind.slice(1)}s`)}
                           </span>
@@ -466,7 +477,7 @@ export const EventsCalendar: React.FC<EventsCalendarProps> = ({ events: eventsPr
                             month: 'long', day: 'numeric', year: 'numeric',
                           })}
                         </span>
-                        <span dir="ltr">{formatVenueTime(event.startAt)}</span>
+                        <bdi>{whenLabel(event)}</bdi>
                         <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold">
                           {t(`schedule.filter${event.kind.charAt(0).toUpperCase()}${event.kind.slice(1)}s`)}
                         </span>

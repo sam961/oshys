@@ -10,6 +10,7 @@ import type { Event } from '../types';
 import { useTranslation } from 'react-i18next';
 import { sanitizeExcerpt } from '../utils/sanitizeHtml';
 import { eventWhen, isUpcomingEvent, wallClock } from '../utils/eventSchedule';
+import { dateLocale } from '../utils/locale';
 
 export const EventsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -32,7 +33,7 @@ export const EventsPage: React.FC = () => {
     return typeObj ? typeObj.label : type.charAt(0).toUpperCase() + type.slice(1);
   };
 
-  const currentLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
+  const currentLocale = dateLocale(i18n.language);
 
   // Upcoming events only: those with a date still ahead.
   const upcomingEvents = events.filter(isUpcomingEvent);

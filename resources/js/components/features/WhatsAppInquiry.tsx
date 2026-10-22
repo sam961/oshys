@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { UpcomingDate } from '../../types';
 import { whatsappLink } from '../../utils/whatsapp';
 import { formatVenueDate, formatVenueTime, spansDays } from './UpcomingDates';
+import { rangeArrow } from '../../utils/locale';
 
 interface WhatsAppInquiryProps {
   /** What the visitor is asking about. */
@@ -44,7 +45,7 @@ export const WhatsAppInquiry: React.FC<WhatsAppInquiryProps> = ({
     // A date running into another day has to name both ends, or the team is
     // told a start with no idea how long it runs.
     const when = spansDays(date)
-      ? `${from} → ${formatVenueDate(date.end_at as string, i18n.language)} · ${formatVenueTime(date.end_at as string)}`
+      ? `${from} ${rangeArrow(i18n.language)} ${formatVenueDate(date.end_at as string, i18n.language)} · ${formatVenueTime(date.end_at as string)}`
       : date.end_at ? `${from} – ${formatVenueTime(date.end_at)}` : from;
     lines.push(t('whatsapp.inquiryDate', { date: when }));
   }
