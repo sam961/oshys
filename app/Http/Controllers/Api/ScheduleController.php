@@ -94,6 +94,12 @@ class ScheduleController extends Controller
         if (array_key_exists('end_at', $validated)) {
             $start = $changes['start_at'] ?? $occurrence->start_at;
             $changes['end_at'] = $this->endFrom($validated, $start);
+        } elseif (isset($changes['start_at']) && $occurrence->end_at) {
+            // Moving only the start moves the whole date: the end follows by
+            // the same amount, so the length is kept. Left where it was, a
+            // date moved a week later would end before it began.
+            $shift = $occurrence->start_at->diffInSeconds($changes['start_at'], false);
+            $changes['end_at'] = $occurrence->end_at->copy()->addSeconds((int) $shift);
         }
 
         if (array_key_exists('capacity', $validated)) {

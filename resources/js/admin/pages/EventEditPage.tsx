@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
@@ -65,8 +65,14 @@ export const EventEditPage: React.FC = () => {
   // form's own Start/End fields provide the first one.
   const [draftDates, setDraftDates] = useState<DraftDate[]>([]);
 
+  // Fill the form once per event. Adding or changing a date refetches the
+  // event (so lists elsewhere stay current); refilling on that refetch would
+  // throw away whatever has been typed above and not yet saved.
+  const loadedEventId = useRef<number | null>(null);
+
   useEffect(() => {
-    if (event && isEditMode) {
+    if (event && isEditMode && loadedEventId.current !== event.id) {
+      loadedEventId.current = event.id;
       const loadedData: FormData = {
         title: event.title,
         description: event.description,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Support\VenueTime;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -97,6 +98,7 @@ class EventController extends Controller
         unset($validated['title_translations'], $validated['description_translations'], $validated['location_translations']);
 
         $validated['slug'] = $this->uniqueSlug(Event::class, $validated['title']);
+        $validated = $this->datesToUtc($validated);
 
         $event = Event::create($validated);
 
@@ -114,6 +116,25 @@ class EventController extends Controller
         $event = $this->resolveEvent($id, ['images', 'translations', 'upcomingOccurrences']);
 
         return response()->json($event->toArrayWithTranslations());
+    }
+
+    /**
+     * Read the admin's start/end as venue-local time and store them as UTC.
+     *
+     * The form sends naive strings ("2026-11-20T23:00", meaning 23:00 in Al
+     * Khobar). Stored as-is they would be read back as 23:00 UTC — three hours
+     * late on the site — while the dates written through the schedule are true
+     * UTC. Converting here keeps the column meaning one thing.
+     */
+    private function datesToUtc(array $validated): array
+    {
+        foreach (['start_date', 'end_date'] as $field) {
+            if (! empty($validated[$field])) {
+                $validated[$field] = VenueTime::toUtc($validated[$field]);
+            }
+        }
+
+        return $validated;
     }
 
     /**
@@ -178,7 +199,7 @@ class EventController extends Controller
             $validated['slug'] = $this->uniqueSlug(Event::class, $validated['title'], $event->id);
         }
 
-        $event->update($validated);
+        $event->update($this->datesToUtc($validated));
 
         // Save translations
         $this->saveTranslationsFromRequest($event, $request);

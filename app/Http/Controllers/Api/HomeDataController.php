@@ -69,12 +69,18 @@ class HomeDataController extends Controller
             ->get();
         $blogPosts = $this->transformWithTranslations($blogPosts);
 
-        // Events — active + upcoming (mirrors EventController::index ordering)
+        // Events — active, with a date still ahead, soonest first.
+        //
+        // Read from the schedule rather than events.start_date: that column
+        // only moves when an admin edits a date, so once an event's first date
+        // passes it points at the past while later dates are still ahead, and
+        // the event would drop off the homepage and the calendar.
         $events = Event::with(['images', 'translations', 'upcomingOccurrences'])
             ->where('is_active', true)
-            ->where('start_date', '>=', now())
-            ->orderBy('start_date', 'asc')
-            ->get();
+            ->whereHas('occurrences', fn ($q) => $q->scheduled()->upcoming())
+            ->get()
+            ->sortBy(fn (Event $event) => $event->nextOccurrence()?->start_at)
+            ->values();
         $events = $this->transformWithTranslations($events);
 
         // Featured team member (mirrors TeamMemberController::featured)

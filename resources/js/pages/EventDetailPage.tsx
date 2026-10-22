@@ -3,6 +3,7 @@ import { sanitizeRichText } from '../utils/sanitizeHtml';
 import { UpcomingDates } from '../components/features/UpcomingDates';
 import { WhatsAppInquiry } from '../components/features/WhatsAppInquiry';
 import type { UpcomingDate } from '../types';
+import { eventWhen, isUpcomingEvent, wallClock } from '../utils/eventSchedule';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -31,7 +32,7 @@ export const EventDetailPage: React.FC = () => {
   const dateLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(dateLocale, {
+    return wallClock(dateString).toLocaleDateString(dateLocale, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -40,7 +41,7 @@ export const EventDetailPage: React.FC = () => {
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString(dateLocale, {
+    return wallClock(dateString).toLocaleTimeString(dateLocale, {
       hour: 'numeric',
       minute: '2-digit',
     });
@@ -63,7 +64,8 @@ export const EventDetailPage: React.FC = () => {
     return t(`events.${type}`, type.charAt(0).toUpperCase() + type.slice(1));
   };
 
-  const isUpcoming = event ? new Date(event.start_date) >= new Date() : false;
+  // Upcoming while any date is still ahead — not just the first one.
+  const isUpcoming = event ? isUpcomingEvent(event) : false;
 
   if (isLoading) {
     return (
@@ -84,6 +86,9 @@ export const EventDetailPage: React.FC = () => {
       </div>
     );
   }
+
+  // The next date, or the last one the event had once all have passed.
+  const when = eventWhen(event);
 
   return (
     <div className="pt-20">
@@ -127,11 +132,11 @@ export const EventDetailPage: React.FC = () => {
             >
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
-                <span>{formatDate(event.start_date)}</span>
+                <span>{formatDate(when.start)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                <span>{formatTime(event.start_date)}</span>
+                <span>{formatTime(when.start)}</span>
               </div>
               {event.location && (
                 <div className="flex items-center gap-2">
@@ -216,17 +221,17 @@ export const EventDetailPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">{t('events.startDate')}</p>
-                      <p className="text-gray-600">{formatDate(event.start_date)} {t('events.at')} {formatTime(event.start_date)}</p>
+                      <p className="text-gray-600">{formatDate(when.start)} {t('events.at')} {formatTime(when.start)}</p>
                     </div>
                   </div>
-                  {event.end_date && (
+                  {when.end && (
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 bg-accent-100 rounded-xl flex items-center justify-center flex-shrink-0">
                         <CalendarCheck className="w-6 h-6 text-accent-600" />
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900">{t('events.endDate')}</p>
-                        <p className="text-gray-600">{formatDate(event.end_date)} {t('events.at')} {formatTime(event.end_date)}</p>
+                        <p className="text-gray-600">{formatDate(when.end)} {t('events.at')} {formatTime(when.end)}</p>
                       </div>
                     </div>
                   )}
