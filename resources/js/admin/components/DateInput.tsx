@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { venueNow } from '../../utils/eventSchedule';
 
 interface DateInputProps {
   /** ISO day, "YYYY-MM-DD", or "" when empty. */
@@ -79,7 +80,7 @@ export const DateInput: React.FC<DateInputProps> = ({
 
   // The month the calendar is showing.
   const [cursor, setCursor] = useState(() => {
-    const base = value || min || toIso(new Date());
+    const base = value || min || venueNow().slice(0, 10);
     const [y, m] = base.split('-').map(Number);
     return new Date(y, (m || 1) - 1, 1);
   });
@@ -117,7 +118,8 @@ export const DateInput: React.FC<DateInputProps> = ({
   };
 
   const isDisabledDay = (day: Date) => !!min && toIso(day) < min;
-  const todayIso = toIso(new Date());
+  // Al Khobar's today, matching the "past" the server enforces.
+  const todayIso = venueNow().slice(0, 10);
 
   return (
     <div ref={wrapper} className={`relative ${className}`}>
@@ -131,9 +133,16 @@ export const DateInput: React.FC<DateInputProps> = ({
         aria-label={ariaLabel}
         onChange={(e) => commit(e.target.value)}
         onFocus={() => setOpen(true)}
+        onKeyDown={(e) => {
+          // The field sits inside the page's form, where Enter would submit
+          // the whole page — saving it and leaving before the date was used.
+          if (e.key === 'Enter') { e.preventDefault(); setOpen(false); }
+        }}
         onBlur={() => {
-          // A half-typed date reverts rather than sitting there looking saved.
-          if (text && !fromDisplay(text)) setText(toDisplay(value));
+          // A half-typed or emptied date shows the value actually held, rather
+          // than sitting there looking saved. (When emptying did clear it,
+          // the value is already "" and this keeps the box empty.)
+          if (!fromDisplay(text)) setText(toDisplay(value));
         }}
         className="w-full rounded-lg border border-gray-300 py-2.5 pl-8 pr-8 focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100"
       />

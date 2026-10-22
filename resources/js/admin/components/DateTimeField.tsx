@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Clock, X } from 'lucide-react';
 import { DateInput } from './DateInput';
 
@@ -67,25 +67,46 @@ export const DateTimeField: React.FC<DateTimeFieldProps> = ({
   const { date, time } = split(value);
   const minParts = split(min || '');
 
-  // Only constrain the time when the chosen day *is* the earliest day —
-  // otherwise a later date would wrongly inherit the earliest day's cutoff.
-  const minTime = minParts.date && date === minParts.date ? minParts.time : undefined;
+  // An end field (one offering durations) must finish after its start, so its
+  // earliest slot is the first one *after* the start time, not equal to it.
+  const strict = durationsFrom !== undefined;
 
-  const times = useMemo(() => {
+  /**
+   * The times offered for a given day: the half-hour slots, plus `keep` if it
+   * is off-grid, cut to those after the earliest allowed moment when that day
+   * is the earliest day. Only the earliest day is cut — a later date must not
+   * inherit its cutoff.
+   */
+  const slotsFor = (day: string, keep: string): string[] => {
     const list = [...COMMON_TIMES];
-    // Keep an existing off-grid time selectable rather than silently dropping it.
-    if (time && !list.includes(time)) {
-      list.push(time);
+    if (keep && !list.includes(keep)) {
+      list.push(keep);
       list.sort();
     }
-    return minTime ? list.filter((slot) => slot >= minTime) : list;
-  }, [time, minTime]);
+    const cutoff = minParts.date && day === minParts.date ? minParts.time : undefined;
+    if (!cutoff) return list;
+    return list.filter((slot) => (strict ? slot > cutoff : slot >= cutoff));
+  };
+
+  const times = slotsFor(date, time);
 
   const emit = (nextDate: string, nextTime: string) => {
-    if (!nextDate) return onChange('');
-    // A date with no time yet defaults to the first slot that is still
-    // allowed, so picking a day alone already produces a usable value.
-    const resolved = nextTime || times[0] || '09:00';
+    if (!nextDate) {
+      // A field with a clear button is cleared with it. Emptying the date
+      // text on the way to typing another must not count: for a saved date,
+      // every change is written at once, so that deleted its end.
+      if (clearable) return;
+      return onChange('');
+    }
+
+    // Choose the time against the *new* day's limits. The list on screen was
+    // built for the previous day, so taking its first entry could stamp a
+    // time that has already passed today (06:00) while showing a later one.
+    const allowed = slotsFor(nextDate, nextTime);
+    const cutoff = minParts.date && nextDate === minParts.date ? minParts.time : undefined;
+    const resolved = nextTime && allowed.includes(nextTime)
+      ? nextTime
+      : allowed[0] ?? cutoff ?? '09:00';
     onChange(`${nextDate}T${resolved}`);
   };
 

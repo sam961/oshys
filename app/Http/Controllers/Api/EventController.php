@@ -83,7 +83,9 @@ class EventController extends Controller
             'description' => 'required|string',
             'type' => 'required|string|max:255',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            // Optional, as the form presents it: plenty of events are a start
+            // time and nothing more. Requiring it failed every such create.
+            'end_date' => 'nullable|date|after_or_equal:start_date',
             'location' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'max_participants' => 'nullable|integer|min:1',
@@ -178,7 +180,7 @@ class EventController extends Controller
             'description' => 'sometimes|required|string',
             'type' => 'sometimes|required|string|max:255',
             'start_date' => 'sometimes|required|date',
-            'end_date' => 'sometimes|required|date|after_or_equal:start_date',
+            'end_date' => 'sometimes|nullable|date|after_or_equal:start_date',
             'location' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'max_participants' => 'nullable|integer|min:1',

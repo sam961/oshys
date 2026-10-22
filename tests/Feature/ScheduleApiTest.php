@@ -279,6 +279,27 @@ class ScheduleApiTest extends TestCase
         $this->assertSame('2026-11-20 22:00:00', $event->end_date->utc()->format('Y-m-d H:i:s'));
     }
 
+    public function test_an_event_can_be_created_without_an_end(): void
+    {
+        // The form offers the end as optional; an empty one arrives as "".
+        $this->postJson('/api/events', [
+            'title' => 'Morning Dive', 'description' => 'd', 'type' => 'workshop', 'is_active' => true,
+            'start_date' => '2026-11-20T08:00', 'end_date' => '',
+        ])->assertCreated();
+
+        $event = Event::where('title', 'Morning Dive')->firstOrFail();
+        $this->assertNull($event->end_date);
+        $this->assertSame('2026-11-20 05:00:00', $event->start_date->utc()->format('Y-m-d H:i:s'));
+    }
+
+    public function test_an_end_before_the_start_is_still_refused_on_the_event_form(): void
+    {
+        $this->postJson('/api/events', [
+            'title' => 'Backwards', 'description' => 'd', 'type' => 'workshop',
+            'start_date' => '2026-11-20T08:00', 'end_date' => '2026-11-20T07:00',
+        ])->assertJsonValidationErrors('end_date');
+    }
+
     public function test_the_resync_migration_points_old_events_at_their_dates_in_utc(): void
     {
         // An event as it was before scheduling: the admin's 23:00 sitting in

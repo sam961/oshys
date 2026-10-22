@@ -28,7 +28,7 @@ export const wallClock = (value: string): Date => {
 };
 
 /** A stored instant ("2026-11-20T20:00:00.000000Z") as the venue's wall clock. */
-const instantToWallClock = (instant: string): string => {
+const instantToWallClock = (instant: string | Date): string => {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-GB', {
       timeZone: VENUE_TIMEZONE,
@@ -38,6 +38,16 @@ const instantToWallClock = (instant: string): string => {
   );
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
 };
+
+/**
+ * "Now" on the venue's clock, as "YYYY-MM-DDTHH:mm".
+ *
+ * What the server measures "in the past" against. Taken from the browser's
+ * own clock instead, an admin in London would be offered times that have
+ * already passed in Al Khobar, and one further east refused times that have
+ * not.
+ */
+export const venueNow = (): string => instantToWallClock(new Date());
 
 /** True while the event has a date still ahead. */
 export const isUpcomingEvent = (event: Event): boolean => !!event.upcoming_dates?.length;
