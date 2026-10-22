@@ -174,8 +174,8 @@ export const EventsPage: React.FC = () => {
               ))}
             </div>
 
-            {/* View Controls */}
-            <div className="flex items-center gap-4">
+            {/* View Controls. Wraps on phones — see CoursesPage. */}
+            <div className="flex flex-wrap lg:flex-nowrap items-center gap-3 sm:gap-4">
               {/* Currency Switcher */}
               <CurrencySwitcher />
 
@@ -184,7 +184,7 @@ export const EventsPage: React.FC = () => {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'default' | 'date-asc' | 'date-desc' | 'price')}
                 aria-label={t('events.sortSoonestFirst')}
-                className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="min-w-0 flex-1 sm:flex-none px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="default">{t('events.sortSoonestFirst')}</option>
                 <option value="date-asc">{t('events.dateEarliest')}</option>
