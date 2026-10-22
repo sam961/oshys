@@ -23,6 +23,12 @@ class ScheduleApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // The dates below are fixed calendar days, and the API refuses dates
+        // in the past. Pin "now" before all of them, or the suite starts
+        // failing on its own once the real clock passes them.
+        $this->travelTo(\Illuminate\Support\Carbon::parse('2026-08-14 09:00:00', 'UTC'));
+
         Sanctum::actingAs(User::factory()->create());
     }
 
@@ -93,6 +99,31 @@ class ScheduleApiTest extends TestCase
 
         $this->putJson("/api/schedule-occurrences/{$id}", ['start_at' => '2026-10-07T19:30'])
             ->assertOk()->assertJsonPath('start_at', '2026-10-07T19:30');
+    }
+
+    public function test_moving_only_the_start_moves_the_end_with_it(): void
+    {
+        $event = $this->event();
+        $created = $this->postJson("/api/schedules/events/{$event->id}", [
+            'start_at' => '2026-11-05T10:00', 'end_at' => '2026-11-05T12:00',
+        ])->json();
+        $id = $created['occurrences'][0]['id'];
+
+        $this->putJson("/api/schedule-occurrences/{$id}", ['start_at' => '2026-11-12T10:00'])
+            ->assertOk()
+            ->assertJsonPath('start_at', '2026-11-12T10:00')
+            ->assertJsonPath('end_at', '2026-11-12T12:00');
+    }
+
+    public function test_moving_the_start_of_a_date_with_no_end_leaves_it_without_one(): void
+    {
+        $event = $this->event();
+        $created = $this->postJson("/api/schedules/events/{$event->id}", ['start_at' => '2026-11-05T10:00'])->json();
+        $id = $created['occurrences'][0]['id'];
+
+        $this->putJson("/api/schedule-occurrences/{$id}", ['start_at' => '2026-11-12T10:00'])
+            ->assertOk()
+            ->assertJsonPath('end_at', null);
     }
 
     public function test_a_seat_limit_can_be_set_and_cleared(): void
@@ -232,6 +263,73 @@ class ScheduleApiTest extends TestCase
 
         // 18:00 in Al Khobar is 15:00 UTC.
         $this->assertSame('2026-10-06 15:00:00', $event->fresh()->start_date->utc()->format('Y-m-d H:i:s'));
+    }
+
+    public function test_an_event_form_date_is_stored_as_venue_time(): void
+    {
+        $this->postJson('/api/events', [
+            'title' => 'Night Dive', 'description' => 'd', 'type' => 'workshop', 'is_active' => true,
+            'start_date' => '2026-11-20T23:00', 'end_date' => '2026-11-21T01:00',
+        ])->assertCreated();
+
+        // 23:00 in Al Khobar is 20:00 UTC — not 23:00 UTC, which the site
+        // would show as 02:00 the next morning.
+        $event = Event::where('title', 'Night Dive')->firstOrFail();
+        $this->assertSame('2026-11-20 20:00:00', $event->start_date->utc()->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-11-20 22:00:00', $event->end_date->utc()->format('Y-m-d H:i:s'));
+    }
+
+    public function test_the_resync_migration_points_old_events_at_their_dates_in_utc(): void
+    {
+        // An event as it was before scheduling: the admin's 23:00 sitting in
+        // the column as though it were UTC, with its backfilled first date.
+        $event = $this->event(['start_date' => '2026-11-20 23:00:00', 'end_date' => '2026-11-21 01:00:00']);
+        $event->occurrences()->create([
+            'start_at' => VenueTime::toUtc('2026-11-20T23:00'),
+            'end_at' => VenueTime::toUtc('2026-11-21T01:00'),
+        ]);
+
+        $migration = require database_path('migrations/2026_10_22_100000_resync_event_dates_from_schedule.php');
+        $migration->up();
+        $migration->up(); // running it twice changes nothing
+
+        $fresh = $event->fresh();
+        $this->assertSame('2026-11-20 20:00:00', $fresh->start_date->utc()->format('Y-m-d H:i:s'));
+        $this->assertSame('2026-11-20 22:00:00', $fresh->end_date->utc()->format('Y-m-d H:i:s'));
+    }
+
+    // ------------------------------------------------------------ the homepage
+
+    public function test_the_homepage_keeps_an_event_whose_first_date_has_passed(): void
+    {
+        $event = $this->event(['title' => 'Weekly Dive', 'is_active' => true]);
+        foreach (['2026-10-06T18:00', '2026-10-13T18:00'] as $when) {
+            $this->postJson("/api/schedules/events/{$event->id}", ['start_at' => $when])->assertOk();
+        }
+
+        // The legacy column still points at the 6th, but the 13th is ahead.
+        $this->travelTo(VenueTime::toUtc('2026-10-08T09:00'));
+        app('auth')->forgetGuards();
+
+        $events = $this->getJson('/api/home-data')->assertOk()->json('events');
+        $this->assertSame(['Weekly Dive'], array_column($events, 'title'));
+        $this->assertSame('2026-10-13T18:00', $events[0]['upcoming_dates'][0]['start_at']);
+    }
+
+    public function test_the_homepage_lists_events_by_their_next_date_and_drops_ones_with_none(): void
+    {
+        $later = $this->event(['title' => 'Later', 'is_active' => true]);
+        $sooner = $this->event(['title' => 'Sooner', 'is_active' => true]);
+        $calledOff = $this->event(['title' => 'Called Off', 'is_active' => true, 'start_date' => '2026-12-01 07:00:00']);
+
+        $this->postJson("/api/schedules/events/{$later->id}", ['start_at' => '2026-11-20T18:00'])->assertOk();
+        $this->postJson("/api/schedules/events/{$sooner->id}", ['start_at' => '2026-11-10T18:00'])->assertOk();
+        $id = $this->postJson("/api/schedules/events/{$calledOff->id}", ['start_at' => '2026-12-01T10:00'])
+            ->json('occurrences.0.id');
+        $this->deleteJson("/api/schedule-occurrences/{$id}")->assertOk();
+
+        app('auth')->forgetGuards();
+        $this->assertSame(['Sooner', 'Later'], array_column($this->getJson('/api/home-data')->json('events'), 'title'));
     }
 
     public function test_removing_the_soonest_date_moves_the_legacy_column_on(): void

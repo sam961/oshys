@@ -20,6 +20,9 @@ export const TripsPage: React.FC = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   const handleBookClick = (e: React.MouseEvent, trip: Trip) => {
+    // Same as the courses list: the button is inside the card's link, which
+    // the browser would otherwise follow instead of opening the form.
+    e.preventDefault();
     e.stopPropagation();
     setSelectedTrip(trip);
     setIsBookingOpen(true);

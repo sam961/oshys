@@ -30,6 +30,10 @@ export const CoursesPage: React.FC = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   const handleEnrollClick = (e: React.MouseEvent, course: Course) => {
+    // The button sits inside the card's link. Stopping propagation alone
+    // leaves the browser to follow that link, so the visitor lands on the
+    // course page and the registration form never opens.
+    e.preventDefault();
     e.stopPropagation();
     setSelectedCourse(course);
     setIsBookingOpen(true);

@@ -257,6 +257,19 @@ export interface MediaItem {
 // All datetimes here are venue-local (Asia/Riyadh) naive strings in
 // "YYYY-MM-DDTHH:mm" form, the shape <input type="datetime-local"> uses.
 // The server converts to/from the UTC it stores.
+export type SchedulableType = 'events' | 'courses' | 'trips';
+
+/** One date something runs on. */
+export interface UpcomingDate {
+  id: number;
+  start_at: string;
+  end_at: string | null;
+  /** Optional seat limit for this date; null when none is stated. */
+  capacity: number | null;
+  /** Only on the admin schedule; public lists hold upcoming dates alone. */
+  is_past?: boolean;
+}
+
 /** Every date on a record. There is no repeat rule — these are the dates. */
 export interface Schedule {
   occurrences: UpcomingDate[];

@@ -9,6 +9,7 @@ import { useGetEventsQuery } from '../services/api';
 import type { Event } from '../types';
 import { useTranslation } from 'react-i18next';
 import { sanitizeExcerpt } from '../utils/sanitizeHtml';
+import { eventWhen, isUpcomingEvent, wallClock } from '../utils/eventSchedule';
 
 export const EventsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -33,29 +34,31 @@ export const EventsPage: React.FC = () => {
 
   const currentLocale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
 
-  // Filter upcoming events only
-  const now = new Date();
-  const upcomingEvents = events.filter(event => new Date(event.start_date) >= now);
+  // Upcoming events only: those with a date still ahead.
+  const upcomingEvents = events.filter(isUpcomingEvent);
 
   const filteredEvents = selectedType
     ? upcomingEvents.filter((e) => e.type === selectedType)
     : upcomingEvents;
 
+  // Venue wall clocks in one fixed shape, so they sort as plain strings.
+  const byDate = (a: Event, b: Event) => eventWhen(a).start.localeCompare(eventWhen(b).start);
+
   const sortedEvents = [...filteredEvents].sort((a, b) => {
     switch (sortBy) {
       case 'date-asc':
-        return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+        return byDate(a, b);
       case 'date-desc':
-        return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
+        return byDate(b, a);
       case 'price':
         return (a.price || 0) - (b.price || 0);
       default:
-        return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+        return byDate(a, b);
     }
   });
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(currentLocale, {
+    return wallClock(dateString).toLocaleDateString(currentLocale, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -64,14 +67,14 @@ export const EventsPage: React.FC = () => {
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString(currentLocale, {
+    return wallClock(dateString).toLocaleTimeString(currentLocale, {
       hour: 'numeric',
       minute: '2-digit',
     });
   };
 
   const formatMonth = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(currentLocale, { month: 'short' });
+    return wallClock(dateString).toLocaleDateString(currentLocale, { month: 'short' });
   };
 
   const getTypeColor = (type: string) => {
@@ -257,10 +260,10 @@ export const EventsPage: React.FC = () => {
                         {/* Date Badge */}
                         <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-lg p-3 text-center">
                           <div className="text-2xl font-bold text-primary-600">
-                            {new Date(event.start_date).getDate()}
+                            {wallClock(eventWhen(event).start).getDate()}
                           </div>
                           <div className="text-xs text-gray-600 uppercase">
-                            {formatMonth(event.start_date)}
+                            {formatMonth(eventWhen(event).start)}
                           </div>
                         </div>
 
@@ -297,7 +300,7 @@ export const EventsPage: React.FC = () => {
                           <div className="space-y-2 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
                               <Clock className="w-4 h-4 text-primary-600" />
-                              <span>{formatTime(event.start_date)}</span>
+                              <span>{formatTime(eventWhen(event).start)}</span>
                             </div>
                             {event.location && (
                               <div className="flex items-center gap-2">
@@ -342,10 +345,10 @@ export const EventsPage: React.FC = () => {
                           {/* Date Block */}
                           <div className="w-24 h-24 flex-shrink-0 bg-gradient-to-br from-primary-600 to-accent-600 rounded-xl flex flex-col items-center justify-center text-white">
                             <div className="text-3xl font-bold">
-                              {new Date(event.start_date).getDate()}
+                              {wallClock(eventWhen(event).start).getDate()}
                             </div>
                             <div className="text-sm uppercase">
-                              {formatMonth(event.start_date)}
+                              {formatMonth(eventWhen(event).start)}
                             </div>
                           </div>
 
@@ -364,7 +367,7 @@ export const EventsPage: React.FC = () => {
                               <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">
                                   <Clock className="w-4 h-4 text-primary-600" />
-                                  <span>{formatDate(event.start_date)} {t('events.at')} {formatTime(event.start_date)}</span>
+                                  <span>{formatDate(eventWhen(event).start)} {t('events.at')} {formatTime(eventWhen(event).start)}</span>
                                 </div>
                                 {event.location && (
                                   <div className="flex items-center gap-2">
